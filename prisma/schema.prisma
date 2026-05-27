@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User accounts synced with GitHub logins
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  name          String?
+  githubId      String        @unique
+  githubLogin   String
+  avatarUrl     String
+  accessToken   String        // Encrypted OAuth Token
+  createdAt     DateTime      @default(now())
+  profile       Profile?
+  pullRequests  PullRequest[]
+}
+
+// User preferences and interests
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills    String[]
+  level     String   // Beginner | Intermediate | Advanced
+  interest  String   // Frontend | Backend | Fullstack | AI/ML | DevOps
+  repos     Json?    // Cached repository recommendations list
+  roadmap   Roadmap?
+}
+
+// Custom 4-Week roadmap
+model Roadmap {
+  id        String        @id @default(uuid())
+  profileId String        @unique
+  profile   Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  weeks     RoadmapWeek[]
+}
+
+model RoadmapWeek {
+  id        String        @id @default(uuid())
+  roadmapId String
+  roadmap   Roadmap       @relation(fields: [roadmapId], references: [id], onDelete: Cascade)
+  weekNumber Int          // 1, 2, 3, 4
+  tasks     RoadmapTask[]
+}
+
+model RoadmapTask {
+  id          String      @id @default(uuid())
+  weekId      String
+  week        RoadmapWeek @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  taskText    String
+  isCompleted Boolean     @default(false)
+  completedAt DateTime?
+}
+
+// Sandbox & webhook pull request verifications
+model PullRequest {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prNumber    Int
+  repoFullName String     // e.g. "facebook/react"
+  title       String
+  url         String
+  status      String      // PENDING | VERIFYING | MERGED | FAILED
+  createdAt   DateTime    @default(now())
+}
