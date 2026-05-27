@@ -125,7 +125,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
 
   const handleCopySnippet = () => {
     const userSlug = githubUser ? githubUser.login : "guest-committer";
-    const textToCopy = `[![OpenBridge OSS-Ready](https://img.shields.io/badge/OpenBridge-OSS_Ready-048754?logo=github&style=flat-square)](https://github.com/${userSlug}/openbridge-onboarding-hub)`;
+    const textToCopy = `[![OpenBridge Passport](${window.location.origin}/api/badge/${userSlug}.svg?theme=${badgeTheme})](${window.location.origin})`;
     navigator.clipboard.writeText(textToCopy).then(() => {
       setBadgeCopied(true);
       setTimeout(() => setBadgeCopied(false), 2000);
@@ -939,19 +939,16 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
               <div className="space-y-3 font-mono">
                 
                 {/* Visual badge mock image representing shield */}
-                <div className="p-3 bg-zinc-950 border border-zinc-90 rounded flex items-center justify-between">
-                  <div>
-                    <span className="block text-[9px] text-zinc-500 uppercase">Live Image Asset Preview</span>
-                    <div className="mt-1 flex items-center gap-1.5">
-                      <span className="p-1 px-1.5 rounded-l text-[10px] bg-zinc-90 font-bold border-l border-t border-b border-zinc-800 text-zinc-300">OpenBridge</span>
-                      <span className="p-1 px-2 rounded-r text-[10px] bg-emerald-700 border-r border-t border-b border-emerald-800 text-white font-bold tracking-tight">
-                        OSS_Ready ✓
-                      </span>
-                    </div>
+                <div className="p-3 bg-zinc-950 border border-zinc-90 rounded flex flex-col gap-2">
+                  <span className="block text-[9px] text-zinc-500 uppercase font-mono">Live SVG Passport Preview</span>
+                  <div className="flex items-center justify-center p-2.5 bg-[#0c0d12]/60 border border-zinc-900 rounded-lg">
+                    <img 
+                      src={`/api/badge/${githubUser?.login || "guest-committer"}.svg?name=${encodeURIComponent(tempPassName)}&theme=${badgeTheme}&t=${Date.now()}`}
+                      alt="OpenBridge Verified Passport"
+                      className="max-w-full h-auto"
+                      style={{ maxHeight: "80px" }}
+                    />
                   </div>
-                  <span className="text-[10px] text-zinc-550 font-bold uppercase bg-emerald-950/20 px-2 py-0.5 border border-emerald-900/20 text-emerald-450 rounded shrink-0">
-                    GSoC Standard
-                  </span>
                 </div>
 
                 {/* Copier text block */}
@@ -979,7 +976,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
                   
                   <textarea
                     readOnly
-                    value={`[![OpenBridge OSS-Ready](https://img.shields.io/badge/OpenBridge-OSS_Ready-048754?logo=github&style=flat-square)](https://github.com/guest-committer/openbridge-onboarding-hub)`}
+                    value={`[![OpenBridge Passport](${window.location.origin}/api/badge/${githubUser?.login || "guest-committer"}.svg?theme=${badgeTheme})](${window.location.origin})`}
                     className="w-full bg-black/60 border border-zinc-900 rounded-lg p-3 text-[10px] font-mono text-zinc-400 h-20 select-all focus:outline-none focus:border-zinc-800 resize-none leading-relaxed"
                   />
                 </div>
