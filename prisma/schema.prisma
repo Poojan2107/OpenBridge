@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 generator client {
@@ -25,7 +25,7 @@ model Profile {
   id        String   @id @default(uuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  skills    String[]
+  skills    String
   level     String   // Beginner | Intermediate | Advanced
   interest  String   // Frontend | Backend | Fullstack | AI/ML | DevOps
   repos     Json?    // Cached repository recommendations list

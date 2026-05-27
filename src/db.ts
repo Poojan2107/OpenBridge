@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import pg from "pg";
 import "dotenv/config";
 
@@ -15,8 +16,16 @@ if (!connectionString) {
 if (globalForPrisma.prisma) {
   prismaInstance = globalForPrisma.prisma;
 } else {
-  const pool = new pg.Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+  let adapter;
+  if (connectionString.startsWith("file:")) {
+    // For SQLite database in Prisma 7
+    adapter = new PrismaBetterSqlite3({ url: connectionString });
+  } else {
+    // For PostgreSQL
+    const pool = new pg.Pool({ connectionString });
+    adapter = new PrismaPg(pool);
+  }
+
   prismaInstance = new PrismaClient({ adapter });
 
   if (process.env.NODE_ENV !== "production") {
