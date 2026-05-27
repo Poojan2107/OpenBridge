@@ -513,14 +513,14 @@ Always output response strictly in the following JSON format structure:
         await prisma.profile.upsert({
           where: { userId: user.id },
           update: {
-            skills,
+            skills: JSON.stringify(skills),
             level,
             interest,
             repos: recommendations.repos as any,
           },
           create: {
             userId: user.id,
-            skills,
+            skills: JSON.stringify(skills),
             level,
             interest,
             repos: recommendations.repos as any,
@@ -559,14 +559,14 @@ Always output response strictly in the following JSON format structure:
         await prisma.profile.upsert({
           where: { userId: user.id },
           update: {
-            skills,
+            skills: JSON.stringify(skills),
             level,
             interest,
             repos: recommendations.repos as any,
           },
           create: {
             userId: user.id,
-            skills,
+            skills: JSON.stringify(skills),
             level,
             interest,
             repos: recommendations.repos as any,
@@ -866,9 +866,16 @@ app.get("/api/user/:login", async (req, res) => {
       });
     }
 
+    let parsedSkills: string[] = [];
+    try {
+      parsedSkills = JSON.parse(user.profile.skills);
+    } catch {
+      parsedSkills = [];
+    }
+
     return res.json({
       profile: {
-        skills: user.profile.skills,
+        skills: parsedSkills,
         level: user.profile.level,
         interest: user.profile.interest
       },
