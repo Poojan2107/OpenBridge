@@ -1,0 +1,6 @@
+{
+  "name": "OpenBridge",
+  "description": "An AI-powered platform to help developers discover, understand, and transition to contributing to open-source software.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
