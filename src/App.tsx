@@ -8,6 +8,7 @@ import OpportunityLayer from "./components/OpportunityLayer";
 import ChallengeHub from "./components/ChallengeHub";
 import PreflightConsole from "./components/PreflightConsole";
 import GithubFileExplorer from "./components/GithubFileExplorer";
+import LevelBadge from "./components/LevelBadge";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -914,6 +915,15 @@ export default function App() {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                {/* Level chip */}
+                <div className="pt-2">
+                  <LevelBadge
+                    completedTasks={Object.values(checkedRoadmapTasks).filter(Boolean).length}
+                    mergedPRs={0}
+                    variant="compact"
+                  />
                 </div>
 
                 <div className="pt-3 border-t border-[#30363d] space-y-2">

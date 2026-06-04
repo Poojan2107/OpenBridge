@@ -16,6 +16,7 @@ import {
   GitPullRequest,
   Calendar
 } from "lucide-react";
+import LevelBadge from "./LevelBadge";
 
 interface PublicProfileProps {
   login: string;
@@ -229,6 +230,15 @@ export default function PublicProfile({ login }: PublicProfileProps) {
                       {s}
                     </span>
                   ))}
+                </div>
+
+                {/* Level badge chip */}
+                <div className="mt-3">
+                  <LevelBadge
+                    completedTasks={completedCount}
+                    mergedPRs={0}
+                    variant="profile"
+                  />
                 </div>
               </div>
 
