@@ -916,7 +916,17 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#30363d]">
+                <div className="pt-3 border-t border-[#30363d] space-y-2">
+                  {/* Public Profile Link */}
+                  <a
+                    href={`/p/${githubUser ? githubUser.login : "guest-committer"}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full text-center inline-flex items-center justify-center gap-1.5 text-[11px] font-mono font-bold uppercase py-1.5 bg-[#21262d] hover:bg-[#2f81f7]/10 hover:text-[#2f81f7] hover:border-[#2f81f7]/30 border border-[#30363d] rounded-md transition-all cursor-pointer"
+                  >
+                    <User className="w-3 h-3" />
+                    View Public Profile
+                  </a>
                   <button
                     onClick={handleResetProfile}
                     className="w-full text-center text-[11px] font-mono font-bold uppercase py-1.5 bg-[#21262d] hover:bg-[#bd2c00]/10 hover:text-[#f85149] hover:border-[#f85149]/30 border border-[#30363d] rounded-md transition-all cursor-pointer"
