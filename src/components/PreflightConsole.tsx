@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import GitTerminalSandbox from "./GitTerminalSandbox";
 import { 
   ShieldCheck, 
   HelpCircle, 
@@ -106,14 +107,31 @@ export default function PreflightConsole() {
   const [systemChecks, setSystemChecks] = useState<Array<{ name: string; status: "success" | "warning"; details: string }>>(() => {
     try {
       const saved = localStorage.getItem("ob_system_checks");
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (!parsed.some((c: any) => c.name === "Git Workflow DCO Compliance")) {
+          parsed.push({ name: "Git Workflow DCO Compliance", status: "warning", details: "Unverified Git workflow sequence. Complete git commits in Sandbox Terminal to test." });
+        }
+        return parsed;
+      }
     } catch {}
     return [
       { name: "Global Git Config Signature", status: "success", details: "Local signature mapped to validated email records." },
       { name: "Repository Origin Trust", status: "success", details: "Push boundaries aligned to upstream main forks." },
-      { name: "Commit Auth (GPG Keys)", status: "warning", details: "Unsigned timeline commits detected. Generate GPG below to secure." }
+      { name: "Commit Auth (GPG Keys)", status: "warning", details: "Unsigned timeline commits detected. Generate GPG below to secure." },
+      { name: "Git Workflow DCO Compliance", status: "warning", details: "Unverified Git workflow sequence. Complete git commits in Sandbox Terminal to test." }
     ];
   });
+
+  const handleTerminalSuccess = () => {
+    setSystemChecks(prev =>
+      prev.map(c =>
+        c.name === "Git Workflow DCO Compliance"
+          ? { name: "Git Workflow DCO Compliance", status: "success", details: "Git staging, sign-offs, and push operations verified successfully!" }
+          : c
+      )
+    );
+  };
 
   React.useEffect(() => {
     localStorage.setItem("ob_gpg_username", userName);
@@ -353,6 +371,24 @@ export default function PreflightConsole() {
             )}
 
           </div>
+
+          {/* Git Sandbox Command Simulator Card */}
+          <div className="bg-[#090a0f] border border-zinc-900 rounded-xl p-5 hover:border-zinc-800 transition-all duration-150 relative">
+            <div className="flex items-center justify-between gap-2 mb-4">
+              <span className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider text-sky-400 font-bold">
+                <Terminal className="w-3.5 h-3.5 text-sky-400" />
+                Git Sandbox Command Simulator
+              </span>
+            </div>
+            <h3 className="text-sm font-bold text-zinc-150 tracking-tight mb-1.5 font-sans">
+              Simulated Git Environment
+            </h3>
+            <p className="text-zinc-500 text-[11px] leading-relaxed mb-4 font-mono">
+              Practice making signed DCO commits on a mock terminal before pushing to upstream. Type <code className="text-zinc-300">help</code> or <code className="text-zinc-300">git status</code> to begin.
+            </p>
+            <GitTerminalSandbox onSuccess={handleTerminalSuccess} />
+          </div>
+
         </div>
 
         {/* Right Column (7/12): Highly Interactive Open Source Developer प्री-फ़्लाइट Quiz */}

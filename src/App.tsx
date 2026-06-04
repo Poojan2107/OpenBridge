@@ -613,7 +613,7 @@ export default function App() {
           <div className="space-y-12 animate-fade-in">
             
             {/* 1. HERO SECTOR WITH GENTLE COSMIC ACCENT & REVOLUTIONARY GREETING */}
-            <div className="relative border border-[#30363d]/85 bg-[#161b22] rounded-2xl overflow-hidden py-12 px-6 sm:px-10 text-center sm:text-left shadow-2xl">
+            <div className="relative glow-border glass-card rounded-2xl overflow-hidden py-12 px-6 sm:px-10 text-center sm:text-left shadow-2xl">
               
               {/* Starry matrix ambient lights */}
               <div className="absolute top-0 right-0 w-80 h-80 bg-[#2f81f7]/15 rounded-full blur-[100px] pointer-events-none"></div>
@@ -707,42 +707,42 @@ export default function App() {
             {/* 2. THE CHANNELS BENTO GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 select-none">
               
-              <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-2 hover:border-[#8b949e] transition-colors">
+              <div className="glass-card rounded-xl p-5 space-y-2">
                 <div className="p-2 w-max bg-[#2f81f7]/10 border border-[#2f81f7]/30 text-[#2f81f7] rounded-md">
                   <Code className="w-4 h-4" />
                 </div>
                 <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Curated Repositories</h4>
-                <p className="text-[#8b949e] text-[11px] leading-relaxed">
+                <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
                   Avoid hunting for problems. We automatically query and recommendation issue indices that match your targeted skill level.
                 </p>
               </div>
 
-              <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-2 hover:border-[#8b949e] transition-colors">
+              <div className="glass-card rounded-xl p-5 space-y-2">
                 <div className="p-2 w-max bg-[#238636]/10 border border-[#238636]/30 text-[#3fb950] rounded-md">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Structured Checklists</h4>
-                <p className="text-[#8b949e] text-[11px] leading-relaxed">
+                <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
                   Follow a dedicated 4-week roadmap detailing code structure exploration, issue mapping, and simulated PR pipelines.
                 </p>
               </div>
 
-              <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-2 hover:border-[#8b949e] transition-colors">
+              <div className="glass-card rounded-xl p-5 space-y-2">
                 <div className="p-2 w-max bg-[#D29922]/10 border border-[#D29922]/30 text-[#D29922] rounded-md">
                   <Shield className="w-4 h-4" />
                 </div>
                 <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Pre-flight Verification</h4>
-                <p className="text-[#8b949e] text-[11px] leading-relaxed">
+                <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
                   Generate secure digital GPG signatures and evaluate open-source hygiene with interactive compliance questionnaires.
                 </p>
               </div>
 
-              <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-2 hover:border-[#8b949e] transition-colors">
+              <div className="glass-card rounded-xl p-5 space-y-2">
                 <div className="p-2 w-max bg-[#7928ca]/10 border border-purple-900/40 text-purple-400 rounded-md">
                   <AlertCircle className="w-4 h-4" />
                 </div>
                 <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">AI Issue Translate</h4>
-                <p className="text-[#8b949e] text-[11px] leading-relaxed">
+                <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
                   Feed complex maintainer bug reports directly to Gemini to get deep technical breakdowns and immediate resolution tips.
                 </p>
               </div>
@@ -829,7 +829,7 @@ export default function App() {
 
               {/* Profile setup form container */}
               <div className="lg:col-span-8 space-y-6">
-                <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-6 shadow-xl">
+                <div className="glass-card rounded-xl p-6 shadow-xl">
                   <h2 className="text-lg font-semibold text-[#f0f6fc] tracking-tight mb-2">
                     Create your customized workstation profile
                   </h2>

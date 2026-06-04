@@ -760,15 +760,53 @@ Always output response strictly in the following JSON format structure:
 
 app.post("/api/explain", async (req, res) => {
   try {
-    const { issue = "" } = req.body;
+    let { issue = "" } = req.body;
     if (!issue.trim()) {
-      return res.status(400).json({ error: "No raw issue description provided." });
+      return res.status(400).json({ error: "No raw issue description or URL provided." });
+    }
+
+    const githubIssueRegex = /github\.com\/([^/]+)\/([^/]+)\/issues\/(\d+)/i;
+    const match = issue.match(githubIssueRegex);
+    let isUrl = false;
+    let fetchedIssueTitle = "";
+
+    if (match) {
+      const owner = match[1];
+      const repo = match[2];
+      const issueNumber = match[3];
+      const apiUrl = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`;
+
+      try {
+        console.log(`Fetching issue details from GitHub API: ${apiUrl}`);
+        const response = await fetch(apiUrl, {
+          headers: {
+            "User-Agent": "openbridge-mentor-app",
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+
+        if (response.ok) {
+          const issueData: any = await response.json();
+          fetchedIssueTitle = issueData.title;
+          issue = `Title: ${issueData.title}\n\nDescription:\n${issueData.body || "No description provided."}`;
+          isUrl = true;
+          console.log(`Successfully fetched issue "${fetchedIssueTitle}"`);
+        } else {
+          console.warn(`GitHub API returned status ${response.status} for URL: ${apiUrl}. Falling back to raw text.`);
+        }
+      } catch (fetchErr) {
+        console.error("Failed to fetch issue from GitHub API:", fetchErr);
+      }
     }
 
     const ai = getGeminiClient();
     if (!ai) {
       console.log("Serving simulated issue translation...");
-      return res.json(getFallbackExplanation(issue));
+      const explanation = getFallbackExplanation(issue);
+      if (isUrl && fetchedIssueTitle) {
+        explanation.meaning = `[Live URL: ${fetchedIssueTitle}] ${explanation.meaning}`;
+      }
+      return res.json(explanation);
     }
 
     const promptMessage = `Act as an expert technical translator. Simplify the following technical GitHub issue text into a plain English, highly accessible and non-intimidating format for a first-time open source developer.
