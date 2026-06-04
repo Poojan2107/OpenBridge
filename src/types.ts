@@ -21,6 +21,7 @@ export interface RepositorySuggestion {
   description: string;
   match: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
+  reason?: string;
   issues: string[];
 }
 

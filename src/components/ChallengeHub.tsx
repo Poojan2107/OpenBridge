@@ -125,7 +125,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
 
   const handleCopySnippet = () => {
     const userSlug = githubUser ? githubUser.login : "guest-committer";
-    const textToCopy = `[![OpenBridge Passport](${window.location.origin}/api/badge/${userSlug}.svg?theme=${badgeTheme})](${window.location.origin})`;
+    const textToCopy = `[![OpenBridge Passport](${window.location.origin}/api/badge/${userSlug}.svg?name=${encodeURIComponent(tempPassName)}&theme=${badgeTheme})](${window.location.origin})`;
     navigator.clipboard.writeText(textToCopy).then(() => {
       setBadgeCopied(true);
       setTimeout(() => setBadgeCopied(false), 2000);
@@ -976,7 +976,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
                   
                   <textarea
                     readOnly
-                    value={`[![OpenBridge Passport](${window.location.origin}/api/badge/${githubUser?.login || "guest-committer"}.svg?theme=${badgeTheme})](${window.location.origin})`}
+                    value={`[![OpenBridge Passport](${window.location.origin}/api/badge/${githubUser?.login || "guest-committer"}.svg?name=${encodeURIComponent(tempPassName)}&theme=${badgeTheme})](${window.location.origin})`}
                     className="w-full bg-black/60 border border-zinc-900 rounded-lg p-3 text-[10px] font-mono text-zinc-400 h-20 select-all focus:outline-none focus:border-zinc-800 resize-none leading-relaxed"
                   />
                 </div>
