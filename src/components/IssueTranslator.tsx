@@ -8,16 +8,16 @@ interface IssueTranslatorProps {
 
 const PRESETS = [
   {
+    title: "Live GitHub Issue (facebook/react)",
+    text: "https://github.com/facebook/react/issues/28000"
+  },
+  {
     title: "Vite local server port conflict",
     text: "Error: listen EADDRINUSE: address already in use :::3000 at Server.setupListenHandle [as _listen2] (node:net:1812:14) at listenInCluster (node:net:1860:12) at Server.listen (node:net:1948:7) - The development server crashed because port 3000 is occupied. Introduce a warning or search for the next available port dynamically."
   },
   {
     title: "React stale closure in search input hook",
     text: "Warning: React hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array. When typing inside the search input rapidly, the old fetched requests resolve after the newer ones, leading to outdated query lists rendering on-screen."
-  },
-  {
-    title: "Docker image permission failure in Alpine environment",
-    text: "npm ERR! code EACCES npm ERR! syscall mkdir npm ERR! path /app/node_modules/.vite npm ERR! errno -13 npm ERR! Error: EACCES: permission denied, mkdir '/app/node_modules/.vite' - Fails to spin up inside rootless container environments."
   }
 ];
 
@@ -33,10 +33,10 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
   const startLoaderAnimation = () => {
     setLoadingStep(0);
     const steps = [
-      "Deconstructing github syntactic trees...",
-      "Mapping error codes to runtime environments...",
-      "Extracting affected file models...",
-      "Formulating isolated resolution sequences..."
+      "Contacting GitHub repositories API...",
+      "Deconstructing code semantic contexts...",
+      "Mapping issue dependencies to files...",
+      "Generating action guidelines with Gemini..."
     ];
     
     let current = 0;
@@ -87,10 +87,10 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
   };
 
   const loaderMessages = [
-    "Deconstructing github syntactic trees...",
-    "Mapping error codes to runtime environments...",
-    "Extracting affected file models...",
-    "Formulating isolated resolution sequences..."
+    "Contacting GitHub repositories API...",
+    "Deconstructing code semantic contexts...",
+    "Mapping issue dependencies to files...",
+    "Generating action guidelines with Gemini..."
   ];
 
   return (
@@ -103,7 +103,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
           Issue Translator & Target Mapper
         </h2>
         <p className="text-zinc-400 text-xs mt-1 max-w-2xl leading-relaxed">
-          Paste any raw GitHub issue, bug trace log, or pull request description. Gemini will isolate why it happens, map the affected target files, and generate a step-by-step resolution checklist.
+          Paste any raw GitHub issue description, bug trace log, or a **live GitHub issue URL**. Gemini will fetch the content, isolate the cause, identify affected target files, and generate a step-by-step checklist.
         </p>
       </div>
 
@@ -135,12 +135,12 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
           </div>
 
           <div className="pt-1">
-            <label className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 mb-1.5 font-mono">Custom input</label>
+            <label className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 mb-1.5 font-mono">Custom Input (Text or Issue URL)</label>
             <div className="relative">
               <textarea
                 value={issueText}
                 onChange={(e) => setIssueText(e.target.value)}
-                placeholder="Paste code segments, stacktrace blocks, or issue briefs..."
+                placeholder="Paste code segments, stacktrace blocks, or a public GitHub issue URL (e.g., https://github.com/owner/repo/issues/123)..."
                 rows={6}
                 className="w-full bg-[#090a0f] border border-zinc-900 rounded p-3 text-xs font-mono text-zinc-200 placeholder-zinc-750 focus:outline-none focus:border-zinc-700 leading-relaxed resize-none"
               />
@@ -305,7 +305,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
               </div>
 
               <div className="text-[10px] text-zinc-550 italic mt-2 font-mono text-right">
-                engine: gemini-2.5-flash
+                engine: gemini-3.5-flash
               </div>
             </div>
           )}
