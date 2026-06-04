@@ -21,6 +21,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { PersonalizedRoadmap, UserProfile, GitHubUser } from "../types";
+import LevelBadge from "./LevelBadge";
 
 interface ChallengeHubProps {
   roadmap: PersonalizedRoadmap;
@@ -716,6 +717,19 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
         </div>
       </div>
       )}
+
+      {/* SECTION 3.5: Contributor Level & XP System */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Contributor Rank</span>
+          <div className="flex-1 h-px bg-zinc-900" />
+        </div>
+        <LevelBadge
+          completedTasks={completedCount}
+          mergedPRs={hacktoberfestPrCount}
+          variant="full"
+        />
+      </div>
 
       {/* SECTION 4: Open-Source Contributor Pass & Embeddable Profile Badges (MVP Readiness Achievement) */}
       <div className="bg-[#090a0f] border border-zinc-900 rounded-xl p-6 space-y-6">
