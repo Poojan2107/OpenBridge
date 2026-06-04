@@ -1,11 +1,73 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
+import crypto from "crypto";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 import { prisma } from "./src/db";
 
 dotenv.config();
+
+// AES-256-CBC cryptographic setup for secure OAuth token storage
+const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY 
+  ? crypto.createHash("sha256").update(process.env.ENCRYPTION_KEY).digest() 
+  : crypto.randomBytes(32); 
+const IV_LENGTH = 16;
+
+function encrypt(text: string): string {
+  try {
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv("aes-256-cbc", ENCRYPTION_SECRET, iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString("hex") + ":" + encrypted.toString("hex");
+  } catch (err) {
+    console.error("Encryption failed:", err);
+    return text;
+  }
+}
+
+function decrypt(text: string): string {
+  try {
+    const textParts = text.split(":");
+    const ivPart = textParts.shift();
+    if (!ivPart) return text;
+    const iv = Buffer.from(ivPart, "hex");
+    const encryptedText = Buffer.from(textParts.join(":"), "hex");
+    const decipher = crypto.createDecipheriv("aes-256-cbc", ENCRYPTION_SECRET, iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  } catch (err) {
+    console.error("Decryption failed:", err);
+    return text;
+  }
+}
+
+// In-memory request rate limiter for AI endpoints
+const rateLimits: { [ip: string]: number[] } = {};
+const LIMIT_WINDOW_MS = 60 * 1000;
+const MAX_REQUESTS = 15;
+
+function rateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || "anonymous";
+  const now = Date.now();
+  
+  if (!rateLimits[ip]) {
+    rateLimits[ip] = [];
+  }
+  
+  rateLimits[ip] = rateLimits[ip].filter(timestamp => now - timestamp < LIMIT_WINDOW_MS);
+  
+  if (rateLimits[ip].length >= MAX_REQUESTS) {
+    return res.status(429).json({
+      error: "Too many requests. Please wait a moment before trying again."
+    });
+  }
+  
+  rateLimits[ip].push(now);
+  next();
+}
 
 const app = express();
 const PORT = 3000;
@@ -52,6 +114,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "The official open-source documentation for GitHub. Excellent first-contribution targets.",
           match: normalizedLevel === "beginner" ? "98%" : "85%",
           difficulty: "Beginner",
+          reason: "This project provides straightforward Markdown documentation files, making it an excellent match for beginner-friendly content edits.",
           issues: [
             "Fix inconsistent spacing in Markdown table guides",
             "Update quickstart document for Codespaces setup flow",
@@ -63,6 +126,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Next-generation frontend tooling. Very active community and friendly maintainers.",
           match: normalizedLevel === "intermediate" ? "92%" : "82%",
           difficulty: "Intermediate",
+          reason: "Aligned to modern build tools using TypeScript, perfect for testing bundler asset cache performances.",
           issues: [
             "Add detailed warning logs in dev server when port 3000 is occupied",
             "Improve performance of CSS compilation caches on large directories",
@@ -74,6 +138,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Beautiful & consistent icon toolkit made by the community. Excellent for standard icon fixes or design contributions.",
           match: "89%",
           difficulty: "Beginner",
+          reason: "Lucide icons require simple SVG manipulations and standard React wrappers, which aligns well with basic components learning.",
           issues: [
             "Add responsive aria-label helpers to React wrappers",
             "Fix stroke alignment on custom terminal dashboard icon",
@@ -90,6 +155,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Fast, unopinionated, minimalist web framework for Node.js. The foundation of modern fullstack apps.",
           match: normalizedLevel === "beginner" ? "90%" : "85%",
           difficulty: "Beginner",
+          reason: "Express is written in Javascript/Node, matching backend learners wanting to understand middleware routing stacks.",
           issues: [
             "Improve validation of malformed JSON payloads in body-parser components",
             "Correct docstring annotations for res.cookie setting options",
@@ -101,6 +167,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Modern, fast (high-performance), web framework for building APIs with Python based on standard Python type hints.",
           match: normalizedLevel === "intermediate" ? "94%" : "86%",
           difficulty: "Intermediate",
+          reason: "Perfect for Python developers interested in asynchronous request processing and type validations.",
           issues: [
             "Optimize dependency injection performance to support fast async routes",
             "Resolve edge case validation errors when parsing complex nested Pydantic parameters",
@@ -112,6 +179,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Collection of Node.js modules for interfacing with PostgreSQL databases. Solid foundational backend tech.",
           match: "85%",
           difficulty: "Intermediate",
+          reason: "Provides direct SQL query interfaces in Node.js, great for validating transaction pools and connection controls.",
           issues: [
             "Fix connection timeout leaks when transaction throws uncaught database exception",
             "Add simplified example documenting connection pool patterns under serverless environments",
@@ -128,6 +196,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Building applications with LLMs through composability. Extremely fast-moving open-source ecosystem.",
           match: normalizedLevel === "intermediate" ? "95%" : "80%",
           difficulty: "Intermediate",
+          reason: "Enables developing AI agent flows and orchestrations using Python, matching modern AI/ML application tooling.",
           issues: [
             "Fix parsing errors inside JSON agents with incomplete markdown boundaries",
             "Update quickstart notebook guides for Google Gemini models integration",
@@ -139,6 +208,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "The friendly PIL fork is an image processing library for Python. Ideal for learners with clear specs.",
           match: "88%",
           difficulty: "Beginner",
+          reason: "An image helper library in Python requiring isolated drawing coordinates fixes, suitable for early learners.",
           issues: [
             "Fix type signatures in ImageDraw utility files",
             "Incorporate sample image resizing scripts with better performance margins",
@@ -150,6 +220,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "State-of-the-art Machine Learning for PyTorch, TensorFlow, and JAX. Highly regarded source repository.",
           match: "84%",
           difficulty: "Intermediate",
+          reason: "The industry standard repository for pre-trained AI models, ideal for intermediate PyTorch learners.",
           issues: [
             "Update onboarding environment guidelines to use clean virtual environments",
             "Correct parameter spelling in pipeline setup logs",
@@ -167,6 +238,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "The official command line interface for Docker. Perfect for developers interested in virtualization and shell scripts.",
           match: "85%",
           difficulty: "Intermediate",
+          reason: "Focuses on CLI parameter styling and WSL configurations, ideal for DevOps learners.",
           issues: [
             "Fix typo in flag helper messages for docker buildx run",
             "Add developer setup instructions for Windows Subsystem for Linux (WSL)",
@@ -178,6 +250,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "Radically simple IT automation system. Excellent for learning configuration-as-code and infrastructure automation.",
           match: "82%",
           difficulty: "Intermediate",
+          reason: "Written in Python, this project helps DevOps enthusiasts understand playbook scripting variables.",
           issues: [
             "Document edge cases where system path variables are overridden in SSH sessions",
             "Add integration tests for custom remote file replication handlers",
@@ -189,6 +262,7 @@ function getFallbackRecommendations(skills: string[], level: string, interest: s
           description: "A delightful community-driven framework for managing your zsh configuration. Fun first contribution opportunity.",
           match: "95%",
           difficulty: "Beginner",
+          reason: "Requires shell script customizations and theme adjustments, very beginner-friendly for shell scripting.",
           issues: [
             "Fix aliases conflict when git plug-in is run alongside custom command trackers",
             "Update terminal indicator color in dark theme profiles to support high contrast accessibility",
@@ -384,6 +458,7 @@ async function getLiveGitHubRecommendations(skills: string[], level: string, int
           description: item.description ? (item.description.slice(0, 80) + (item.description.length > 80 ? "..." : "")) : "No description provided.",
           match: matchPercent,
           difficulty: level,
+          reason: `Matches your interest in ${interest} and proficiency in ${skills.join(", ") || "General Programming"}.`,
           issues: issuesList
         };
       })
@@ -397,7 +472,7 @@ async function getLiveGitHubRecommendations(skills: string[], level: string, int
 }
 
 // API Endpoints
-app.post("/api/recommend", async (req, res) => {
+app.post("/api/recommend", rateLimiter, async (req, res) => {
   try {
     const { skills = [], level = "Beginner", interest = "Frontend", githubUser = null } = req.body;
     const ai = getGeminiClient();
@@ -426,7 +501,7 @@ Skills: ${skills.join(", ") || "General Programming"}
 Experience Level: ${level}
 Area of Interest: ${interest}
 
-For each repository, include the full name (e.g., "facebook/react" or suitable matching realistic real-world or common open source repositories), a brief description under 30 words, a simulated but realistic match percentage (e.g., "94%"), the difficulty category ("Beginner" or "Intermediate"), and exactly 3 very specific, highly realistic beginner-friendly issue examples they can solve, written in a clear action-oriented way.
+For each repository, include the full name (e.g., "facebook/react"), a brief description under 30 words, a simulated but realistic match percentage (e.g., "94%"), the difficulty category ("Beginner" or "Intermediate"), exactly 3 very specific, highly realistic beginner-friendly issue examples they can solve, and a 1-2 sentence match explanation ("reason") explaining why this repository directly aligns with their skill sets and interests.
 
 Always output response strictly in the following JSON format structure:
 {
@@ -440,7 +515,8 @@ Always output response strictly in the following JSON format structure:
         "Issue action step 1",
         "Issue action step 2",
         "Issue action step 3"
-      ]
+      ],
+      "reason": "personalized match explanation"
     }
   ]
 }`;
@@ -459,12 +535,13 @@ Always output response strictly in the following JSON format structure:
                 description: "The list of 3 repository suggestions.",
                 items: {
                   type: Type.OBJECT,
-                  required: ["name", "description", "match", "difficulty", "issues"],
+                  required: ["name", "description", "match", "difficulty", "issues", "reason"],
                   properties: {
                     name: { type: Type.STRING },
                     description: { type: Type.STRING },
                     match: { type: Type.STRING },
                     difficulty: { type: Type.STRING },
+                    reason: { type: Type.STRING },
                     issues: {
                       type: Type.ARRAY,
                       items: { type: Type.STRING }
@@ -493,12 +570,13 @@ Always output response strictly in the following JSON format structure:
     // Save user profile state in database if logged in
     if (githubUser && recommendations && recommendations.repos) {
       try {
+        const encryptedToken = encrypt(githubUser.token || "simulated_token");
         const user = await prisma.user.upsert({
           where: { githubId: githubUser.id ? githubUser.id.toString() : `sim_${githubUser.login}` },
           update: {
             name: githubUser.name || githubUser.login,
             avatarUrl: githubUser.avatar_url,
-            accessToken: githubUser.token || "simulated_token",
+            accessToken: encryptedToken,
           },
           create: {
             githubId: githubUser.id ? githubUser.id.toString() : `sim_${githubUser.login}`,
@@ -506,7 +584,7 @@ Always output response strictly in the following JSON format structure:
             email: githubUser.email || `${githubUser.login}@example.com`,
             name: githubUser.name || githubUser.login,
             avatarUrl: githubUser.avatar_url,
-            accessToken: githubUser.token || "simulated_token",
+            accessToken: encryptedToken,
           },
         });
 
@@ -539,12 +617,13 @@ Always output response strictly in the following JSON format structure:
 
     if (githubUser && recommendations && recommendations.repos) {
       try {
+        const encryptedToken = encrypt(githubUser.token || "simulated_token");
         const user = await prisma.user.upsert({
           where: { githubId: githubUser.id ? githubUser.id.toString() : `sim_${githubUser.login}` },
           update: {
             name: githubUser.name || githubUser.login,
             avatarUrl: githubUser.avatar_url,
-            accessToken: githubUser.token || "simulated_token",
+            accessToken: encryptedToken,
           },
           create: {
             githubId: githubUser.id ? githubUser.id.toString() : `sim_${githubUser.login}`,
@@ -552,7 +631,7 @@ Always output response strictly in the following JSON format structure:
             email: githubUser.email || `${githubUser.login}@example.com`,
             name: githubUser.name || githubUser.login,
             avatarUrl: githubUser.avatar_url,
-            accessToken: githubUser.token || "simulated_token",
+            accessToken: encryptedToken,
           },
         });
 
@@ -758,7 +837,7 @@ Always output response strictly in the following JSON format structure:
   }
 });
 
-app.post("/api/explain", async (req, res) => {
+app.post("/api/explain", rateLimiter, async (req, res) => {
   try {
     let { issue = "" } = req.body;
     if (!issue.trim()) {
@@ -965,6 +1044,88 @@ app.post("/api/roadmap/task/toggle", async (req, res) => {
   } catch (err) {
     console.error("Failed to toggle roadmap task:", err);
     return res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+app.get("/api/roadmap/export/:login", async (req, res) => {
+  try {
+    const { login } = req.params;
+
+    const user = await prisma.user.findFirst({
+      where: { githubLogin: login },
+      include: {
+        profile: {
+          include: {
+            roadmap: {
+              include: {
+                weeks: {
+                  include: {
+                    tasks: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!user || !user.profile) {
+      return res.status(404).json({ error: "User profile not found." });
+    }
+
+    let parsedSkills: string[] = [];
+    try {
+      parsedSkills = JSON.parse(user.profile.skills);
+    } catch {
+      parsedSkills = [];
+    }
+
+    const name = user.name || user.githubLogin;
+    const domain = user.profile.interest;
+    const level = user.profile.level;
+    const skillsList = parsedSkills.join(", ") || "General Programming";
+
+    let markdown = `# OpenBridge Contribution Roadmap
+
+## Profile Summary
+- **GitHub Username:** @${user.githubLogin}
+- **Developer Name:** ${name}
+- **Area of Interest:** ${domain}
+- **Experience Level:** ${level}
+- **Primary Skills:** ${skillsList}
+
+---
+
+## 4-Week Action Plan
+`;
+
+    if (user.profile.roadmap && user.profile.roadmap.weeks.length > 0) {
+      const sortedWeeks = [...user.profile.roadmap.weeks].sort((a, b) => a.weekNumber - b.weekNumber);
+      
+      sortedWeeks.forEach((week) => {
+        markdown += `\n### Week ${week.weekNumber}\n`;
+        const sortedTasks = [...week.tasks];
+        sortedTasks.forEach((task) => {
+          const checkbox = task.isCompleted ? "[x]" : "[ ]";
+          markdown += `- ${checkbox} ${task.taskText}\n`;
+        });
+      });
+    } else {
+      markdown += `\n*No active roadmap found. Please complete the profiling process on the dashboard to generate a custom 4-week roadmap.*\n`;
+    }
+
+    markdown += `
+---
+*Generated by OpenBridge on ${new Date().toLocaleDateString()}. Keep contributing to open source!*
+`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${user.githubLogin}-roadmap.md"`);
+    res.setHeader("Content-Type", "text/markdown");
+    return res.send(markdown);
+  } catch (err) {
+    console.error("Failed to export roadmap:", err);
+    return res.status(500).send("Internal server error");
   }
 });
 

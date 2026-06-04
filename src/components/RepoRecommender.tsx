@@ -207,9 +207,20 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
               </div>
 
               {/* Repo description */}
-              <p className="text-zinc-400 text-xs leading-relaxed flex-grow mb-5">
+              <p className="text-zinc-400 text-xs leading-relaxed flex-grow mb-4">
                 {repo.description}
               </p>
+
+              {/* Personalized Match Explanation */}
+              {repo.reason && (
+                <div className="mb-5 p-3 rounded-lg bg-blue-950/10 border border-blue-900/30 text-[11px] leading-relaxed text-zinc-300 flex items-start gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold text-zinc-200">Mentor Match Reason: </span>
+                    {repo.reason}
+                  </div>
+                </div>
+              )}
 
               {/* Recommended Issues block */}
               <div className="border-t border-zinc-900 pt-4 mt-auto">

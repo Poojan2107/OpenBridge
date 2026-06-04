@@ -1064,6 +1064,7 @@ export default function App() {
                           roadmap={roadmap} 
                           checkedTasks={checkedRoadmapTasks} 
                           onToggleTask={handleToggleRoadmapTask} 
+                          login={githubUser ? githubUser.login : "guest-committer"}
                         />
                       )}
                     </div>

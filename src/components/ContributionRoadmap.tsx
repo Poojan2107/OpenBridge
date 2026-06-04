@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { PersonalizedRoadmap } from "../types";
-import { Compass, CalendarDays, CheckCircle2, ChevronRight, HelpCircle, Code, Award, Info, BookOpen } from "lucide-react";
+import { Compass, CalendarDays, CheckCircle2, ChevronRight, HelpCircle, Code, Award, Info, BookOpen, Download } from "lucide-react";
 
 interface ContributionRoadmapProps {
   roadmap: PersonalizedRoadmap;
   checkedTasks?: { [key: string]: boolean };
   onToggleTask?: (week: string, index: number) => void;
+  login?: string;
 }
 
 const WEEK_LABELS = {
@@ -15,7 +16,7 @@ const WEEK_LABELS = {
   week4: { title: "Week 04", subtitle: "Feature & Engagement", desc: "Crafting structured Pull Requests, documenting impact & interacting with maintainers." }
 } as const;
 
-export default function ContributionRoadmap({ roadmap, checkedTasks: propsCheckedTasks, onToggleTask }: ContributionRoadmapProps) {
+export default function ContributionRoadmap({ roadmap, checkedTasks: propsCheckedTasks, onToggleTask, login }: ContributionRoadmapProps) {
   const [activeWeek, setActiveWeek] = useState<keyof PersonalizedRoadmap>("week1");
   const [localCheckedTasks, setLocalCheckedTasks] = useState<{ [key: string]: boolean }>({});
 
@@ -28,6 +29,11 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
       const key = `${week}-${index}`;
       setLocalCheckedTasks((prev) => ({ ...prev, [key]: !prev[key] }));
     }
+  };
+
+  const handleExportRoadmap = () => {
+    const userLogin = login || "guest-committer";
+    window.location.href = `/api/roadmap/export/${userLogin}`;
   };
 
   const getWeekProgress = (week: keyof PersonalizedRoadmap) => {
@@ -55,17 +61,28 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
           </p>
         </div>
 
-        {/* Global Progress indicator */}
-        <div className="bg-[#090a0f] px-3.5 py-2 border border-zinc-900 rounded select-none">
-          <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold tracking-wider">Phase progress</span>
-          <div className="flex items-center gap-3 mt-1.5">
-            <div className="w-24 h-1 bg-zinc-900 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-zinc-400 transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              ></div>
+        <div className="flex items-center gap-3 self-start md:self-center">
+          {/* Export Roadmap Button */}
+          <button
+            onClick={handleExportRoadmap}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-zinc-800 hover:border-zinc-700 bg-zinc-950 hover:bg-zinc-900 text-xs font-mono text-zinc-300 transition-all cursor-pointer select-none"
+            title="Export this 4-week roadmap to Markdown format"
+          >
+            <Download className="w-3.5 h-3.5 text-blue-400" /> Export Roadmap
+          </button>
+
+          {/* Global Progress indicator */}
+          <div className="bg-[#090a0f] px-3.5 py-2 border border-zinc-900 rounded select-none">
+            <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold tracking-wider">Phase progress</span>
+            <div className="flex items-center gap-3 mt-1.5">
+              <div className="w-24 h-1 bg-zinc-900 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-zinc-400 transition-all duration-300"
+                  style={{ width: `${progressPercent}%` }}
+                ></div>
+              </div>
+              <span className="text-xs font-mono font-bold text-zinc-350">{progressPercent}%</span>
             </div>
-            <span className="text-xs font-mono font-bold text-zinc-350">{progressPercent}%</span>
           </div>
         </div>
       </div>
