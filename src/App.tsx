@@ -9,6 +9,7 @@ import ChallengeHub from "./components/ChallengeHub";
 import PreflightConsole from "./components/PreflightConsole";
 import GithubFileExplorer from "./components/GithubFileExplorer";
 import LevelBadge from "./components/LevelBadge";
+import CodeReview from "./components/CodeReview";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -50,7 +51,7 @@ export default function App() {
     }
   });
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs">(() => {
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview">(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
       if (saved) return saved as any;
@@ -1035,6 +1036,23 @@ export default function App() {
                       6
                     </span>
                   </button>
+
+                  <button
+                    onClick={() => setActiveTab("codereview")}
+                    className={`w-full text-left px-4 py-3 text-xs font-semibold flex items-center justify-between transition-colors ${
+                      activeTab === "codereview"
+                        ? "bg-[#21262d] text-[#f0f6fc] border-l-2 border-violet-500"
+                        : "text-[#8b949e] bg-[#161b22] hover:bg-[#21262d] hover:text-[#f0f6fc]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Sparkles className="w-4 h-4" />
+                      <span>Code Review</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 bg-violet-950/40 border border-violet-900/40 text-violet-400 rounded font-bold">
+                      AI
+                    </span>
+                  </button>
                 </div>
               </div>
 
@@ -1122,6 +1140,12 @@ export default function App() {
               {activeTab === "programs" && (
                 <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
                   <OpportunityLayer />
+                </div>
+              )}
+
+              {activeTab === "codereview" && (
+                <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
+                  <CodeReview />
                 </div>
               )}
 
