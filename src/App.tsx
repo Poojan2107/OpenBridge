@@ -11,6 +11,7 @@ import GithubFileExplorer from "./components/GithubFileExplorer";
 import LevelBadge from "./components/LevelBadge";
 import CodeReview from "./components/CodeReview";
 import MockInterview from "./components/MockInterview";
+import StreakHeatmap, { recordActivity } from "./components/StreakHeatmap";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -52,6 +53,7 @@ export default function App() {
     }
   });
   const [loading, setLoading] = useState(false);
+  const [activityRefresh, setActivityRefresh] = useState(0);
   const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview">(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
@@ -275,6 +277,12 @@ export default function App() {
     const key = `${week}-${index}`;
     const isCompletedNow = !checkedRoadmapTasks[key];
     setCheckedRoadmapTasks((prev) => ({ ...prev, [key]: isCompletedNow }));
+
+    // Track activity for streak heatmap
+    if (isCompletedNow) {
+      recordActivity();
+      setActivityRefresh(prev => prev + 1);
+    }
 
     if (githubUser && roadmap) {
       const weekTasks = roadmap[week as keyof PersonalizedRoadmap];
@@ -1089,6 +1097,11 @@ export default function App() {
                       <span className="text-xs font-mono font-bold text-[#f0f6fc]">ACTIVE WORKBENCH REPOSITORY TREE</span>
                     </div>
                     <GithubFileExplorer />
+                  </div>
+
+                  {/* Contribution Streak Heatmap */}
+                  <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-5">
+                    <StreakHeatmap refreshKey={activityRefresh} />
                   </div>
 
                   {/* Curated Repo Recommendations */}
