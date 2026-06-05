@@ -1,6 +1,8 @@
 import { Router, Request } from "express";
 import crypto from "crypto";
+import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../../src/db";
+import { addSSEClient, removeSSEClient, broadcastSSEEvent } from "../services/sse";
 
 const router = Router();
 
@@ -8,6 +10,37 @@ const router = Router();
 interface SignedRequest extends Request {
   rawBody?: Buffer;
 }
+
+// GET /api/events — SSE endpoint for real-time notifications
+router.get("/api/events", (req, res) => {
+  const clientId = uuidv4();
+
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.flushHeaders();
+
+  // Send a heartbeat to confirm connection
+  res.write(`event: connected\ndata: {"clientId":"${clientId}"}\n\n`);
+
+  addSSEClient(clientId, res);
+
+  // Heartbeat every 25 seconds to prevent proxy timeouts
+  const heartbeat = setInterval(() => {
+    try {
+      res.write(`: heartbeat\n\n`);
+    } catch {
+      clearInterval(heartbeat);
+    }
+  }, 25000);
+
+  req.on("close", () => {
+    clearInterval(heartbeat);
+    removeSSEClient(clientId);
+  });
+});
+
 
 function verifySignature(payload: string, signature: string | undefined, secret: string): boolean {
   if (!signature) return false;
@@ -117,6 +150,20 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
       });
       console.log(`Registered new PullRequest #${prNumber} for ${githubLogin} with status: ${status}`);
     }
+
+    // Broadcast real-time SSE notification to all connected clients
+    broadcastSSEEvent({
+      type: "PR_UPDATE",
+      payload: {
+        login: githubLogin,
+        prNumber,
+        repoFullName,
+        title,
+        status,
+        prUrl,
+        timestamp: new Date().toISOString(),
+      },
+    });
 
     return res.status(200).json({ success: true, pullRequest: pr });
   } catch (err: any) {

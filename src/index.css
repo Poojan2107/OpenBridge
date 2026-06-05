@@ -91,3 +91,8 @@ body {
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(200%); }
 }
+
+@keyframes shrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}

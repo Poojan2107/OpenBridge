@@ -14,6 +14,7 @@ import codereviewRouter from "./server/routes/codereview";
 import interviewRouter from "./server/routes/interview";
 import userRouter from "./server/routes/user";
 import webhooksRouter from "./server/routes/webhooks";
+import leaderboardRouter from "./server/routes/leaderboard";
 
 // Rate Limiter middleware
 import { rateLimiter } from "./server/middleware/rateLimiter";
@@ -54,6 +55,7 @@ app.use(codereviewRouter);
 app.use(interviewRouter);
 app.use(userRouter);
 app.use(webhooksRouter);
+app.use(leaderboardRouter);
 
 // Vite middleware integration / Static serving
 async function startServer() {
