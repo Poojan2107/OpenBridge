@@ -39,7 +39,7 @@ Inside your `.env` file, specify:
 ### 4. Database Setup & Sync
 Prisma is used to manage database interactions. Initialize and push your local schema:
 ```bash
-npx prisma db push
+npx prisma migrate dev
 npx prisma generate
 ```
 
