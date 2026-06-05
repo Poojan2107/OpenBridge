@@ -29,6 +29,7 @@ interface ChallengeHubProps {
   onToggleTask: (week: string, index: number) => void;
   profile?: UserProfile | null;
   githubUser?: GitHubUser | null;
+  initialPullRequests?: any[];
 }
 
 interface SubmittedPR {
@@ -39,33 +40,50 @@ interface SubmittedPR {
   title: string;
 }
 
-export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, profile, githubUser }: ChallengeHubProps) {
+export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, profile, githubUser, initialPullRequests = [] }: ChallengeHubProps) {
   const [prUrl, setPrUrl] = useState("");
   const [prName, setPrName] = useState("");
-  const [submittedPrs, setSubmittedPrs] = useState<SubmittedPR[]>(() => {
-    try {
-      const saved = localStorage.getItem("ob_submitted_prs");
-      if (saved) return JSON.parse(saved);
-    } catch {}
-    return [
-      {
-        id: "pr-1",
-        url: "https://github.com/github/docs/pull/1042",
-        repo: "github/docs",
-        status: "merged",
-        title: "Typo correction in markdown guides"
-      },
-      {
-        id: "pr-2",
-        url: "https://github.com/guest-committer/openbridge-onboarding-hub/pull/1",
-        repo: "guest-committer/openbridge-onboarding-hub",
-        status: "pending",
-        title: "ci: enforce DCO and sign-offs pre-flight validations"
-      }
-    ];
-  });
+  const [submittedPrs, setSubmittedPrs] = useState<SubmittedPR[]>([]);
   const [registering, setRegistering] = useState(false);
   const [registryMessage, setRegistryMessage] = useState("");
+
+  // Sync with database initialPullRequests
+  React.useEffect(() => {
+    if (initialPullRequests && initialPullRequests.length > 0) {
+      const mapped = initialPullRequests.map((pr: any) => ({
+        id: pr.id || `pr-${pr.prNumber}`,
+        url: pr.url,
+        repo: pr.repoFullName,
+        status: pr.status.toLowerCase() as any,
+        title: pr.title
+      }));
+      setSubmittedPrs(mapped);
+    } else {
+      try {
+        const saved = localStorage.getItem("ob_submitted_prs");
+        if (saved) {
+          setSubmittedPrs(JSON.parse(saved));
+        } else {
+          setSubmittedPrs([
+            {
+              id: "pr-1",
+              url: "https://github.com/github/docs/pull/1042",
+              repo: "github/docs",
+              status: "merged",
+              title: "Typo correction in markdown guides"
+            },
+            {
+              id: "pr-2",
+              url: "https://github.com/guest-committer/openbridge-onboarding-hub/pull/1",
+              repo: "guest-committer/openbridge-onboarding-hub",
+              status: "pending",
+              title: "ci: enforce DCO and sign-offs pre-flight validations"
+            }
+          ]);
+        }
+      } catch {}
+    }
+  }, [initialPullRequests]);
 
   // Real PR status polling via GitHub API
   const checkPRStatus = async (pr: SubmittedPR): Promise<SubmittedPR> => {
@@ -217,6 +235,23 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
           status: "verifying", // Start as verifying, then poll real GitHub status
           title: prName
         };
+
+        // Persist pull request registration in the database
+        if (githubUser) {
+          fetch("/api/pr/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              githubLogin: githubUser.login,
+              prUrl: prUrl,
+              title: prName
+            })
+          }).then(res => {
+            if (!res.ok) console.warn("Failed to register pull request in database.");
+          }).catch(err => {
+            console.error("Database PR registration error:", err);
+          });
+        }
 
         setSubmittedPrs(prev => [newPr, ...prev]);
         setPrUrl("");

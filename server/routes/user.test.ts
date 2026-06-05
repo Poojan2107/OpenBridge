@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
 import { app } from "../../server";
+import { prisma } from "../../src/db";
 
 describe("POST /api/gpg/verify", () => {
   beforeAll(() => {
@@ -61,5 +62,80 @@ describe("POST /api/gpg/verify", () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
     expect(res.body).toHaveProperty("details");
+  });
+});
+
+describe("POST /api/pr/register", () => {
+  const testLogin = "pr-register-test-user";
+  let testUserId: string;
+
+  beforeAll(async () => {
+    process.env.NODE_ENV = "test";
+    
+    // Seed user
+    const user = await prisma.user.upsert({
+      where: { githubId: "test-pr-register-id" },
+      update: {},
+      create: {
+        githubId: "test-pr-register-id",
+        githubLogin: testLogin,
+        email: "pr-register-test@example.com",
+        avatarUrl: "https://example.com/avatar.png",
+        accessToken: "test-token"
+      }
+    });
+    testUserId = user.id;
+  });
+
+  afterAll(async () => {
+    // Clean up
+    await prisma.pullRequest.deleteMany({
+      where: { userId: testUserId }
+    });
+    await prisma.user.delete({
+      where: { id: testUserId }
+    });
+  });
+
+  it("should successfully register a valid pull request URL", async () => {
+    const res = await request(app)
+      .post("/api/pr/register")
+      .send({
+        githubLogin: testLogin,
+        prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
+        title: "feat: add registration tests"
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("success", true);
+    expect(res.body.pullRequest).toHaveProperty("prNumber", 202);
+    expect(res.body.pullRequest).toHaveProperty("repoFullName", "Poojan2107/OpenBridge");
+    expect(res.body.pullRequest).toHaveProperty("status", "PENDING");
+  });
+
+  it("should fail validation for invalid PR URL format", async () => {
+    const res = await request(app)
+      .post("/api/pr/register")
+      .send({
+        githubLogin: testLogin,
+        prUrl: "invalid-url",
+        title: "test"
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty("error");
+  });
+
+  it("should return 404 if user is not found", async () => {
+    const res = await request(app)
+      .post("/api/pr/register")
+      .send({
+        githubLogin: "nonexistent-user-12345",
+        prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
+        title: "test"
+      });
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty("error", "User not found.");
   });
 });

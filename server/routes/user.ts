@@ -13,6 +13,7 @@ router.get("/api/user/:login", async (req, res) => {
     const user = await prisma.user.findFirst({
       where: { githubLogin: login },
       include: {
+        pullRequests: true,
         profile: {
           include: {
             roadmap: {
@@ -63,7 +64,8 @@ router.get("/api/user/:login", async (req, res) => {
       },
       repos: user.profile.repos || [],
       roadmap: user.profile.roadmap ? roadmapData : null,
-      checkedRoadmapTasks: checkedTasks
+      checkedRoadmapTasks: checkedTasks,
+      pullRequests: user.pullRequests || []
     });
   } catch (err) {
     console.error("Failed to fetch user data:", err);
@@ -254,6 +256,75 @@ router.post("/api/gpg/verify", (req, res) => {
     return res.json({ success: true, metadata });
   } catch (err: any) {
     return res.status(400).json({ error: err.message || "Failed to parse GPG public key block." });
+  }
+});
+
+const PrRegisterSchema = z.object({
+  githubLogin: z.string().min(1, "GitHub login is required."),
+  prUrl: z.string().url("Must be a valid URL."),
+  title: z.string().min(1, "PR title is required."),
+});
+
+router.post("/api/pr/register", async (req, res) => {
+  try {
+    const parseResult = PrRegisterSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: "Invalid payload.", details: parseResult.error.format() });
+    }
+
+    const { githubLogin, prUrl, title } = parseResult.data;
+
+    // Parse repository name and PR number from URL
+    const match = prUrl.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/i);
+    if (!match) {
+      return res.status(400).json({ error: "Invalid GitHub PR URL format. Must be like https://github.com/owner/repo/pull/123" });
+    }
+
+    const [, owner, repo, prNumStr] = match;
+    const prNumber = parseInt(prNumStr, 10);
+    const repoFullName = `${owner}/${repo}`;
+
+    // Find user
+    const user = await prisma.user.findFirst({
+      where: { githubLogin }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Upsert the PullRequest record
+    const existingPr = await prisma.pullRequest.findFirst({
+      where: {
+        userId: user.id,
+        prNumber,
+        repoFullName
+      }
+    });
+
+    let pr;
+    if (existingPr) {
+      pr = await prisma.pullRequest.update({
+        where: { id: existingPr.id },
+        data: { title, url: prUrl }
+      });
+    } else {
+      pr = await prisma.pullRequest.create({
+        data: {
+          userId: user.id,
+          prNumber,
+          repoFullName,
+          title,
+          url: prUrl,
+          status: "PENDING"
+        }
+      });
+    }
+
+    return res.json({ success: true, pullRequest: pr });
+  } catch (err: any) {
+    console.error("Failed to register PR:", err);
+    return res.status(500).json({ error: "Internal server error." });
   }
 });
 
