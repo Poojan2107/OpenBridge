@@ -114,6 +114,7 @@ export default function App() {
       return {};
     }
   });
+  const [pullRequests, setPullRequests] = useState<any[]>([]);
 
   useEffect(() => {
     if (profile) {
@@ -218,6 +219,9 @@ export default function App() {
             }
             if (data.checkedRoadmapTasks) {
               setCheckedRoadmapTasks(data.checkedRoadmapTasks);
+            }
+            if (data.pullRequests) {
+              setPullRequests(data.pullRequests);
             }
           }
         } catch (err) {
@@ -1145,13 +1149,14 @@ export default function App() {
               {activeTab === "challenge" && (
                 <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
                   {roadmap && (
-                    <ChallengeHub 
-                      roadmap={roadmap} 
-                      checkedTasks={checkedRoadmapTasks} 
-                      onToggleTask={handleToggleRoadmapTask} 
-                      profile={profile}
-                      githubUser={githubUser}
-                    />
+                     <ChallengeHub 
+                       roadmap={roadmap} 
+                       checkedTasks={checkedRoadmapTasks} 
+                       onToggleTask={handleToggleRoadmapTask} 
+                       profile={profile}
+                       githubUser={githubUser}
+                       initialPullRequests={pullRequests}
+                     />
                   )}
                 </div>
               )}

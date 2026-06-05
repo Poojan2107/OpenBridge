@@ -13,6 +13,7 @@ import explainRouter from "./server/routes/explain";
 import codereviewRouter from "./server/routes/codereview";
 import interviewRouter from "./server/routes/interview";
 import userRouter from "./server/routes/user";
+import webhooksRouter from "./server/routes/webhooks";
 
 // Rate Limiter middleware
 import { rateLimiter } from "./server/middleware/rateLimiter";
@@ -22,7 +23,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 
 // Security middleware configuration
 app.use(helmet({
@@ -48,6 +53,7 @@ app.use(explainRouter);
 app.use(codereviewRouter);
 app.use(interviewRouter);
 app.use(userRouter);
+app.use(webhooksRouter);
 
 // Vite middleware integration / Static serving
 async function startServer() {
