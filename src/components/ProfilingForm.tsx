@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { UserProfile, GitHubUser } from "../types";
-import { Terminal, Code, Server, BrainCircuit, ShieldAlert, Cpu, Award, Zap, ToggleLeft, ArrowRight, Sparkles, Plus, X } from "lucide-react";
+import { Terminal, Code, Server, BrainCircuit, Cpu, ArrowRight, Sparkles, Plus, X, Loader2, Github } from "lucide-react";
 
 interface ProfilingFormProps {
   onSubmit: (profile: UserProfile) => void;
@@ -27,6 +27,28 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
   const [customSkillInput, setCustomSkillInput] = useState("");
   const [experienceLevel, setExperienceLevel] = useState<UserProfile["level"]>("Beginner");
   const [interestArea, setInterestArea] = useState<UserProfile["interest"]>("Frontend");
+  const [detectedSkills, setDetectedSkills] = useState<string[]>([]);
+  const [detectingSkills, setDetectingSkills] = useState(false);
+
+  // Auto-detect skills from GitHub repos
+  useEffect(() => {
+    if (githubUser && !githubUser.simulated) {
+      setDetectingSkills(true);
+      fetch(`/api/github/skills/${githubUser.login}`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.skills && data.skills.length > 0) {
+            setDetectedSkills(data.skills);
+            setSelectedSkills((prev) => {
+              const merged = Array.from(new Set([...data.skills, ...prev]));
+              return merged.slice(0, 10);
+            });
+          }
+        })
+        .catch(() => {/* fallback to bio parsing */})
+        .finally(() => setDetectingSkills(false));
+    }
+  }, [githubUser?.login]);
 
   useEffect(() => {
     if (githubUser) {
@@ -169,6 +191,26 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
                 Register the languages, frameworks, or developer utilities you feel comfortable navigating.
               </p>
             </div>
+
+            {/* Auto-detection status banner */}
+            {githubUser && !githubUser.simulated && (
+              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[11px] font-mono transition-all ${
+                detectingSkills
+                  ? "border-blue-900/40 bg-blue-950/20 text-blue-400"
+                  : detectedSkills.length > 0
+                  ? "border-emerald-900/40 bg-emerald-950/15 text-emerald-400"
+                  : "border-zinc-900 bg-zinc-950/40 text-zinc-500"
+              }`}>
+                {detectingSkills ? (
+                  <><Loader2 className="w-3 h-3 animate-spin shrink-0" /> Scanning your GitHub repos for languages…</>
+                ) : detectedSkills.length > 0 ? (
+                  <><Github className="w-3 h-3 shrink-0" /> Auto-detected {detectedSkills.length} skills from your {githubUser.public_repos} repos</>
+                ) : (
+                  <><Github className="w-3 h-3 shrink-0" /> Connect GitHub to auto-detect skills from your repos</>
+                )}
+              </div>
+            )}
+
 
             {/* Current Selection tags */}
             <div className="flex flex-wrap gap-1 bg-[#090a0f] p-2 rounded border border-zinc-900 min-h-[44px]">

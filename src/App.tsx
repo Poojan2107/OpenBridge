@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import ProfilingForm from "./components/ProfilingForm";
 import GithubLandingPage from "./components/GithubLandingPage";
 import RepoRecommender from "./components/RepoRecommender";
@@ -12,6 +12,9 @@ import LevelBadge from "./components/LevelBadge";
 import CodeReview from "./components/CodeReview";
 import MockInterview from "./components/MockInterview";
 import StreakHeatmap, { recordActivity } from "./components/StreakHeatmap";
+import Leaderboard from "./components/Leaderboard";
+import NotificationToast, { ToastNotification } from "./components/NotificationToast";
+import { useSSE } from "./hooks/useSSE";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -40,7 +43,8 @@ import {
   Bell,
   User,
   CheckCircle,
-  Menu
+  Menu,
+  Trophy
 } from "lucide-react";
 
 export default function App() {
@@ -54,7 +58,7 @@ export default function App() {
   });
   const [loading, setLoading] = useState(false);
   const [activityRefresh, setActivityRefresh] = useState(0);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview">(() => {
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview" | "leaderboard">(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
       if (saved) return saved as any;
@@ -62,6 +66,8 @@ export default function App() {
     return "dashboard";
   });
   const [apiError, setApiError] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState<ToastNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // GitHub user profile session (real or simulated feedback)
   const [githubUser, setGithubUser] = useState<GitHubUser | null>(() => {
@@ -231,6 +237,35 @@ export default function App() {
       syncUserData();
     }
   }, [githubUser]);
+
+  // SSE: real-time notifications from webhook events
+  const handleSSEEvent = useCallback((event: { type: string; payload: Record<string, unknown> }) => {
+    if (event.type === "PR_UPDATE") {
+      const { login, title, status, repoFullName } = event.payload as Record<string, string>;
+      const statusLabels: Record<string, string> = {
+        MERGED: "PR Merged 🎉",
+        PENDING: "PR Opened",
+        VERIFYING: "PR Under Review",
+        FAILED: "PR Closed",
+      };
+      const toast: ToastNotification = {
+        id: `${Date.now()}-${Math.random()}`,
+        type: "PR_UPDATE",
+        title: statusLabels[status] || "PR Update",
+        message: `${login} · ${repoFullName} — "${title}"`,
+        timestamp: new Date(),
+        status,
+      };
+      setNotifications((prev) => [toast, ...prev].slice(0, 5));
+      setUnreadCount((c) => c + 1);
+    }
+  }, []);
+
+  useSSE(handleSSEEvent);
+
+  const dismissNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
   const handleConnectGithub = async () => {
     try {
@@ -479,10 +514,19 @@ export default function App() {
 
           {/* Right menu bar: notifications, profile, fast support */}
           <div className="flex items-center gap-3">
-            <button className="p-1.5 hover:bg-[#21262d] text-[#8b949e] hover:text-[#f0f6fc] rounded-md border border-transparent hover:border-[#30363d] transition-all relative">
+            <button
+              onClick={() => setUnreadCount(0)}
+              className="p-1.5 hover:bg-[#21262d] text-[#8b949e] hover:text-[#f0f6fc] rounded-md border border-transparent hover:border-[#30363d] transition-all relative"
+              title="Notifications"
+            >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#2f81f7]"></span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] rounded-full bg-[#2f81f7] text-white text-[9px] font-bold font-mono flex items-center justify-center px-0.5">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </button>
+
 
             <a 
               href={githubUser ? githubUser.html_url : "https://github.com/guest-committer/openbridge-onboarding-hub"} 
@@ -1083,14 +1127,38 @@ export default function App() {
                       AI
                     </span>
                   </button>
+
+                  <button
+                    onClick={() => setActiveTab("leaderboard")}
+                    className={`w-full text-left px-4 py-3 text-xs font-semibold flex items-center justify-between transition-colors ${
+                      activeTab === "leaderboard"
+                        ? "bg-[#21262d] text-[#f0f6fc] border-l-2 border-amber-500"
+                        : "text-[#8b949e] bg-[#161b22] hover:bg-[#21262d] hover:text-[#f0f6fc]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <Trophy className="w-4 h-4" />
+                      <span>Leaderboard</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 bg-amber-950/40 border border-amber-900/40 text-amber-400 rounded font-bold">
+                      XP
+                    </span>
+                  </button>
                 </div>
               </div>
+
 
             </div>
 
             {/* RIGHT MAIN WORKSPACE LAYER: Dynamic Tab Content */}
             <div className="lg:col-span-9 space-y-6">
               
+              {activeTab === "leaderboard" && (
+                <div className="animate-fade-in">
+                  <Leaderboard currentLogin={githubUser?.login} />
+                </div>
+              )}
+
               {activeTab === "dashboard" && (
                 <div className="space-y-6 animate-fade-in">
                   
@@ -1207,6 +1275,12 @@ export default function App() {
         </footer>
 
       </main>
+
+      {/* Real-time notification toasts */}
+      <NotificationToast
+        notifications={notifications}
+        onDismiss={dismissNotification}
+      />
     </div>
   );
 }
