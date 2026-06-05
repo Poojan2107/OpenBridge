@@ -15,6 +15,7 @@ import StreakHeatmap, { recordActivity } from "./components/StreakHeatmap";
 import Leaderboard from "./components/Leaderboard";
 import NotificationToast, { ToastNotification } from "./components/NotificationToast";
 import { useSSE } from "./hooks/useSSE";
+import DashboardAnalytics from "./components/DashboardAnalytics";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -44,7 +45,8 @@ import {
   User,
   CheckCircle,
   Menu,
-  Trophy
+  Trophy,
+  BarChart2
 } from "lucide-react";
 
 export default function App() {
@@ -58,7 +60,7 @@ export default function App() {
   });
   const [loading, setLoading] = useState(false);
   const [activityRefresh, setActivityRefresh] = useState(0);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview" | "leaderboard">(() => {
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview" | "leaderboard" | "analytics">(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
       if (saved) return saved as any;
@@ -1144,8 +1146,26 @@ export default function App() {
                       XP
                     </span>
                   </button>
+
+                  <button
+                    onClick={() => setActiveTab("analytics")}
+                    className={`w-full text-left px-4 py-3 text-xs font-semibold flex items-center justify-between transition-colors ${
+                      activeTab === "analytics"
+                        ? "bg-[#21262d] text-[#f0f6fc] border-l-2 border-blue-500"
+                        : "text-[#8b949e] bg-[#161b22] hover:bg-[#21262d] hover:text-[#f0f6fc]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <BarChart2 className="w-4 h-4" />
+                      <span>Analytics</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 bg-blue-950/40 border border-blue-900/40 text-blue-400 rounded font-bold">
+                      {Object.values(checkedRoadmapTasks).filter(Boolean).length} XP
+                    </span>
+                  </button>
                 </div>
               </div>
+
 
 
             </div>
@@ -1153,6 +1173,21 @@ export default function App() {
             {/* RIGHT MAIN WORKSPACE LAYER: Dynamic Tab Content */}
             <div className="lg:col-span-9 space-y-6">
               
+              {activeTab === "analytics" && (
+                <div className="animate-fade-in">
+                  <DashboardAnalytics
+                    completedTasks={Object.values(checkedRoadmapTasks).filter(Boolean).length}
+                    totalTasks={roadmap ? Object.values(roadmap).flat().length : 0}
+                    checkedRoadmapTasks={checkedRoadmapTasks}
+                    roadmap={roadmap}
+                    pullRequests={pullRequests}
+                    profile={profile}
+                    githubUser={githubUser}
+                    activityRefreshKey={activityRefresh}
+                  />
+                </div>
+              )}
+
               {activeTab === "leaderboard" && (
                 <div className="animate-fade-in">
                   <Leaderboard currentLogin={githubUser?.login} />
