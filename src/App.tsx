@@ -10,6 +10,7 @@ import PreflightConsole from "./components/PreflightConsole";
 import GithubFileExplorer from "./components/GithubFileExplorer";
 import LevelBadge from "./components/LevelBadge";
 import CodeReview from "./components/CodeReview";
+import MockInterview from "./components/MockInterview";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -51,7 +52,7 @@ export default function App() {
     }
   });
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview">(() => {
+  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview">(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
       if (saved) return saved as any;
@@ -1053,6 +1054,23 @@ export default function App() {
                       AI
                     </span>
                   </button>
+
+                  <button
+                    onClick={() => setActiveTab("interview")}
+                    className={`w-full text-left px-4 py-3 text-xs font-semibold flex items-center justify-between transition-colors ${
+                      activeTab === "interview"
+                        ? "bg-[#21262d] text-[#f0f6fc] border-l-2 border-cyan-500"
+                        : "text-[#8b949e] bg-[#161b22] hover:bg-[#21262d] hover:text-[#f0f6fc]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-2.5">
+                      <HelpCircle className="w-4 h-4" />
+                      <span>Interview Prep</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 bg-cyan-950/40 border border-cyan-900/40 text-cyan-400 rounded font-bold">
+                      AI
+                    </span>
+                  </button>
                 </div>
               </div>
 
@@ -1146,6 +1164,12 @@ export default function App() {
               {activeTab === "codereview" && (
                 <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
                   <CodeReview />
+                </div>
+              )}
+
+              {activeTab === "interview" && (
+                <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
+                  <MockInterview profile={profile} />
                 </div>
               )}
 

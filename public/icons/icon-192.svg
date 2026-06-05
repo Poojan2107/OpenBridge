@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#0d1117"/>
+  <rect x="16" y="16" width="160" height="160" rx="24" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <!-- Bridge arch -->
+  <path d="M 46 130 Q 96 50 146 130" stroke="url(#grad)" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <!-- Bridge pillars -->
+  <line x1="66" y1="107" x2="66" y2="140" stroke="#58a6ff" stroke-width="6" stroke-linecap="round"/>
+  <line x1="126" y1="107" x2="126" y2="140" stroke="#3fb950" stroke-width="6" stroke-linecap="round"/>
+  <!-- Road -->
+  <line x1="36" y1="140" x2="156" y2="140" stroke="#8b949e" stroke-width="4" stroke-linecap="round"/>
+  <!-- OB text -->
+  <text x="96" y="170" text-anchor="middle" fill="#f0f6fc" font-family="system-ui, sans-serif" font-weight="900" font-size="20" letter-spacing="3">OB</text>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2f81f7"/>
+      <stop offset="50%" stop-color="#58a6ff"/>
+      <stop offset="100%" stop-color="#3fb950"/>
+    </linearGradient>
+  </defs>
+</svg>
