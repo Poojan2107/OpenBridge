@@ -1,5 +1,7 @@
 import { Router } from "express";
+import { z } from "zod";
 import { prisma } from "../../src/db";
+import { parseGpgPublicKey } from "../services/gpg";
 
 const router = Router();
 
@@ -233,6 +235,25 @@ router.get("/api/badge/:login.svg", async (req, res) => {
   } catch (err) {
     console.error("Failed to generate SVG badge:", err);
     return res.status(500).send("Internal server error");
+  }
+});
+
+const GpgVerifySchema = z.object({
+  publicKeyBlock: z.string().min(1, "GPG public key block is required."),
+});
+
+router.post("/api/gpg/verify", (req, res) => {
+  try {
+    const parseResult = GpgVerifySchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return res.status(400).json({ error: "Invalid payload.", details: parseResult.error.format() });
+    }
+
+    const { publicKeyBlock } = parseResult.data;
+    const metadata = parseGpgPublicKey(publicKeyBlock);
+    return res.json({ success: true, metadata });
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message || "Failed to parse GPG public key block." });
   }
 });
 

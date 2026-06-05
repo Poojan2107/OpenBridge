@@ -86,6 +86,13 @@ export default function PreflightConsole() {
   const [userEmail, setUserEmail] = useState(() => localStorage.getItem("ob_gpg_email") || "");
   const [generatingGPG, setGeneratingGPG] = useState(false);
   const [generatedGPG, setGeneratedGPG] = useState<string | null>(() => localStorage.getItem("ob_gpg_key") || null);
+
+  // GPG verification states
+  const [gpgTab, setGpgTab] = useState<"generate" | "verify">("generate");
+  const [pastedGpgKey, setPastedGpgKey] = useState("");
+  const [verifyingGPG, setVerifyingGPG] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [parsedMetadata, setParsedMetadata] = useState<any | null>(null);
   
   // Quiz states
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: number]: number }>(() => {
@@ -204,6 +211,41 @@ export default function PreflightConsole() {
     }, 2000);
   };
 
+  const handleVerifyGPG = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pastedGpgKey.trim()) return;
+
+    setVerifyingGPG(true);
+    setVerificationError(null);
+    setParsedMetadata(null);
+
+    try {
+      const res = await fetch("/api/gpg/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publicKeyBlock: pastedGpgKey })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setVerificationError(data.error || "Failed to verify key.");
+      } else {
+        setParsedMetadata(data.metadata);
+        setSystemChecks(prev => 
+          prev.map(c => 
+            c.name === "Commit Auth (GPG Keys)" 
+              ? { name: "Commit Auth (GPG Keys)", status: "success", details: `GPG Key 0x${data.metadata.keyId.substring(0, 8)} (${data.metadata.name}) verified & linked successfully.` }
+              : c
+          )
+        );
+      }
+    } catch (err: any) {
+      setVerificationError(err.message || "Network request failed.");
+    } finally {
+      setVerifyingGPG(false);
+    }
+  };
+
   const handleQuizSubmit = () => {
     let currentScore = 0;
     PREFLIGHT_QUESTIONS.forEach((q) => {
@@ -302,73 +344,152 @@ export default function PreflightConsole() {
               ))}
             </div>
 
-            {/* Simulated Git Config Generator form */}
-            <form onSubmit={handleGenerateGPG} className="space-y-3 mt-6 border-t border-zinc-90 pt-5 pr-1">
-              <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">Sign Your Identity (Secure GPG Key Generator)</span>
-              
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[9px] text-zinc-550 mb-1 font-mono">Full Git Legal Name</label>
-                  <input
-                    type="text"
-                    required
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    placeholder="e.g. Linus Torvalds"
-                    className="w-full bg-black/40 border border-zinc-900 rounded p-2 text-xs font-mono text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/30"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[9px] text-zinc-550 mb-1 font-mono">Git Config Email Address</label>
-                  <input
-                    type="email"
-                    required
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    placeholder="e.g. mail@example.com"
-                    className="w-full bg-black/40 border border-zinc-900 rounded p-2 text-xs font-mono text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/30"
-                  />
-                </div>
+            {/* GPG Key Verification & Generator Tabs */}
+            <div className="mt-6 border-t border-zinc-90 pt-5 pr-1 space-y-4">
+              <div className="flex items-center gap-1.5 p-1 bg-[#0a0a0f] border border-zinc-900 rounded-lg max-w-xs">
+                <button
+                  type="button"
+                  onClick={() => setGpgTab("generate")}
+                  className={`flex-grow py-1 px-3 rounded text-[10px] font-mono font-bold uppercase transition-all ${
+                    gpgTab === "generate"
+                      ? "bg-zinc-800 text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-350"
+                  }`}
+                >
+                  Generate Key
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGpgTab("verify")}
+                  className={`flex-grow py-1 px-3 rounded text-[10px] font-mono font-bold uppercase transition-all ${
+                    gpgTab === "verify"
+                      ? "bg-zinc-800 text-white shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-350"
+                  }`}
+                >
+                  Verify Key
+                </button>
               </div>
 
-              <button
-                type="submit"
-                disabled={generatingGPG || !userName.trim() || !userEmail.trim()}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-700 hover:bg-emerald-600 border border-emerald-800 text-white disabled:bg-zinc-900 disabled:border-zinc-805 disabled:text-zinc-650 rounded text-[11px] font-mono uppercase font-bold tracking-wider cursor-pointer transition-colors"
-              >
-                {generatingGPG ? (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    Generating Secure PGP Signature Block...
-                  </>
-                ) : (
-                  <>
-                    Generate Digital Git Signature
-                    <Signature className="w-3.5 h-3.5" />
-                  </>
-                )}
-              </button>
-            </form>
+              {gpgTab === "generate" ? (
+                /* Simulated Git Config Generator form */
+                <form onSubmit={handleGenerateGPG} className="space-y-3">
+                  <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">Sign Your Identity (Secure GPG Key Generator)</span>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[9px] text-zinc-550 mb-1 font-mono">Full Git Legal Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        placeholder="e.g. Linus Torvalds"
+                        className="w-full bg-black/40 border border-zinc-900 rounded p-2 text-xs font-mono text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] text-zinc-550 mb-1 font-mono">Git Config Email Address</label>
+                      <input
+                        type="email"
+                        required
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
+                        placeholder="e.g. mail@example.com"
+                        className="w-full bg-black/40 border border-zinc-900 rounded p-2 text-xs font-mono text-zinc-200 placeholder-zinc-700 focus:outline-none focus:border-emerald-500/30"
+                      />
+                    </div>
+                  </div>
 
-            {/* Generated PGP Key display (Terminal looking wrapper) */}
-            {generatedGPG && (
-              <div className="mt-4 border border-zinc-90 w-full rounded overflow-hidden">
-                <div className="flex items-center justify-between px-3 py-1 bg-zinc-950 border-b border-zinc-90 w-full text-zinc-500 text-[10px] font-mono">
-                  <span className="flex items-center gap-1 text-[#2da44e]">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Verified Key Block Linked
-                  </span>
-                  <span>GPG PUBLIC BLOCK</span>
+                  <button
+                    type="submit"
+                    disabled={generatingGPG || !userName.trim() || !userEmail.trim()}
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-700 hover:bg-emerald-600 border border-emerald-800 text-white disabled:bg-zinc-900 disabled:border-zinc-805 disabled:text-zinc-650 rounded text-[11px] font-mono uppercase font-bold tracking-wider cursor-pointer transition-colors"
+                  >
+                    {generatingGPG ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        Generating Secure PGP Signature Block...
+                      </>
+                    ) : (
+                      <>
+                        Generate Digital Git Signature
+                        <Signature className="w-3.5 h-3.5" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                /* Verify GPG Key Paste Form */
+                <form onSubmit={handleVerifyGPG} className="space-y-3">
+                  <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-500 font-mono">Verify GPG Public Key Block</span>
+                  <div>
+                    <label className="block text-[9px] text-zinc-550 mb-1 font-mono">Paste GPG Public Key ASCII Armor</label>
+                    <textarea
+                      required
+                      value={pastedGpgKey}
+                      onChange={(e) => setPastedGpgKey(e.target.value)}
+                      placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----&#10;...&#10;-----END PGP PUBLIC KEY BLOCK-----"
+                      className="w-full bg-black/40 border border-zinc-900 rounded p-2 text-xs font-mono text-zinc-200 placeholder-zinc-700 h-28 focus:outline-none focus:border-blue-500/30 resize-none"
+                    />
+                  </div>
+
+                  {verificationError && (
+                    <div className="p-2.5 rounded bg-red-950/20 border border-red-900/30 text-rose-400 font-mono text-[10.5px]">
+                      Error: {verificationError}
+                    </div>
+                  )}
+
+                  {parsedMetadata && (
+                    <div className="p-3 rounded bg-blue-950/10 border border-blue-900/30 text-zinc-300 font-mono text-[10.5px] space-y-1">
+                      <div className="text-[9px] uppercase font-bold text-sky-400 mb-1">Parsed OpenPGP Metadata</div>
+                      <div><span className="text-zinc-500">Key ID:</span> <span className="text-zinc-200 font-bold">0x{parsedMetadata.keyId}</span></div>
+                      <div><span className="text-zinc-500">Identity:</span> <span className="text-zinc-200">{parsedMetadata.name} &lt;{parsedMetadata.email}&gt;</span></div>
+                      <div><span className="text-zinc-500">Algorithm:</span> <span className="text-zinc-200">{parsedMetadata.algorithm} ({parsedMetadata.keyLength} bits)</span></div>
+                      <div><span className="text-zinc-500">Created At:</span> <span className="text-zinc-200">{new Date(parsedMetadata.createdAt).toLocaleDateString()}</span></div>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={verifyingGPG || !pastedGpgKey.trim()}
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-800 hover:bg-blue-700 border border-blue-900 text-white disabled:bg-zinc-900 disabled:border-zinc-805 disabled:text-zinc-650 rounded text-[11px] font-mono uppercase font-bold tracking-wider cursor-pointer transition-colors"
+                  >
+                    {verifyingGPG ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        Verifying GPG Public Key Packet...
+                      </>
+                    ) : (
+                      <>
+                        Verify & Link GPG Signature
+                        <Signature className="w-3.5 h-3.5" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+
+              {/* Generated PGP Key display (Terminal looking wrapper) */}
+              {generatedGPG && gpgTab === "generate" && (
+                <div className="mt-4 border border-zinc-90 w-full rounded overflow-hidden">
+                  <div className="flex items-center justify-between px-3 py-1 bg-zinc-950 border-b border-zinc-90 w-full text-zinc-500 text-[10px] font-mono">
+                    <span className="flex items-center gap-1 text-[#2da44e]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                      Verified Key Block Linked
+                    </span>
+                    <span>GPG PUBLIC BLOCK</span>
+                  </div>
+                  <pre className="p-3 bg-black font-mono text-[9.5px] text-emerald-450 leading-relaxed overflow-x-auto max-h-[140px] select-all">
+                    {generatedGPG}
+                  </pre>
+                  <div className="p-2.5 bg-zinc-950 text-[10px] text-zinc-500 font-mono flex items-center gap-2.5 border-t border-zinc-90">
+                    <span className="text-emerald-500 font-bold block shrink-0">Security Tip:</span>
+                    <span>Use git commit -S and paste this signed DCO block parameters to show the verified green commit badge in GitHub!</span>
+                  </div>
                 </div>
-                <pre className="p-3 bg-black font-mono text-[9.5px] text-emerald-450 leading-relaxed overflow-x-auto max-h-[140px] select-all">
-                  {generatedGPG}
-                </pre>
-                <div className="p-2.5 bg-zinc-950 text-[10px] text-zinc-500 font-mono flex items-center gap-2.5 border-t border-zinc-90">
-                  <span className="text-emerald-500 font-bold block shrink-0">Security Tip:</span>
-                  <span>Use git commit -S and paste this signed DCO block parameters to show the verified green commit badge in GitHub!</span>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
 
           </div>
 
