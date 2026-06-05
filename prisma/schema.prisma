@@ -69,3 +69,11 @@ model PullRequest {
   status      String      // PENDING | VERIFYING | MERGED | FAILED
   createdAt   DateTime    @default(now())
 }
+
+// Cached repository recommendations to minimize Gemini AI queries
+model RecommendationCache {
+  id        String   @id @default(uuid())
+  key       String   @unique // SHA-256 hash of skills + level + interest
+  response  String   // JSON string of recommendations
+  createdAt DateTime @default(now())
+}

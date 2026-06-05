@@ -3,6 +3,7 @@ import { z } from "zod";
 import { Type } from "@google/genai";
 import { getGeminiClient, getLiveGitHubRecommendations } from "../services/gemini";
 import { saveUserProfile } from "../services/db";
+import { generateCacheKey, getCachedRecommendations, setCachedRecommendations } from "../services/cache";
 
 const router = Router();
 
@@ -21,6 +22,17 @@ router.post("/api/recommend", async (req, res) => {
     }
 
     const { skills, level, interest, githubUser } = parseResult.data;
+    
+    // Check recommendation cache
+    const cacheKey = generateCacheKey(skills, level, interest);
+    const cachedData = await getCachedRecommendations(cacheKey);
+    if (cachedData) {
+      if (githubUser && cachedData.repos) {
+        await saveUserProfile(githubUser, skills, level, interest, cachedData.repos);
+      }
+      return res.json(cachedData);
+    }
+
     const ai = getGeminiClient();
     let recommendations: any = null;
 
@@ -91,6 +103,11 @@ Always output response strictly in the following JSON format structure:
       }
     }
 
+    // Save recommendations in cache
+    if (recommendations && recommendations.repos) {
+      await setCachedRecommendations(cacheKey, recommendations);
+    }
+
     // Save user profile state in database if logged in
     if (githubUser && recommendations && recommendations.repos) {
       await saveUserProfile(githubUser, skills, level, interest, recommendations.repos);
@@ -101,6 +118,11 @@ Always output response strictly in the following JSON format structure:
     console.error("API /api/recommend errored out. Falling back to live data.", err);
     const { skills = [], level = "Beginner", interest = "Frontend", githubUser = null } = req.body;
     const recommendations = await getLiveGitHubRecommendations(skills, level, interest);
+
+    const cacheKey = generateCacheKey(skills, level, interest);
+    if (recommendations && recommendations.repos) {
+      await setCachedRecommendations(cacheKey, recommendations);
+    }
 
     if (githubUser && recommendations && recommendations.repos) {
       try {
