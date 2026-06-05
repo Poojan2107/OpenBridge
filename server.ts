@@ -1475,6 +1475,62 @@ Mix difficulties: 2 beginner, 2 intermediate, 1 advanced. Make questions specifi
   }
 });
 
+// GET /api/pr/status?url=... — Check real PR status from GitHub API
+app.get("/api/pr/status", async (req, res) => {
+  try {
+    const prUrl = (req.query.url as string) || "";
+    const match = prUrl.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/i);
+    if (!match) {
+      return res.status(400).json({ error: "Invalid GitHub PR URL format." });
+    }
+
+    const [, owner, repo, prNumber] = match;
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`;
+
+    const response = await fetch(apiUrl, {
+      headers: {
+        "User-Agent": "openbridge-mentor-app",
+        "Accept": "application/vnd.github.v3+json"
+      }
+    });
+
+    if (!response.ok) {
+      // If 404, the PR doesn't exist or is in a private repo
+      if (response.status === 404) {
+        return res.json({ status: "not_found", message: "PR not found or repository is private." });
+      }
+      return res.json({ status: "unknown", message: `GitHub API returned ${response.status}` });
+    }
+
+    const data: any = await response.json();
+
+    let status: string;
+    if (data.merged) {
+      status = "merged";
+    } else if (data.draft) {
+      status = "draft";
+    } else if (data.state === "closed") {
+      status = "closed";
+    } else {
+      status = "open";
+    }
+
+    return res.json({
+      status,
+      title: data.title || "",
+      user: data.user?.login || "",
+      merged_at: data.merged_at || null,
+      created_at: data.created_at || null,
+      additions: data.additions || 0,
+      deletions: data.deletions || 0,
+      changed_files: data.changed_files || 0
+    });
+  } catch (err) {
+    console.error("GET /api/pr/status error:", err);
+    return res.status(500).json({ error: "Failed to check PR status." });
+  }
+});
+
 // Get authorizable direct redirect provider URL
 app.get("/api/auth/url", (req, res) => {
   const host = req.headers.host || "localhost:3000";

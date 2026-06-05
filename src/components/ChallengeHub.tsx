@@ -35,7 +35,7 @@ interface SubmittedPR {
   id: string;
   url: string;
   repo: string;
-  status: "pending" | "verifying" | "merged" | "failed";
+  status: "pending" | "verifying" | "merged" | "open" | "closed" | "draft" | "not_found" | "failed";
   title: string;
 }
 
@@ -66,6 +66,47 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
   });
   const [registering, setRegistering] = useState(false);
   const [registryMessage, setRegistryMessage] = useState("");
+
+  // Real PR status polling via GitHub API
+  const checkPRStatus = async (pr: SubmittedPR): Promise<SubmittedPR> => {
+    try {
+      const res = await fetch(`/api/pr/status?url=${encodeURIComponent(pr.url)}`);
+      if (!res.ok) return { ...pr, status: "failed" };
+      const data = await res.json();
+      const newStatus = data.status as SubmittedPR["status"];
+      const newTitle = data.title || pr.title;
+      return { ...pr, status: newStatus, title: newTitle };
+    } catch {
+      return { ...pr, status: "failed" };
+    }
+  };
+
+  // Poll status of non-resolved PRs on mount and when PRs change
+  React.useEffect(() => {
+    const pollable = submittedPrs.filter(
+      pr => pr.status === "verifying" || pr.status === "pending" || pr.status === "open"
+    );
+    if (pollable.length === 0) return;
+
+    let cancelled = false;
+    const poll = async () => {
+      const updated = await Promise.all(
+        submittedPrs.map(async (pr) => {
+          if (pr.status === "verifying" || pr.status === "pending" || pr.status === "open") {
+            return checkPRStatus(pr);
+          }
+          return pr;
+        })
+      );
+      if (!cancelled) {
+        setSubmittedPrs(updated);
+      }
+    };
+
+    // Initial poll after 1s
+    const timer = setTimeout(poll, 1000);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [submittedPrs.filter(p => p.status === "verifying").length]);
 
   // PR review workspace state
   const [selectedPrId, setSelectedPrId] = useState<string | null>(null);
@@ -173,7 +214,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
           id: `pr-${Date.now()}`,
           url: prUrl,
           repo: extractedRepo,
-          status: "merged", // For responsive reward UI feel, we successfully verify & merge
+          status: "verifying", // Start as verifying, then poll real GitHub status
           title: prName
         };
 
@@ -181,7 +222,7 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
         setPrUrl("");
         setPrName("");
         setRegistering(false);
-        setRegistryMessage("Success! PR validated against repository rules and successfully registered.");
+        setRegistryMessage("PR registered! Checking real-time status from GitHub…");
         
         setTimeout(() => setRegistryMessage(""), 4000);
       }, 1000);
@@ -652,10 +693,20 @@ export default function ChallengeHub({ roadmap, checkedTasks, onToggleTask, prof
                   </div>
                   <span className={`px-1.5 py-0.5 rounded text-[8px] uppercase font-bold tracking-wider shrink-0 border ${
                     pr.status === "merged" 
-                      ? "text-emerald-400 bg-emerald-950/20 border-emerald-900/40" 
+                      ? "text-emerald-400 bg-emerald-950/20 border-emerald-900/40"
+                      : pr.status === "open"
+                      ? "text-blue-400 bg-blue-950/20 border-blue-900/40"
+                      : pr.status === "closed"
+                      ? "text-red-400 bg-red-950/20 border-red-900/40"
+                      : pr.status === "draft"
+                      ? "text-zinc-400 bg-zinc-900/20 border-zinc-800/40"
+                      : pr.status === "not_found"
+                      ? "text-zinc-500 bg-zinc-950/20 border-zinc-800/40"
+                      : pr.status === "verifying"
+                      ? "text-amber-400 bg-amber-950/20 border-amber-900/40 animate-pulse"
                       : "text-amber-400 bg-amber-950/20 border-amber-900/40 animate-pulse"
                   }`}>
-                    {pr.status}
+                    {pr.status === "not_found" ? "N/A" : pr.status}
                   </span>
                 </div>
               ))}
