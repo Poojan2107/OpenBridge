@@ -305,7 +305,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
               </div>
 
               <div className="text-[10px] text-zinc-550 italic mt-2 font-mono text-right">
-                engine: gemini-3.5-flash
+                engine: gemini-2.5-flash
               </div>
             </div>
           )}

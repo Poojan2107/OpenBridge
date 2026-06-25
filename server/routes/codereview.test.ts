@@ -5,6 +5,7 @@ import { app } from "../../server";
 describe("POST /api/codereview", () => {
   beforeAll(() => {
     process.env.NODE_ENV = "test";
+    process.env.GEMINI_API_KEY = "";
   });
 
   it("should perform heuristics-based code review for valid snippet (local fallback)", async () => {

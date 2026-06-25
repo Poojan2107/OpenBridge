@@ -16,6 +16,7 @@ import Leaderboard from "./components/Leaderboard";
 import NotificationToast, { ToastNotification } from "./components/NotificationToast";
 import { useSSE } from "./hooks/useSSE";
 import DashboardAnalytics from "./components/DashboardAnalytics";
+import RoadmapExporter from "./components/RoadmapExporter";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
   Compass, 
@@ -46,7 +47,8 @@ import {
   CheckCircle,
   Menu,
   Trophy,
-  BarChart2
+  BarChart2,
+  Download
 } from "lucide-react";
 
 export default function App() {
@@ -70,6 +72,7 @@ export default function App() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<ToastNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showExporter, setShowExporter] = useState(false);
 
   // GitHub user profile session (real or simulated feedback)
   const [githubUser, setGithubUser] = useState<GitHubUser | null>(() => {
@@ -1236,12 +1239,24 @@ export default function App() {
                           <div className="h-24 bg-[#30363d]/50 rounded"></div>
                         </div>
                       ) : (
-                        <ContributionRoadmap 
-                          roadmap={roadmap} 
-                          checkedTasks={checkedRoadmapTasks} 
-                          onToggleTask={handleToggleRoadmapTask} 
-                          login={githubUser ? githubUser.login : "guest-committer"}
-                        />
+                        <>
+                          <div className="flex items-center justify-between mb-2">
+                            <span />
+                            <button
+                              onClick={() => setShowExporter(true)}
+                              className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold px-3 py-1.5 rounded-lg border border-[#30363d] bg-[#21262d] hover:bg-[#30363d] hover:border-zinc-500 text-zinc-400 hover:text-zinc-200 transition-all"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              Export Roadmap
+                            </button>
+                          </div>
+                          <ContributionRoadmap 
+                            roadmap={roadmap} 
+                            checkedTasks={checkedRoadmapTasks} 
+                            onToggleTask={handleToggleRoadmapTask} 
+                            login={githubUser ? githubUser.login : "guest-committer"}
+                          />
+                        </>
                       )}
                     </div>
                   )}
@@ -1316,6 +1331,17 @@ export default function App() {
         notifications={notifications}
         onDismiss={dismissNotification}
       />
+
+      {/* Roadmap export modal */}
+      {showExporter && roadmap && (
+        <RoadmapExporter
+          roadmap={roadmap}
+          checkedTasks={checkedRoadmapTasks}
+          githubUser={githubUser}
+          profile={profile!}
+          onClose={() => setShowExporter(false)}
+        />
+      )}
     </div>
   );
 }
