@@ -19,33 +19,24 @@ import DashboardAnalytics from "./components/DashboardAnalytics";
 import RoadmapExporter from "./components/RoadmapExporter";
 import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
 import { 
-  Compass, 
   Sparkles, 
-  BookOpen, 
   GitPullRequest, 
   HelpCircle, 
   Terminal, 
   ArrowUpRight, 
   Award, 
-  Flame, 
-  RefreshCw, 
   Star, 
   Layers, 
   Code, 
-  Play, 
   Eye, 
   GitFork, 
   Shield, 
-  Tag, 
-  Lock, 
   AlertCircle, 
   Settings, 
   Github,
   Search,
   Bell,
   User,
-  CheckCircle,
-  Menu,
   Trophy,
   BarChart2,
   Download
@@ -475,21 +466,22 @@ export default function App() {
           
           {/* Logo, title and branch indicator */}
           <div className="flex items-center gap-3">
-            <div 
+            <button 
               onClick={handleResetProfile}
               className="flex items-center justify-center w-7 h-7 rounded-md bg-[#1f242c] border border-[#30363d] text-[#f0f6fc] hover:border-[#8b949e] cursor-pointer transition-colors"
+              aria-label="Reset profile"
             >
               <Github className="w-4 h-4" />
-            </div>
+            </button>
             
-            <div className="flex items-center gap-1.5" onClick={handleResetProfile}>
+            <button className="flex items-center gap-1.5" onClick={handleResetProfile} aria-label="Reset profile">
               <span className="text-sm font-semibold text-[#f0f6fc] tracking-tight hover:text-[#2f81f7] cursor-pointer">
                 OpenBridge
               </span>
               <span className="text-[10px] uppercase font-mono px-1.5 py-0.2 bg-[#30363d]/50 text-[#8b949e] border border-[#30363d] rounded-md">
                 Mentor AI
               </span>
-            </div>
+            </button>
 
             <div className="hidden md:flex items-center gap-1 text-[11px] text-[#8b949e] font-mono pl-3 border-l border-[#30363d]">
               <span className="text-[#8b949e]">v2.6.5</span>
@@ -777,7 +769,7 @@ export default function App() {
                 </div>
                 <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Curated Repositories</h4>
                 <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
-                  Avoid hunting for problems. We automatically query and recommendation issue indices that match your targeted skill level.
+                  Avoid hunting for problems. We automatically query and recommend issue indices that match your targeted skill level.
                 </p>
               </div>
 

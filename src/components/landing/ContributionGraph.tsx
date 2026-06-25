@@ -22,8 +22,8 @@ function getSimulatedContributionData(): number[][] {
     H: [[0, 0], [0, 4], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 4]],
   };
   const word = "OPENBRIDGE";
-  const letterSpacing = 6;
-  const startCol = 2;
+  const letterSpacing = 5;
+  const startCol = 1;
   word.split("").forEach((ch, idx) => {
     const pattern = letterPatterns[ch];
     if (!pattern) { return; }

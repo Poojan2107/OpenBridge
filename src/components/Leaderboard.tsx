@@ -5,10 +5,7 @@ import {
   GitMerge,
   GitPullRequest,
   CheckCircle2,
-  Star,
-  Code,
   RefreshCw,
-  ArrowLeft,
   Medal,
   Crown,
 } from "lucide-react";

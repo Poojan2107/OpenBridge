@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { PersonalizedRoadmap } from "../types";
-import { Compass, CalendarDays, CheckCircle2, ChevronRight, HelpCircle, Code, Award, Info, BookOpen, Download } from "lucide-react";
+import { ChevronRight, BookOpen, Download } from "lucide-react";
 
 interface ContributionRoadmapProps {
   roadmap: PersonalizedRoadmap;
