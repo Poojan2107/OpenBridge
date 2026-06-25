@@ -8,7 +8,7 @@
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![React 19](https://img.shields.io/badge/React_19-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
-[![Gemini AI](https://img.shields.io/badge/Gemini_AI-886FBF?style=flat&logo=google&logoColor=white)](https://ai.google.dev)
+[![Gemini 2.5 Flash](https://img.shields.io/badge/Gemini_2.5_AI-886FBF?style=flat&logo=google&logoColor=white)](https://ai.google.dev)
 [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat&logo=prisma&logoColor=white)](https://prisma.io)
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com)
@@ -84,7 +84,7 @@ OpenBridge solves this. It profiles your skills, matches you to real GitHub repo
 │  └────┬─────────────────────────────┬─────────────────┘ │
 │       │                             │                    │
 │  ┌────▼────────┐           ┌────────▼─────────┐         │
-│  │ Gemini 3.5  │           │  Prisma + SQLite  │         │
+│  │ Gemini 2.5  │           │  Prisma + SQLite  │         │
 │  │  Flash AI   │           │  (or PostgreSQL)  │         │
 │  └─────────────┘           └──────────────────┘         │
 └─────────────────────────────────────────────────────────┘
@@ -191,7 +191,7 @@ openbridge/
 |---|---|
 | **Frontend** | React 19, TypeScript, Tailwind CSS 4, Lucide Icons |
 | **Backend** | Express.js, Node.js |
-| **AI** | Google Gemini 3.5 Flash (structured JSON output) |
+| **AI** | Google Gemini 2.5 Flash (structured JSON output) |
 | **Database** | Prisma ORM → SQLite (dev) / PostgreSQL (prod) |
 | **Auth** | GitHub OAuth 2.0 with AES-256-CBC token encryption |
 | **Build** | Vite (frontend), esbuild (server), tsx (dev) |

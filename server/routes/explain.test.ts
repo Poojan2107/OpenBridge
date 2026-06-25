@@ -5,6 +5,7 @@ import { app } from "../../server";
 describe("POST /api/explain", () => {
   beforeAll(() => {
     process.env.NODE_ENV = "test";
+    process.env.GEMINI_API_KEY = "";
   });
 
   it("should explain raw technical issue text (simulated/local fallback)", async () => {

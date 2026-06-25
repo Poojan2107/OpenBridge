@@ -156,7 +156,7 @@ Generate exactly 5 technical interview questions that are realistic, progressive
 Mix difficulties: 2 beginner, 2 intermediate, 1 advanced. Make questions specific to ${interest} and ${skillList}.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         responseMimeType: "application/json",
