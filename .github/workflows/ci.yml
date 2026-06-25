@@ -28,8 +28,11 @@ jobs:
     - name: Generate Prisma Client
       run: npx prisma generate
 
+    - name: Apply database migrations
+      run: npx prisma migrate deploy
+
     - name: Run lint (TypeScript typecheck)
       run: npm run lint
 
     - name: Run unit tests
-      run: npm run test -- --run
+      run: npx vitest run
