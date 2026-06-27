@@ -10,10 +10,10 @@ describe("Token Encryption Service", () => {
   it("should encrypt and decrypt a standard token back to the original value", () => {
     const originalToken = "gho_1234567890abcdefghijklmnopqrstuvwxyz";
     const encrypted = encrypt(originalToken);
-    
+
     expect(encrypted).not.toBe(originalToken);
     expect(encrypted).toContain(":"); // Should contain IV and ciphertext separated by colon
-    
+
     const decrypted = decrypt(encrypted);
     expect(decrypted).toBe(originalToken);
   });
@@ -28,7 +28,7 @@ describe("Token Encryption Service", () => {
     const token = "my_secret_token";
     const enc1 = encrypt(token);
     const enc2 = encrypt(token);
-    
+
     expect(enc1).not.toBe(enc2);
     expect(decrypt(enc1)).toBe(token);
     expect(decrypt(enc2)).toBe(token);

@@ -12,7 +12,7 @@ describe("LandingNav", () => {
         onConnectGithub={() => {}}
         onDisconnectGithub={() => {}}
         handleScrollToId={() => {}}
-      />
+      />,
     );
 
     const button = screen.getByRole("button", { name: /start demo/i });
@@ -28,7 +28,7 @@ describe("LandingNav", () => {
         onConnectGithub={() => {}}
         onDisconnectGithub={() => {}}
         handleScrollToId={() => {}}
-      />
+      />,
     );
 
     const signIn = screen.getByRole("button", { name: /sign in/i });

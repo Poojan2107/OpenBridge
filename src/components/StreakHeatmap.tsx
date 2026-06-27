@@ -49,20 +49,37 @@ function computeStreak(log: Record<string, number>): number {
   return streak;
 }
 
-const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_LABELS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
 function getIntensity(count: number): string {
   if (count === 0) return "bg-[#161b22] border-[#1b1f23]";
   if (count === 1) return "bg-emerald-950/60 border-emerald-900/40";
-  if (count <= 3)  return "bg-emerald-800/50 border-emerald-700/40";
-  if (count <= 6)  return "bg-emerald-600/60 border-emerald-500/40";
+  if (count <= 3) return "bg-emerald-800/50 border-emerald-700/40";
+  if (count <= 6) return "bg-emerald-600/60 border-emerald-500/40";
   return "bg-emerald-400/70 border-emerald-400/50";
 }
 
 function getTooltip(dateStr: string, count: number): string {
   const d = new Date(dateStr + "T00:00:00");
-  const formatted = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const formatted = d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
   if (count === 0) return `No activity on ${formatted}`;
   return `${count} action${count > 1 ? "s" : ""} on ${formatted}`;
 }
@@ -118,7 +135,7 @@ export default function StreakHeatmap({ refreshKey = 0 }: StreakHeatmapProps) {
 
   const streak = computeStreak(log);
   const totalActivities = Object.values(log).reduce((a, b) => a + b, 0);
-  const activeDays = Object.values(log).filter(v => v > 0).length;
+  const activeDays = Object.values(log).filter((v) => v > 0).length;
 
   return (
     <div className="space-y-4">
@@ -126,19 +143,25 @@ export default function StreakHeatmap({ refreshKey = 0 }: StreakHeatmapProps) {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-zinc-400" />
-          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Activity Heatmap</span>
+          <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            Activity Heatmap
+          </span>
         </div>
         <div className="flex items-center gap-4">
           {/* Streak counter */}
           <div className="flex items-center gap-1.5">
             <Flame className={`w-4 h-4 ${streak > 0 ? "text-orange-400" : "text-zinc-700"}`} />
-            <span className={`text-sm font-bold font-mono ${streak > 0 ? "text-orange-400" : "text-zinc-600"}`}>
+            <span
+              className={`text-sm font-bold font-mono ${streak > 0 ? "text-orange-400" : "text-zinc-600"}`}
+            >
               {streak}
             </span>
             <span className="text-[10px] font-mono text-zinc-600">day streak</span>
           </div>
           <div className="h-4 w-px bg-zinc-800" />
-          <span className="text-[10px] font-mono text-zinc-600">{activeDays} active days · {totalActivities} actions</span>
+          <span className="text-[10px] font-mono text-zinc-600">
+            {activeDays} active days · {totalActivities} actions
+          </span>
         </div>
       </div>
 
@@ -162,7 +185,10 @@ export default function StreakHeatmap({ refreshKey = 0 }: StreakHeatmapProps) {
             {/* Day labels */}
             <div className="flex flex-col gap-[2px] mr-1.5 pt-0">
               {DAY_LABELS.map((label, i) => (
-                <span key={i} className="text-[8px] font-mono text-zinc-700 h-[12px] flex items-center justify-end w-6">
+                <span
+                  key={i}
+                  className="text-[8px] font-mono text-zinc-700 h-[12px] flex items-center justify-end w-6"
+                >
                   {label}
                 </span>
               ))}
@@ -174,7 +200,7 @@ export default function StreakHeatmap({ refreshKey = 0 }: StreakHeatmapProps) {
               style={{
                 gridTemplateRows: `repeat(7, 12px)`,
                 gridTemplateColumns: `repeat(${TOTAL_WEEKS + 1}, 12px)`,
-                gridAutoFlow: "column"
+                gridAutoFlow: "column",
               }}
             >
               {grid.map((cell) => (

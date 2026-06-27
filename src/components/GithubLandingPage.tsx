@@ -1,5 +1,14 @@
 import { UserProfile, GitHubUser } from "../types";
-import { LandingNav, HeroSection, ProblemsSection, SolutionSection, ProgramsSection, ContributionGraph, GatedWorkstation, LandingFooter } from "./landing";
+import {
+  LandingNav,
+  HeroSection,
+  ProblemsSection,
+  SolutionSection,
+  ProgramsSection,
+  ContributionGraph,
+  GatedWorkstation,
+  LandingFooter,
+} from "./landing";
 
 interface GithubLandingPageProps {
   githubUser: GitHubUser | null;

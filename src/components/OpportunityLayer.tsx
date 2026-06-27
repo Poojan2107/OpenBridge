@@ -5,63 +5,75 @@ import { OpenSourceProgram } from "../types";
 const PROGRAMS: OpenSourceProgram[] = [
   {
     name: "Google Summer of Code",
-    description: "A global, online program focused on bringing new contributors into open source software development. Contributors work with mentor organizations on a 12+ week project.",
+    description:
+      "A global, online program focused on bringing new contributors into open source software development. Contributors work with mentor organizations on a 12+ week project.",
     timeline: "Applications open annually around March/April",
     tag: "Paid Stipend • Global",
     url: "https://summerofcode.withgoogle.com",
-    iconName: "Award"
+    iconName: "Award",
   },
   {
     name: "Outreachy Mentorship",
-    description: "Provides paid, remote, 3-month internships for people who face systemic bias and are underrepresented in the tech industry. Great support system with dedicated mentors.",
+    description:
+      "Provides paid, remote, 3-month internships for people who face systemic bias and are underrepresented in the tech industry. Great support system with dedicated mentors.",
     timeline: "Runs twice a year (May-August & Dec-March)",
     tag: "Paid Internship • $7,000 USD",
     url: "https://outreachy.org",
-    iconName: "Users"
+    iconName: "Users",
   },
   {
     name: "LFX Mentorship",
-    description: "Supported by the Linux Foundation, LFX allows students and early-career engineers to work on critical open-source projects (like Kubernetes, Node, and hyperledger) with direct guidance.",
+    description:
+      "Supported by the Linux Foundation, LFX allows students and early-career engineers to work on critical open-source projects (like Kubernetes, Node, and hyperledger) with direct guidance.",
     timeline: "Multiple cohorts throughout the year",
     tag: "Industry Standard • Specialized",
     url: "https://mentorship.lfx.linuxfoundation.org",
-    iconName: "Cpu"
+    iconName: "Cpu",
   },
   {
     name: "MLH Fellowship",
-    description: "A remote, 12-week educational program where students and developers collaborate on major real-world open source projects used by millions of developers.",
+    description:
+      "A remote, 12-week educational program where students and developers collaborate on major real-world open source projects used by millions of developers.",
     timeline: "Fall, Spring, & Summer cohorts available",
     tag: "Educational • Stipends",
     url: "https://fellowship.mlh.io",
-    iconName: "Compass"
+    iconName: "Compass",
   },
   {
     name: "Google Season of Docs",
-    description: "Pairs open-source organizations with professional technical writers to create top-tier documentation and solve communication challenges in the community.",
+    description:
+      "Pairs open-source organizations with professional technical writers to create top-tier documentation and solve communication challenges in the community.",
     timeline: "Applications open around February annually",
     tag: "Technical Writing • Paid",
     url: "https://developers.google.com/season-of-docs",
-    iconName: "BookOpen"
+    iconName: "BookOpen",
   },
   {
     name: "Hacktoberfest",
-    description: "A month-long global celebration of open source software hosted by DigitalOcean. Encourages beginners to make their first four pull requests to any participating project on GitHub.",
+    description:
+      "A month-long global celebration of open source software hosted by DigitalOcean. Encourages beginners to make their first four pull requests to any participating project on GitHub.",
     timeline: "Throughout the month of October",
     tag: "Casual • Swag & Tree Planting",
     url: "https://hacktoberfest.com",
-    iconName: "Globe"
-  }
+    iconName: "Globe",
+  },
 ];
 
 export default function OpportunityLayer() {
   const getIcon = (name: string) => {
     switch (name) {
-      case "Award": return <Award className="w-4 h-4 text-zinc-400" />;
-      case "Users": return <Users className="w-4 h-4 text-zinc-400" />;
-      case "Cpu": return <Cpu className="w-4 h-4 text-zinc-400" />;
-      case "Compass": return <Compass className="w-4 h-4 text-zinc-400" />;
-      case "BookOpen": return <BookOpen className="w-4 h-4 text-zinc-400" />;
-      default: return <Globe className="w-4 h-4 text-zinc-400" />;
+      case "Award":
+        return <Award className="w-4 h-4 text-zinc-400" />;
+      case "Users":
+        return <Users className="w-4 h-4 text-zinc-400" />;
+      case "Cpu":
+        return <Cpu className="w-4 h-4 text-zinc-400" />;
+      case "Compass":
+        return <Compass className="w-4 h-4 text-zinc-400" />;
+      case "BookOpen":
+        return <BookOpen className="w-4 h-4 text-zinc-400" />;
+      default:
+        return <Globe className="w-4 h-4 text-zinc-400" />;
     }
   };
 
@@ -75,7 +87,8 @@ export default function OpportunityLayer() {
           Open Source Programs & Fellowships
         </h2>
         <p className="text-zinc-400 text-xs mt-1 max-w-2xl leading-relaxed">
-          Structured mentorship programs, remote internships, and funded cohorts that support onboarding into the open source software landscape.
+          Structured mentorship programs, remote internships, and funded cohorts that support
+          onboarding into the open source software landscape.
         </p>
       </div>
 
@@ -104,7 +117,9 @@ export default function OpportunityLayer() {
 
             <div className="mt-5 pt-4 border-t border-zinc-90 flex items-center justify-between text-[11px] font-mono">
               <div className="text-zinc-550">
-                <span className="block text-[9px] uppercase tracking-wider text-zinc-600 mb-0.5">Timeline</span>
+                <span className="block text-[9px] uppercase tracking-wider text-zinc-600 mb-0.5">
+                  Timeline
+                </span>
                 <span className="text-zinc-400">{program.timeline}</span>
               </div>
               <a

@@ -13,7 +13,9 @@ router.post("/api/explain", async (req, res) => {
   try {
     const parseResult = ExplainSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid request payload format.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid request payload format.", details: parseResult.error.format() });
     }
 
     let { issue } = parseResult.data;
@@ -33,8 +35,8 @@ router.post("/api/explain", async (req, res) => {
         const response = await fetch(apiUrl, {
           headers: {
             "User-Agent": "openbridge-mentor-app",
-            "Accept": "application/vnd.github.v3+json"
-          }
+            Accept: "application/vnd.github.v3+json",
+          },
         });
 
         if (response.ok) {
@@ -44,7 +46,9 @@ router.post("/api/explain", async (req, res) => {
           isUrl = true;
           console.log(`Successfully fetched issue "${fetchedIssueTitle}"`);
         } else {
-          console.warn(`GitHub API returned status ${response.status} for URL: ${apiUrl}. Falling back to raw text.`);
+          console.warn(
+            `GitHub API returned status ${response.status} for URL: ${apiUrl}. Falling back to raw text.`,
+          );
         }
       } catch (fetchErr) {
         console.error("Failed to fetch issue from GitHub API:", fetchErr);
@@ -88,11 +92,19 @@ Always output response strictly in the following JSON format structure:
           required: ["meaning", "files", "steps"],
           properties: {
             meaning: { type: Type.STRING },
-            files: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Likely files involved" },
-            steps: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Action steps to solve" }
-          }
-        }
-      }
+            files: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "Likely files involved",
+            },
+            steps: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+              description: "Action steps to solve",
+            },
+          },
+        },
+      },
     });
 
     const text = response.text;

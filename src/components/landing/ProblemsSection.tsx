@@ -26,18 +26,31 @@ const problems = [
 
 export function ProblemsSection() {
   return (
-    <section id="ob-features-struggle" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left">
+    <section
+      id="ob-features-struggle"
+      className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left"
+    >
       <div className="space-y-12">
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-mono uppercase text-[#2F81F7] font-bold tracking-wider">Traditional Pain Points</span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">Why developers struggle with Open Source</h2>
+          <span className="text-xs font-mono uppercase text-[#2F81F7] font-bold tracking-wider">
+            Traditional Pain Points
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">
+            Why developers struggle with Open Source
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {problems.map((p) => {
             const Icon = p.icon;
             return (
-              <div key={p.id} className="bg-[#161B22] border border-[#30363D] p-6 rounded-lg space-y-4 hover:border-[#8B949E]/70 transition-colors shadow-sm">
-                <div className={`p-2.5 border rounded-md w-max mx-auto sm:mx-0 ${p.iconBg}`} aria-hidden="true">
+              <div
+                key={p.id}
+                className="bg-[#161B22] border border-[#30363D] p-6 rounded-lg space-y-4 hover:border-[#8B949E]/70 transition-colors shadow-sm"
+              >
+                <div
+                  className={`p-2.5 border rounded-md w-max mx-auto sm:mx-0 ${p.iconBg}`}
+                  aria-hidden="true"
+                >
                   <Icon className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-[#F0F6FC]">{p.title}</h3>

@@ -6,7 +6,7 @@ export async function saveUserProfile(
   skills: string[],
   level: string,
   interest: string,
-  repos: any
+  repos: any,
 ) {
   try {
     const encryptedToken = encrypt(githubUser.token || "simulated_token");
@@ -54,13 +54,13 @@ export async function saveUserRoadmap(githubUser: any, roadmapData: any) {
   try {
     const user = await prisma.user.findUnique({
       where: { githubId: githubUser.id ? githubUser.id.toString() : `sim_${githubUser.login}` },
-      include: { profile: true }
+      include: { profile: true },
     });
 
     if (user && user.profile) {
       // Delete any existing roadmap to overwrite it cleanly
       const existingRoadmap = await prisma.roadmap.findUnique({
-        where: { profileId: user.profile.id }
+        where: { profileId: user.profile.id },
       });
       if (existingRoadmap) {
         await prisma.roadmap.delete({ where: { id: existingRoadmap.id } });
@@ -75,30 +75,42 @@ export async function saveUserRoadmap(githubUser: any, roadmapData: any) {
               {
                 weekNumber: 1,
                 tasks: {
-                  create: (roadmapData.week1 || []).map((t: string) => ({ taskText: t, isCompleted: false }))
-                }
+                  create: (roadmapData.week1 || []).map((t: string) => ({
+                    taskText: t,
+                    isCompleted: false,
+                  })),
+                },
               },
               {
                 weekNumber: 2,
                 tasks: {
-                  create: (roadmapData.week2 || []).map((t: string) => ({ taskText: t, isCompleted: false }))
-                }
+                  create: (roadmapData.week2 || []).map((t: string) => ({
+                    taskText: t,
+                    isCompleted: false,
+                  })),
+                },
               },
               {
                 weekNumber: 3,
                 tasks: {
-                  create: (roadmapData.week3 || []).map((t: string) => ({ taskText: t, isCompleted: false }))
-                }
+                  create: (roadmapData.week3 || []).map((t: string) => ({
+                    taskText: t,
+                    isCompleted: false,
+                  })),
+                },
               },
               {
                 weekNumber: 4,
                 tasks: {
-                  create: (roadmapData.week4 || []).map((t: string) => ({ taskText: t, isCompleted: false }))
-                }
-              }
-            ]
-          }
-        }
+                  create: (roadmapData.week4 || []).map((t: string) => ({
+                    taskText: t,
+                    isCompleted: false,
+                  })),
+                },
+              },
+            ],
+          },
+        },
       });
     }
   } catch (dbErr) {

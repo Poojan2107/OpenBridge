@@ -1,69 +1,118 @@
 # Contributing to OpenBridge
 
-Thank you for your interest in contributing to OpenBridge! OpenBridge is built for open-source contributors, by the open-source community. Follow these guidelines to set up your local development environment.
+Thank you for your interest in contributing to OpenBridge! OpenBridge is built for open-source contributors, by the open-source community.
 
-## 🛠️ Prerequisites
+## Prerequisites
 
-Before you begin, ensure you have the following installed on your machine:
-* **Node.js** (v18.0.0 or higher)
-* **npm** (v9.0.0 or higher)
-* **Git**
+- **Node.js** ≥ 20 (see `.nvmrc`)
+- **npm** ≥ 9
+- **Git**
 
----
+## Quick Start
 
-## 🚀 Local Development Setup
-
-Follow these steps to spin up the application on your local machine:
-
-### 1. Clone the Repository
 ```bash
 git clone https://github.com/Poojan2107/OpenBridge.git
 cd OpenBridge
-```
-
-### 2. Install Dependencies
-```bash
 npm install
-```
-
-### 3. Configure Environment Variables
-Create a `.env` file in the root directory (you can copy `.env.example` as a template):
-```bash
-cp .env.example .env
-```
-Inside your `.env` file, specify:
-* `DATABASE_URL="file:./dev.db"` (SQLite path)
-* `GEMINI_API_KEY` (Your Google Gemini API Key - Optional, falls back to structured simulations if not provided)
-* `GITHUB_CLIENT_ID` & `GITHUB_CLIENT_SECRET` (For OAuth integrations - Optional, fall back to interactive sandboxes)
-
-### 4. Database Setup & Sync
-Prisma is used to manage database interactions. Initialize and push your local schema:
-```bash
+cp .env.example .env    # edit GEMINI_API_KEY
 npx prisma migrate dev
 npx prisma generate
+npm run dev              # → http://localhost:3000
+
+# Seed demo data (optional)
+npm run seed
 ```
 
-### 5. Start the Development Server
-Launch the full-stack server (express API + Vite client):
+### Docker
+
 ```bash
-npm run dev
+docker compose up -d
 ```
-Open your browser and navigate to: **`http://localhost:3000`**
 
----
+## Development Workflow
 
-## 📜 Contribution Rules & DCO Compliance
+### Commands
 
-OpenBridge enforces the **Developer Certificate of Origin (DCO)** standard to certify that contributions are legally clear. 
+| Command                | Description                   |
+| ---------------------- | ----------------------------- |
+| `npm run dev`          | Start dev server (hot reload) |
+| `npm run build`        | Production build              |
+| `npm run lint`         | TypeScript type-check         |
+| `npm run eslint`       | ESLint code quality           |
+| `npm run format`       | Auto-format with Prettier     |
+| `npm run format:check` | Check formatting              |
+| `npm test`             | Run all tests                 |
+| `npm run seed`         | Seed demo data                |
+| `npm run clean`        | Remove build artifacts        |
 
-### ✍️ Signed-Off Commits
-Every commit submitted to this project must include a `Signed-off-by` line in the message footer.
-You can automate this by adding the `-s` flag when committing:
+### Commit Workflow
+
+1. Make your changes
+2. `git add .`
+3. `git commit -s` — the `-s` flag automatically signs off (DCO). `lint-staged` runs ESLint + Prettier on staged files before the commit finishes.
+4. `git push`
+
+### Project Structure
+
+```
+openbridge/
+├── src/              # React frontend
+├── server/           # Express API server
+├── prisma/           # Database schema + migrations + seed
+├── public/           # Static assets (PWA, icons)
+├── .github/          # CI, issue templates
+├── server.ts         # Server entry point
+├── index.html        # SPA entry
+└── tsconfig.json     # TypeScript config
+```
+
+## Code Style
+
+- **TypeScript** — strict mode. Avoid `any` where possible.
+- **React** — functional components with hooks.
+- **CSS** — Tailwind CSS 4 utility classes.
+- **Icons** — lucide-react.
+- **Formatting** — Prettier (semicolons, double quotes, trailing commas).
+- **ESLint** — `npm run eslint` before pushing.
+
+## Testing
+
+All tests live next to their modules: `*.test.ts` / `*.test.tsx`.
+
 ```bash
-git commit -s -m "feat: implement issue URL fetcher"
+npm test         # all tests
+npx vitest run   # same, but without npm wrapper
 ```
-This will append the following footer to your commit message:
+
+## Contribution Rules
+
+### DCO (Developer Certificate of Origin)
+
+Every commit must include a `Signed-off-by` line:
+
+```bash
+git commit -s -m "feat: add amazing feature"
+```
+
+This appends:
+
 ```text
 Signed-off-by: Your Name <your.email@example.com>
 ```
-*Note: Commits without this sign-off will fail the pre-flight checks and PR pipelines.*
+
+### PR Checklist
+
+Before opening a PR:
+
+- [ ] `npm run lint` — zero type errors
+- [ ] `npm run eslint` — zero lint errors
+- [ ] `npm run format:check` — matches Prettier
+- [ ] `npm test` — all green
+- [ ] Commits are DCO-signed (`git commit -s`)
+- [ ] Branch name follows `feat/`, `fix/`, `chore/` convention
+
+## Reporting Issues
+
+- **Bug**: open a [Bug Report](https://github.com/Poojan2107/OpenBridge/issues/new?labels=bug,help+wanted&template=bug_report.md)
+- **Feature**: open a [Feature Request](https://github.com/Poojan2107/OpenBridge/issues/new?labels=enhancement,good+first+issue&template=feature_request.md)
+- **Security**: see [SECURITY.md](SECURITY.md)

@@ -1,0 +1,45 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+    groups:
+      prisma:
+        patterns:
+          - "@prisma/*"
+          - "prisma"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "typescript-eslint"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "docker"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "ci"

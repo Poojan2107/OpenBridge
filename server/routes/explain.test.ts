@@ -9,11 +9,9 @@ describe("POST /api/explain", () => {
   });
 
   it("should explain raw technical issue text (simulated/local fallback)", async () => {
-    const res = await request(app)
-      .post("/api/explain")
-      .send({
-        issue: "git commit fails due to missing author identity settings"
-      });
+    const res = await request(app).post("/api/explain").send({
+      issue: "git commit fails due to missing author identity settings",
+    });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("meaning");
@@ -31,16 +29,14 @@ describe("POST /api/explain", () => {
       ok: true,
       json: async () => ({
         title: "Fix responsive container padding",
-        body: "The main page container overlaps on narrow viewports because of missing responsive padding utilities."
-      })
+        body: "The main page container overlaps on narrow viewports because of missing responsive padding utilities.",
+      }),
     });
     vi.stubGlobal("fetch", mockFetch);
 
-    const res = await request(app)
-      .post("/api/explain")
-      .send({
-        issue: "https://github.com/Poojan2107/OpenBridge/issues/42"
-      });
+    const res = await request(app).post("/api/explain").send({
+      issue: "https://github.com/Poojan2107/OpenBridge/issues/42",
+    });
 
     expect(res.status).toBe(200);
     expect(mockFetch).toHaveBeenCalled();
@@ -54,11 +50,9 @@ describe("POST /api/explain", () => {
   });
 
   it("should fail validation if issue is empty or missing", async () => {
-    const res = await request(app)
-      .post("/api/explain")
-      .send({
-        issue: ""
-      });
+    const res = await request(app).post("/api/explain").send({
+      issue: "",
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");

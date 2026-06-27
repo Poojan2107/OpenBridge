@@ -13,14 +13,14 @@ describe("POST /api/recommend", () => {
       .send({
         skills: ["React", "TypeScript"],
         level: "Beginner",
-        interest: "Frontend"
+        interest: "Frontend",
       });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("repos");
     expect(Array.isArray(res.body.repos)).toBe(true);
     expect(res.body.repos.length).toBe(3);
-    
+
     const firstRepo = res.body.repos[0];
     expect(firstRepo).toHaveProperty("name");
     expect(firstRepo).toHaveProperty("description");
@@ -32,12 +32,10 @@ describe("POST /api/recommend", () => {
   });
 
   it("should fail validation with invalid payload", async () => {
-    const res = await request(app)
-      .post("/api/recommend")
-      .send({
-        skills: "not-an-array",
-        level: 123
-      });
+    const res = await request(app).post("/api/recommend").send({
+      skills: "not-an-array",
+      level: 123,
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");

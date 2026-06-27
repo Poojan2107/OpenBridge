@@ -17,29 +17,35 @@ import NotificationToast, { ToastNotification } from "./components/NotificationT
 import { useSSE } from "./hooks/useSSE";
 import DashboardAnalytics from "./components/DashboardAnalytics";
 import RoadmapExporter from "./components/RoadmapExporter";
-import { UserProfile, RepositorySuggestion, PersonalizedRoadmap, IssueTranslation, GitHubUser } from "./types";
-import { 
-  Sparkles, 
-  GitPullRequest, 
-  HelpCircle, 
-  Terminal, 
-  ArrowUpRight, 
-  Award, 
-  Star, 
-  Layers, 
-  Code, 
-  Eye, 
-  GitFork, 
-  Shield, 
-  AlertCircle, 
-  Settings, 
+import {
+  UserProfile,
+  RepositorySuggestion,
+  PersonalizedRoadmap,
+  IssueTranslation,
+  GitHubUser,
+} from "./types";
+import {
+  Sparkles,
+  GitPullRequest,
+  HelpCircle,
+  Terminal,
+  ArrowUpRight,
+  Award,
+  Star,
+  Layers,
+  Code,
+  Eye,
+  GitFork,
+  Shield,
+  AlertCircle,
+  Settings,
   Github,
   Search,
   Bell,
   User,
   Trophy,
   BarChart2,
-  Download
+  Download,
 } from "lucide-react";
 
 export default function App() {
@@ -53,7 +59,17 @@ export default function App() {
   });
   const [loading, setLoading] = useState(false);
   const [activityRefresh, setActivityRefresh] = useState(0);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "challenge" | "preflight" | "translator" | "programs" | "codereview" | "interview" | "leaderboard" | "analytics">(() => {
+  const [activeTab, setActiveTab] = useState<
+    | "dashboard"
+    | "challenge"
+    | "preflight"
+    | "translator"
+    | "programs"
+    | "codereview"
+    | "interview"
+    | "leaderboard"
+    | "analytics"
+  >(() => {
     try {
       const saved = localStorage.getItem("ob_active_tab");
       if (saved) return saved as any;
@@ -174,25 +190,31 @@ export default function App() {
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const origin = event.origin;
-      if (!origin.endsWith(".run.app") && !origin.includes("localhost") && !origin.includes("127.0.0.1") && !origin.includes("0.0.0.0")) {
+      if (
+        !origin.endsWith(".run.app") &&
+        !origin.includes("localhost") &&
+        !origin.includes("127.0.0.1") &&
+        !origin.includes("0.0.0.0")
+      ) {
         return;
       }
-      
+
       if (event.data?.type === "OAUTH_AUTH_SUCCESS" && event.data?.user) {
         const user = event.data.user;
         setGithubUser(user);
         localStorage.setItem("ob_github_user", JSON.stringify(user));
-        
+
         // Auto-hydrate developer platform configuration if empty or placeholder
         if (!profile) {
-          const matchedSkills = user.login === "guest-committer" 
-            ? ["React", "TypeScript", "Node.js", "Git/GitHub"] 
-            : ["JavaScript", "Git/GitHub"];
-            
+          const matchedSkills =
+            user.login === "guest-committer"
+              ? ["React", "TypeScript", "Node.js", "Git/GitHub"]
+              : ["JavaScript", "Git/GitHub"];
+
           const autoProfile: UserProfile = {
             skills: matchedSkills,
             level: "Beginner",
-            interest: "Frontend"
+            interest: "Frontend",
           };
           handleSubmitProfile(autoProfile);
         }
@@ -235,27 +257,30 @@ export default function App() {
   }, [githubUser]);
 
   // SSE: real-time notifications from webhook events
-  const handleSSEEvent = useCallback((event: { type: string; payload: Record<string, unknown> }) => {
-    if (event.type === "PR_UPDATE") {
-      const { login, title, status, repoFullName } = event.payload as Record<string, string>;
-      const statusLabels: Record<string, string> = {
-        MERGED: "PR Merged 🎉",
-        PENDING: "PR Opened",
-        VERIFYING: "PR Under Review",
-        FAILED: "PR Closed",
-      };
-      const toast: ToastNotification = {
-        id: `${Date.now()}-${Math.random()}`,
-        type: "PR_UPDATE",
-        title: statusLabels[status] || "PR Update",
-        message: `${login} · ${repoFullName} — "${title}"`,
-        timestamp: new Date(),
-        status,
-      };
-      setNotifications((prev) => [toast, ...prev].slice(0, 5));
-      setUnreadCount((c) => c + 1);
-    }
-  }, []);
+  const handleSSEEvent = useCallback(
+    (event: { type: string; payload: Record<string, unknown> }) => {
+      if (event.type === "PR_UPDATE") {
+        const { login, title, status, repoFullName } = event.payload as Record<string, string>;
+        const statusLabels: Record<string, string> = {
+          MERGED: "PR Merged 🎉",
+          PENDING: "PR Opened",
+          VERIFYING: "PR Under Review",
+          FAILED: "PR Closed",
+        };
+        const toast: ToastNotification = {
+          id: `${Date.now()}-${Math.random()}`,
+          type: "PR_UPDATE",
+          title: statusLabels[status] || "PR Update",
+          message: `${login} · ${repoFullName} — "${title}"`,
+          timestamp: new Date(),
+          status,
+        };
+        setNotifications((prev) => [toast, ...prev].slice(0, 5));
+        setUnreadCount((c) => c + 1);
+      }
+    },
+    [],
+  );
 
   useSSE(handleSSEEvent);
 
@@ -268,20 +293,22 @@ export default function App() {
       const res = await fetch("/api/auth/url");
       if (!res.ok) throw new Error("Could not request direct authorization path");
       const { url } = await res.json();
-      
+
       const width = 500;
       const height = 660;
       const left = window.screen.width / 2 - width / 2;
       const top = window.screen.height / 2 - height / 2;
-      
+
       const authWindow = window.open(
         url,
         "github_login_popup",
-        `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes`
+        `width=${width},height=${height},top=${top},left=${left},status=no,resizable=yes`,
       );
-      
+
       if (!authWindow) {
-        alert("The authentication pop-up was blocked. Please permit pop-ups to pair your GitHub login.");
+        alert(
+          "The authentication pop-up was blocked. Please permit pop-ups to pair your GitHub login.",
+        );
       }
     } catch (err) {
       console.error("Initiation of GitHub Auth failed:", err);
@@ -297,7 +324,7 @@ export default function App() {
       html_url: "https://github.com/guest-committer",
       public_repos: 42,
       followers: 128,
-      simulated: true
+      simulated: true,
     };
     setGithubUser(guestUser);
     localStorage.setItem("ob_github_user", JSON.stringify(guestUser));
@@ -316,7 +343,7 @@ export default function App() {
     // Track activity for streak heatmap
     if (isCompletedNow) {
       recordActivity();
-      setActivityRefresh(prev => prev + 1);
+      setActivityRefresh((prev) => prev + 1);
     }
 
     if (githubUser && roadmap) {
@@ -330,8 +357,8 @@ export default function App() {
             body: JSON.stringify({
               login: githubUser.login,
               taskText,
-              isCompleted: isCompletedNow
-            })
+              isCompleted: isCompletedNow,
+            }),
           });
         } catch (err) {
           console.error("Failed to sync checklist toggle with database:", err);
@@ -345,7 +372,7 @@ export default function App() {
     const presetProfile: UserProfile = {
       skills: ["React", "TypeScript", "Tailwind CSS"],
       level: "Beginner",
-      interest: "Frontend"
+      interest: "Frontend",
     };
     await handleSubmitProfile(presetProfile);
   };
@@ -365,8 +392,8 @@ export default function App() {
             skills: newProfile.skills,
             level: newProfile.level,
             interest: newProfile.interest,
-            githubUser: githubUser // Dynamic customized suggestions based on GitHub profile contents
-          })
+            githubUser: githubUser, // Dynamic customized suggestions based on GitHub profile contents
+          }),
         }),
         fetch("/api/roadmap", {
           method: "POST",
@@ -374,9 +401,9 @@ export default function App() {
           body: JSON.stringify({
             skills: newProfile.skills,
             level: newProfile.level,
-            githubUser: githubUser
-          })
-        })
+            githubUser: githubUser,
+          }),
+        }),
       ]);
 
       if (recsRes.ok && roadmapRes.ok) {
@@ -390,7 +417,9 @@ export default function App() {
         console.error("Server API error during recommendations fetch.");
       }
     } catch (err) {
-      setApiError("A network error occurred. Please check that the backend is running and correct GITHUB_CLIENT_ID / GEMINI_API_KEY settings are configured.");
+      setApiError(
+        "A network error occurred. Please check that the backend is running and correct GITHUB_CLIENT_ID / GEMINI_API_KEY settings are configured.",
+      );
       console.error("API error: ", err);
     } finally {
       setLoading(false);
@@ -402,7 +431,7 @@ export default function App() {
       const res = await fetch("/api/explain", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ issue: issueText })
+        body: JSON.stringify({ issue: issueText }),
       });
       if (res.ok) {
         return await res.json();
@@ -459,22 +488,24 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#f0f6fc] flex flex-col antialiased font-sans flex-grow">
-      
       {/* 1. TOP NAVIGATION BAR */}
       <header className="sticky top-0 z-30 bg-[#161b22] border-b border-[#30363d] h-14 flex items-center px-4 sm:px-6 select-none">
         <div className="w-full flex items-center justify-between">
-          
           {/* Logo, title and branch indicator */}
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={handleResetProfile}
               className="flex items-center justify-center w-7 h-7 rounded-md bg-[#1f242c] border border-[#30363d] text-[#f0f6fc] hover:border-[#8b949e] cursor-pointer transition-colors"
               aria-label="Reset profile"
             >
               <Github className="w-4 h-4" />
             </button>
-            
-            <button className="flex items-center gap-1.5" onClick={handleResetProfile} aria-label="Reset profile">
+
+            <button
+              className="flex items-center gap-1.5"
+              onClick={handleResetProfile}
+              aria-label="Reset profile"
+            >
               <span className="text-sm font-semibold text-[#f0f6fc] tracking-tight hover:text-[#2f81f7] cursor-pointer">
                 OpenBridge
               </span>
@@ -524,10 +555,13 @@ export default function App() {
               )}
             </button>
 
-
-            <a 
-              href={githubUser ? githubUser.html_url : "https://github.com/guest-committer/openbridge-onboarding-hub"} 
-              target="_blank" 
+            <a
+              href={
+                githubUser
+                  ? githubUser.html_url
+                  : "https://github.com/guest-committer/openbridge-onboarding-hub"
+              }
+              target="_blank"
               rel="noreferrer"
               className="text-xs text-[#8b949e] hover:text-[#f0f6fc] flex items-center gap-1.5 bg-[#21262d] border border-[#30363d] hover:bg-[#30363d] px-2.5 py-1 rounded-md transition-all font-mono"
             >
@@ -536,22 +570,29 @@ export default function App() {
 
             {githubUser ? (
               <div className="flex items-center gap-2 relative group">
-                <img 
-                  src={githubUser.avatar_url} 
+                <img
+                  src={githubUser.avatar_url}
                   alt={githubUser.login}
                   referrerPolicy="no-referrer"
-                  className="w-7 h-7 rounded-full border border-[#30363d] cursor-pointer hover:border-[#8b949e] transition-all" 
+                  className="w-7 h-7 rounded-full border border-[#30363d] cursor-pointer hover:border-[#8b949e] transition-all"
                   title={`Logged in as ${githubUser.name || githubUser.login}`}
                 />
-                <span className="hidden sm:inline text-xs font-mono text-[#8b949e] hover:text-[#f0f6fc] cursor-pointer font-semibold" title="Disconnect profile" onClick={handleDisconnectGithub}>
+                <span
+                  className="hidden sm:inline text-xs font-mono text-[#8b949e] hover:text-[#f0f6fc] cursor-pointer font-semibold"
+                  title="Disconnect profile"
+                  onClick={handleDisconnectGithub}
+                >
                   {githubUser.login}
                 </span>
-                <span className="text-[10px] text-[#f85149] hover:underline cursor-pointer hidden md:inline ml-1" onClick={handleDisconnectGithub}>
+                <span
+                  className="text-[10px] text-[#f85149] hover:underline cursor-pointer hidden md:inline ml-1"
+                  onClick={handleDisconnectGithub}
+                >
                   (Sign Out)
                 </span>
               </div>
             ) : (
-              <button 
+              <button
                 onClick={handleConnectGithub}
                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#238636] hover:bg-[#2ea44f] text-[#f0f6fc] border border-[#2ea44f] rounded-md text-xs font-semibold cursor-pointer transition-colors font-mono"
               >
@@ -573,7 +614,9 @@ export default function App() {
                 {githubUser ? githubUser.login : "guest-committer"}
               </span>
               <span className="text-[#8b949e]">/</span>
-              <span className="font-bold text-[#f0f6fc] hover:underline cursor-pointer">openbridge-onboarding-hub</span>
+              <span className="font-bold text-[#f0f6fc] hover:underline cursor-pointer">
+                openbridge-onboarding-hub
+              </span>
             </div>
             <span className="px-2 py-0.2 rounded-full text-[10px] bg-[#21262d] border border-[#30363d] text-[#8b949e] font-mono font-medium">
               Public
@@ -586,15 +629,14 @@ export default function App() {
 
           {/* Metrics controller block with crisp styling */}
           <div className="flex items-center gap-1.5 select-none shrink-0 self-start md:self-center">
-            
             <button
               onClick={() => {
                 setWatched(!watched);
-                setWatches(w => watched ? w - 1 : w + 1);
+                setWatches((w) => (watched ? w - 1 : w + 1));
               }}
               className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-[11px] font-mono font-semibold transition-all cursor-pointer ${
-                watched 
-                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]" 
+                watched
+                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]"
                   : "bg-[#21262d] border-[#30363d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#f0f6fc]"
               }`}
             >
@@ -608,11 +650,11 @@ export default function App() {
             <button
               onClick={() => {
                 setForked(!forked);
-                setForks(f => forked ? f - 1 : f + 1);
+                setForks((f) => (forked ? f - 1 : f + 1));
               }}
               className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-[11px] font-mono font-semibold transition-all cursor-pointer ${
-                forked 
-                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]" 
+                forked
+                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]"
                   : "bg-[#21262d] border-[#30363d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#f0f6fc]"
               }`}
             >
@@ -626,11 +668,11 @@ export default function App() {
             <button
               onClick={() => {
                 setStarred(!starred);
-                setStars(s => starred ? s - 1 : s + 1);
+                setStars((s) => (starred ? s - 1 : s + 1));
               }}
               className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border text-[11px] font-mono font-semibold transition-all cursor-pointer ${
-                starred 
-                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]" 
+                starred
+                  ? "bg-[#21262d] border-[#8b949e] text-[#f0f6fc]"
                   : "bg-[#21262d] border-[#30363d] hover:bg-[#30363d] text-[#8b949e] hover:text-[#f0f6fc]"
               }`}
             >
@@ -646,16 +688,17 @@ export default function App() {
 
       {/* 3. CORE TWO-COLUMN COLLABORATION WORKSPACE WORKBENCH */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        
         {apiError && (
           <div className="mb-6 bg-rose-950/20 border border-rose-900/40 rounded-lg p-4 text-rose-350 text-xs font-mono flex items-start gap-2.5 relative animate-fade-in shadow-lg">
             <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
             <div className="space-y-1 pr-8">
-              <span className="font-bold text-white block uppercase text-[10px] tracking-wider">API HANDSHAKE TELEMETRY WARNING</span>
+              <span className="font-bold text-white block uppercase text-[10px] tracking-wider">
+                API HANDSHAKE TELEMETRY WARNING
+              </span>
               <p className="leading-relaxed">{apiError}</p>
             </div>
-            <button 
-              onClick={() => setApiError(null)} 
+            <button
+              onClick={() => setApiError(null)}
               className="absolute top-3 right-3 text-rose-400 hover:text-white font-bold cursor-pointer transition-colors p-1"
               title="Dismiss warning"
             >
@@ -667,14 +710,12 @@ export default function App() {
         {!profile ? (
           /* High-Fidelity GitHub styled landing and onboarding showcase */
           <div className="space-y-12 animate-fade-in">
-            
             {/* 1. HERO SECTOR WITH GENTLE COSMIC ACCENT & REVOLUTIONARY GREETING */}
             <div className="relative glow-border glass-card rounded-2xl overflow-hidden py-12 px-6 sm:px-10 text-center sm:text-left shadow-2xl">
-              
               {/* Starry matrix ambient lights */}
               <div className="absolute top-0 right-0 w-80 h-80 bg-[#2f81f7]/15 rounded-full blur-[100px] pointer-events-none"></div>
               <div className="absolute -bottom-10 left-10 w-60 h-60 bg-[#238636]/10 rounded-full blur-[80px] pointer-events-none"></div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
                 <div className="lg:col-span-8 space-y-5">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#238636]/10 border border-[#238636]/30 rounded-full">
@@ -683,23 +724,32 @@ export default function App() {
                       OpenBridge Onboarding System
                     </span>
                   </div>
-                  
+
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#f0f6fc] leading-tight">
                     Let's build from here. <br />
                     <span className="bg-gradient-to-r from-[#2f81f7] via-[#58a6ff] to-[#3fb950] text-transparent bg-clip-text">
                       Transition to open-source velocity.
                     </span>
                   </h1>
-                  
+
                   <p className="text-[#8b949e] text-xs sm:text-sm leading-relaxed max-w-2.5xl">
-                    OpenBridge is a custom developer workbench that pairs your personal skillset with genuine codebase requirements. Access interactive 4-week roadmap milestones, generate cryptographic commit signature keys, and map complex bug reports to logical code instructions with Gemini intelligence.
+                    OpenBridge is a custom developer workbench that pairs your personal skillset
+                    with genuine codebase requirements. Access interactive 4-week roadmap
+                    milestones, generate cryptographic commit signature keys, and map complex bug
+                    reports to logical code instructions with Gemini intelligence.
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     {githubUser ? (
                       <div className="inline-flex items-center gap-2 bg-[#0d1117] border border-[#30363d] px-3 py-2 rounded-lg">
-                        <img src={githubUser.avatar_url} className="w-6 h-6 rounded-full border border-[#2ea44f]" referrerPolicy="no-referrer" />
-                        <span className="text-xs text-[#f0f6fc] font-mono">@{githubUser.login} authenticated</span>
+                        <img
+                          src={githubUser.avatar_url}
+                          className="w-6 h-6 rounded-full border border-[#2ea44f]"
+                          referrerPolicy="no-referrer"
+                        />
+                        <span className="text-xs text-[#f0f6fc] font-mono">
+                          @{githubUser.login} authenticated
+                        </span>
                       </div>
                     ) : (
                       <button
@@ -710,7 +760,7 @@ export default function App() {
                         Connect via GitHub
                       </button>
                     )}
-                    
+
                     <button
                       onClick={() => {
                         const target = document.getElementById("profile-creation-deck");
@@ -743,8 +793,8 @@ export default function App() {
                     <div className="space-y-1">
                       <p className="text-[#2f81f7]">$ check-auth --provider=github</p>
                       <p className="text-[#8b949e]">
-                        {githubUser 
-                          ? `✓ Linked ID: ${githubUser.login} (${githubUser.public_repos} rep)` 
+                        {githubUser
+                          ? `✓ Linked ID: ${githubUser.login} (${githubUser.public_repos} rep)`
                           : "⚠ No master token found. Interactive simulation open."}
                       </p>
                     </div>
@@ -757,19 +807,20 @@ export default function App() {
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* 2. THE CHANNELS BENTO GRID */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 select-none">
-              
               <div className="glass-card rounded-xl p-5 space-y-2">
                 <div className="p-2 w-max bg-[#2f81f7]/10 border border-[#2f81f7]/30 text-[#2f81f7] rounded-md">
                   <Code className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Curated Repositories</h4>
+                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">
+                  Curated Repositories
+                </h4>
                 <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
-                  Avoid hunting for problems. We automatically query and recommend issue indices that match your targeted skill level.
+                  Avoid hunting for problems. We automatically query and recommend issue indices
+                  that match your targeted skill level.
                 </p>
               </div>
 
@@ -777,9 +828,12 @@ export default function App() {
                 <div className="p-2 w-max bg-[#238636]/10 border border-[#238636]/30 text-[#3fb950] rounded-md">
                   <Sparkles className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Structured Checklists</h4>
+                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">
+                  Structured Checklists
+                </h4>
                 <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
-                  Follow a dedicated 4-week roadmap detailing code structure exploration, issue mapping, and simulated PR pipelines.
+                  Follow a dedicated 4-week roadmap detailing code structure exploration, issue
+                  mapping, and simulated PR pipelines.
                 </p>
               </div>
 
@@ -787,9 +841,12 @@ export default function App() {
                 <div className="p-2 w-max bg-[#D29922]/10 border border-[#D29922]/30 text-[#D29922] rounded-md">
                   <Shield className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">Pre-flight Verification</h4>
+                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">
+                  Pre-flight Verification
+                </h4>
                 <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
-                  Generate secure digital GPG signatures and evaluate open-source hygiene with interactive compliance questionnaires.
+                  Generate secure digital GPG signatures and evaluate open-source hygiene with
+                  interactive compliance questionnaires.
                 </p>
               </div>
 
@@ -797,52 +854,75 @@ export default function App() {
                 <div className="p-2 w-max bg-[#7928ca]/10 border border-purple-900/40 text-purple-400 rounded-md">
                   <AlertCircle className="w-4 h-4" />
                 </div>
-                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">AI Issue Translate</h4>
+                <h4 className="text-sm font-semibold text-[#f0f6fc] tracking-tight">
+                  AI Issue Translate
+                </h4>
                 <p className="text-[#8b949e] text-[11px] leading-relaxed font-sans">
-                  Feed complex maintainer bug reports directly to Gemini to get deep technical breakdowns and immediate resolution tips.
+                  Feed complex maintainer bug reports directly to Gemini to get deep technical
+                  breakdowns and immediate resolution tips.
                 </p>
               </div>
-
             </div>
 
             {/* 3. TWIN SPLIT CONFIGURATION AREA */}
-            <div id="profile-creation-deck" className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              
+            <div
+              id="profile-creation-deck"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start"
+            >
               {/* Onboarding Sidebar */}
               <div className="lg:col-span-4 bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-4 shadow-xl">
                 <div className="flex items-center gap-2 pb-3 border-b border-[#30363d] text-xs font-mono font-bold text-[#8b949e]">
                   <Settings className="w-4 h-4 text-[#8b949e]" />
                   <span>WORKSPACE CONTROLS</span>
                 </div>
-                
+
                 <div className="space-y-3">
                   <span className="block text-[10px] uppercase font-mono tracking-wider font-bold text-[#8b949e]">
                     Configuration Progress
                   </span>
-                  
+
                   <div className="w-full bg-[#0d1117] h-1.5 rounded-full overflow-hidden border border-[#30363d]">
-                    <div className={`bg-[#238636] h-full transition-all ${githubUser ? "w-[100%]" : "w-[15%]"}`}></div>
+                    <div
+                      className={`bg-[#238636] h-full transition-all ${githubUser ? "w-[100%]" : "w-[15%]"}`}
+                    ></div>
                   </div>
-                  
+
                   <span className="block text-[11px] text-[#8b949e] leading-relaxed">
                     {githubUser ? (
-                      <span>Workstation synchronized with your verified <strong className="text-[#3fb950]">GitHub details</strong>. Adjust your language focus below to generate milestones.</span>
+                      <span>
+                        Workstation synchronized with your verified{" "}
+                        <strong className="text-[#3fb950]">GitHub details</strong>. Adjust your
+                        language focus below to generate milestones.
+                      </span>
                     ) : (
-                      <span>Profile setup is currently pending. Connect below using our direct pop-up redirect module or use the React/TS preset template.</span>
+                      <span>
+                        Profile setup is currently pending. Connect below using our direct pop-up
+                        redirect module or use the React/TS preset template.
+                      </span>
                     )}
                   </span>
                 </div>
 
                 {/* GitHub Connect Box */}
                 <div className="pt-3 border-t border-[#30363d] space-y-2.5">
-                  <span className="block text-[10px] font-mono text-[#8b949e] uppercase font-bold">GitHub Credentials</span>
+                  <span className="block text-[10px] font-mono text-[#8b949e] uppercase font-bold">
+                    GitHub Credentials
+                  </span>
                   {githubUser ? (
                     <div className="bg-[#0D1117] border border-[#30363d] rounded-md p-3 space-y-2.5">
                       <div className="flex items-center gap-2">
-                        <img src={githubUser.avatar_url} className="w-6 h-6 rounded-full border border-[#30363d]" referrerPolicy="no-referrer" />
+                        <img
+                          src={githubUser.avatar_url}
+                          className="w-6 h-6 rounded-full border border-[#30363d]"
+                          referrerPolicy="no-referrer"
+                        />
                         <div className="min-w-0">
-                          <span className="block text-[11px] font-bold text-[#f0f6fc] truncate">@{githubUser.login}</span>
-                          <span className="block text-[9px] text-[#8b949e] font-mono">{githubUser.public_repos} repos • {githubUser.followers} followers</span>
+                          <span className="block text-[11px] font-bold text-[#f0f6fc] truncate">
+                            @{githubUser.login}
+                          </span>
+                          <span className="block text-[9px] text-[#8b949e] font-mono">
+                            {githubUser.public_repos} repos • {githubUser.followers} followers
+                          </span>
                         </div>
                       </div>
                       <div className="flex justify-between items-center text-[10px]">
@@ -850,7 +930,10 @@ export default function App() {
                           <span className="w-1.5 h-1.5 rounded-full bg-[#238636] block"></span>
                           Ready
                         </span>
-                        <button onClick={handleDisconnectGithub} className="text-[#f85149] hover:underline cursor-pointer">
+                        <button
+                          onClick={handleDisconnectGithub}
+                          className="text-[#f85149] hover:underline cursor-pointer"
+                        >
                           Disconnect Profile
                         </button>
                       </div>
@@ -858,7 +941,8 @@ export default function App() {
                   ) : (
                     <div className="bg-[#0D1117] border border-[#30363d]/60 rounded-md p-3 space-y-3">
                       <span className="block text-[10px] text-[#8b949e] leading-normal font-mono">
-                        Supports real GitHub authorization if client credentials exist, or interactive sandbox authorization instantly.
+                        Supports real GitHub authorization if client credentials exist, or
+                        interactive sandbox authorization instantly.
                       </span>
                       <button
                         onClick={handleConnectGithub}
@@ -872,7 +956,9 @@ export default function App() {
                 </div>
 
                 <div className="pt-2.5 border-t border-[#30363d] space-y-2">
-                  <span className="block text-[10px] font-mono text-[#8b949e] uppercase font-bold">Instant Sandbox-Preset</span>
+                  <span className="block text-[10px] font-mono text-[#8b949e] uppercase font-bold">
+                    Instant Sandbox-Preset
+                  </span>
                   <button
                     onClick={handleOnboardPreset}
                     className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-[#21262d] hover:bg-[#30363d] border border-[#30363d] text-xs font-mono font-semibold text-[#f0f6fc] rounded-md transition-all cursor-pointer"
@@ -890,31 +976,29 @@ export default function App() {
                     Create your customized workstation profile
                   </h2>
                   <p className="text-[#8b949e] text-xs leading-relaxed max-w-2xl mb-6 font-mono">
-                    OpenBridge leverages your parameters to dynamically fetch relevant codebase issues and synthesize milestones. Select your primary domain, difficulty level, and tools below:
+                    OpenBridge leverages your parameters to dynamically fetch relevant codebase
+                    issues and synthesize milestones. Select your primary domain, difficulty level,
+                    and tools below:
                   </p>
                   <ProfilingForm onSubmit={handleSubmitProfile} isLoading={loading} />
                 </div>
               </div>
-
             </div>
-
           </div>
         ) : (
           /* Main active platform view and tabs layout */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            
             {/* LEFT SIDEBAR PANEL: Developer Profile summary & workspace navigation */}
             <div className="lg:col-span-3 space-y-5">
-              
               {/* Profile Card Summary */}
               <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-5 space-y-4">
                 <div className="flex items-center gap-3">
                   {githubUser ? (
-                    <img 
-                      src={githubUser.avatar_url} 
+                    <img
+                      src={githubUser.avatar_url}
                       alt={githubUser.login}
                       referrerPolicy="no-referrer"
-                      className="w-11 h-11 rounded-full border border-[#30363d] select-none shrink-0" 
+                      className="w-11 h-11 rounded-full border border-[#30363d] select-none shrink-0"
                     />
                   ) : (
                     <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#238636] to-emerald-500 flex items-center justify-center text-sm text-white font-bold border border-[#30363d] select-none shrink-0 font-mono">
@@ -923,13 +1007,23 @@ export default function App() {
                   )}
                   <div className="min-w-0">
                     <span className="block text-xs font-mono font-bold text-[#8b949e] uppercase">
-                      {githubUser?.simulated ? "Simulated Profile" : githubUser ? "Verified Account" : "GitHub Guest"}
+                      {githubUser?.simulated
+                        ? "Simulated Profile"
+                        : githubUser
+                          ? "Verified Account"
+                          : "GitHub Guest"}
                     </span>
                     <span className="block text-sm font-bold text-[#f0f6fc] truncate leading-tight">
                       {githubUser ? githubUser.name || githubUser.login : "guest-committer"}
                     </span>
-                    <span className="block text-[10px] text-[#8b949e] mt-1 hover:text-[#2f81f7] cursor-pointer font-mono" title="Commit sign-off ID info">
-                      id: {githubUser ? `GH_${githubUser.login.substring(0, 8).toUpperCase()}` : "OB_071557Z"}
+                    <span
+                      className="block text-[10px] text-[#8b949e] mt-1 hover:text-[#2f81f7] cursor-pointer font-mono"
+                      title="Commit sign-off ID info"
+                    >
+                      id:{" "}
+                      {githubUser
+                        ? `GH_${githubUser.login.substring(0, 8).toUpperCase()}`
+                        : "OB_071557Z"}
                     </span>
                   </div>
                 </div>
@@ -938,7 +1032,9 @@ export default function App() {
                   <div className="bg-[#0d1117] border border-[#30363d] rounded-md p-2.5 space-y-1.5 text-[11px] font-mono text-[#8b949e]">
                     <div className="flex justify-between">
                       <span>Public Repos:</span>
-                      <span className="text-[#f0f6fc] font-semibold">{githubUser.public_repos}</span>
+                      <span className="text-[#f0f6fc] font-semibold">
+                        {githubUser.public_repos}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Followers:</span>
@@ -961,10 +1057,15 @@ export default function App() {
                   </div>
 
                   <div className="space-y-1.5 pt-1.5">
-                    <span className="block text-[10px] uppercase font-mono tracking-wider text-[#8b949e] font-bold">Workspace Toolset</span>
+                    <span className="block text-[10px] uppercase font-mono tracking-wider text-[#8b949e] font-bold">
+                      Workspace Toolset
+                    </span>
                     <div className="flex flex-wrap gap-1">
                       {profile.skills.map((s, idx) => (
-                        <span key={idx} className="bg-[#0d1117] text-[#8b949e] border border-[#30363d] px-1.5 py-0.5 rounded text-[10px] font-mono leading-none">
+                        <span
+                          key={idx}
+                          className="bg-[#0d1117] text-[#8b949e] border border-[#30363d] px-1.5 py-0.5 rounded text-[10px] font-mono leading-none"
+                        >
                           {s}
                         </span>
                       ))}
@@ -1006,7 +1107,7 @@ export default function App() {
                 <div className="px-4 py-3 border-b border-[#30363d] text-[10px] font-mono uppercase tracking-wider text-[#8b949e] font-bold">
                   MENTOR INTERACTION CHANNELS
                 </div>
-                
+
                 <div className="divide-y divide-[#30363d]">
                   <button
                     onClick={() => setActiveTab("dashboard")}
@@ -1160,14 +1261,10 @@ export default function App() {
                   </button>
                 </div>
               </div>
-
-
-
             </div>
 
             {/* RIGHT MAIN WORKSPACE LAYER: Dynamic Tab Content */}
             <div className="lg:col-span-9 space-y-6">
-              
               {activeTab === "analytics" && (
                 <div className="animate-fade-in">
                   <DashboardAnalytics
@@ -1191,12 +1288,13 @@ export default function App() {
 
               {activeTab === "dashboard" && (
                 <div className="space-y-6 animate-fade-in">
-                  
                   {/* File tree browser explorer */}
                   <div className="bg-[#161b22] border border-[#30363d] rounded-lg p-5">
                     <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#30363d]">
                       <Terminal className="w-4 h-4 text-[#8b949e]" />
-                      <span className="text-xs font-mono font-bold text-[#f0f6fc]">ACTIVE WORKBENCH REPOSITORY TREE</span>
+                      <span className="text-xs font-mono font-bold text-[#f0f6fc]">
+                        ACTIVE WORKBENCH REPOSITORY TREE
+                      </span>
                     </div>
                     <GithubFileExplorer />
                   </div>
@@ -1218,7 +1316,11 @@ export default function App() {
                         </div>
                       </div>
                     ) : (
-                      <RepoRecommender repos={repos} userProfile={profile} onReset={handleResetProfile} />
+                      <RepoRecommender
+                        repos={repos}
+                        userProfile={profile}
+                        onReset={handleResetProfile}
+                      />
                     )}
                   </div>
 
@@ -1242,31 +1344,30 @@ export default function App() {
                               Export Roadmap
                             </button>
                           </div>
-                          <ContributionRoadmap 
-                            roadmap={roadmap} 
-                            checkedTasks={checkedRoadmapTasks} 
-                            onToggleTask={handleToggleRoadmapTask} 
+                          <ContributionRoadmap
+                            roadmap={roadmap}
+                            checkedTasks={checkedRoadmapTasks}
+                            onToggleTask={handleToggleRoadmapTask}
                             login={githubUser ? githubUser.login : "guest-committer"}
                           />
                         </>
                       )}
                     </div>
                   )}
-
                 </div>
               )}
 
               {activeTab === "challenge" && (
                 <div className="animate-fade-in bg-[#161b22] border border-[#30363d] rounded-lg p-5">
                   {roadmap && (
-                     <ChallengeHub 
-                       roadmap={roadmap} 
-                       checkedTasks={checkedRoadmapTasks} 
-                       onToggleTask={handleToggleRoadmapTask} 
-                       profile={profile}
-                       githubUser={githubUser}
-                       initialPullRequests={pullRequests}
-                     />
+                    <ChallengeHub
+                      roadmap={roadmap}
+                      checkedTasks={checkedRoadmapTasks}
+                      onToggleTask={handleToggleRoadmapTask}
+                      profile={profile}
+                      githubUser={githubUser}
+                      initialPullRequests={pullRequests}
+                    />
                   )}
                 </div>
               )}
@@ -1300,29 +1401,40 @@ export default function App() {
                   <MockInterview profile={profile} />
                 </div>
               )}
-
             </div>
-
           </div>
         )}
 
         {/* 4. FOOTER REGION */}
         <footer className="border-t border-[#30363d] pt-6 mt-12 text-[#8b949e] text-[11px] text-center space-y-2 font-mono select-none">
-          <p>© 2026 OpenBridge. Designed as a native developer tool inspired by open-source telemetry workflows.</p>
+          <p>
+            © 2026 OpenBridge. Designed as a native developer tool inspired by open-source telemetry
+            workflows.
+          </p>
           <div className="flex items-center justify-center gap-4 text-[10px]">
-            <a href="https://github.com/opensource/code-of-conduct" target="_blank" rel="noreferrer" className="hover:text-[#2f81f7] transition-colors">Contributor Covenant</a>
+            <a
+              href="https://github.com/opensource/code-of-conduct"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#2f81f7] transition-colors"
+            >
+              Contributor Covenant
+            </a>
             <span>•</span>
-            <a href="https://opensource.org" target="_blank" rel="noreferrer" className="hover:text-[#2f81f7] font-medium transition-colors font-semibold">OSI Framework Parity</a>
+            <a
+              href="https://opensource.org"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-[#2f81f7] font-medium transition-colors font-semibold"
+            >
+              OSI Framework Parity
+            </a>
           </div>
         </footer>
-
       </main>
 
       {/* Real-time notification toasts */}
-      <NotificationToast
-        notifications={notifications}
-        onDismiss={dismissNotification}
-      />
+      <NotificationToast notifications={notifications} onDismiss={dismissNotification} />
 
       {/* Roadmap export modal */}
       {showExporter && roadmap && (

@@ -41,17 +41,16 @@ router.get("/api/events", (req, res) => {
   });
 });
 
-
 function verifySignature(payload: string, signature: string | undefined, secret: string): boolean {
   if (!signature) return false;
   try {
     const hmac = crypto.createHmac("sha256", secret);
     const digest = "sha256=" + hmac.update(payload).digest("hex");
-    
+
     // Convert both to buffers and compare with timingSafeEqual to avoid timing attacks
     const sigBuffer = Buffer.from(signature);
     const digestBuffer = Buffer.from(digest);
-    
+
     if (sigBuffer.length !== digestBuffer.length) {
       return false;
     }
@@ -69,7 +68,7 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
     if (webhookSecret) {
       const signature = req.headers["x-hub-signature-256"] as string;
       const rawBody = req.rawBody?.toString("utf8") || JSON.stringify(req.body);
-      
+
       if (!verifySignature(rawBody, signature, webhookSecret)) {
         console.warn("Invalid GitHub Webhook Signature.");
         return res.status(401).json({ error: "Invalid signature verification." });
@@ -109,12 +108,14 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
 
     // Find the contributor user
     const user = await prisma.user.findFirst({
-      where: { githubLogin }
+      where: { githubLogin },
     });
 
     if (!user) {
       console.warn(`User with login '${githubLogin}' not found in database for PR #${prNumber}.`);
-      return res.status(200).json({ status: "skipped", message: "User not registered in OpenBridge." });
+      return res
+        .status(200)
+        .json({ status: "skipped", message: "User not registered in OpenBridge." });
     }
 
     // Upsert the PullRequest
@@ -122,8 +123,8 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
       where: {
         userId: user.id,
         prNumber,
-        repoFullName
-      }
+        repoFullName,
+      },
     });
 
     let pr;
@@ -133,8 +134,8 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
         data: {
           status,
           title,
-          url: prUrl
-        }
+          url: prUrl,
+        },
       });
       console.log(`Updated PullRequest #${prNumber} for ${githubLogin} to status: ${status}`);
     } else {
@@ -145,10 +146,12 @@ router.post("/api/webhooks/github", async (req: SignedRequest, res) => {
           repoFullName,
           title,
           url: prUrl,
-          status
-        }
+          status,
+        },
       });
-      console.log(`Registered new PullRequest #${prNumber} for ${githubLogin} with status: ${status}`);
+      console.log(
+        `Registered new PullRequest #${prNumber} for ${githubLogin} with status: ${status}`,
+      );
     }
 
     // Broadcast real-time SSE notification to all connected clients

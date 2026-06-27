@@ -10,10 +10,34 @@ export function LandingFooter() {
           <span className="text-[11px] text-zinc-600">© 2026 OpenBridge, Inc.</span>
         </div>
         <div className="flex flex-wrap items-center gap-5 text-xs">
-          <a href="https://github.com/opensource/code-of-conduct" target="_blank" rel="noreferrer" className="hover:text-[#2F81F7] transition-colors" aria-label="Code of Conduct">Code of Conduct</a>
-          <a href="https://opensource.org" target="_blank" rel="noreferrer" className="hover:text-[#2F81F7] transition-colors" aria-label="OSI Parity Link">OSI Parity</a>
-          <a href="#" className="hover:text-[#2F81F7] transition-colors" aria-label="Terms of Use">Terms of Use</a>
-          <a href="#" className="hover:text-[#2F81F7] transition-colors" aria-label="Security Controls">Security Controls</a>
+          <a
+            href="https://github.com/opensource/code-of-conduct"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-[#2F81F7] transition-colors"
+            aria-label="Code of Conduct"
+          >
+            Code of Conduct
+          </a>
+          <a
+            href="https://opensource.org"
+            target="_blank"
+            rel="noreferrer"
+            className="hover:text-[#2F81F7] transition-colors"
+            aria-label="OSI Parity Link"
+          >
+            OSI Parity
+          </a>
+          <a href="#" className="hover:text-[#2F81F7] transition-colors" aria-label="Terms of Use">
+            Terms of Use
+          </a>
+          <a
+            href="#"
+            className="hover:text-[#2F81F7] transition-colors"
+            aria-label="Security Controls"
+          >
+            Security Controls
+          </a>
         </div>
       </div>
     </footer>

@@ -33,18 +33,31 @@ const solutions = [
 
 export function SolutionSection() {
   return (
-    <section id="ob-solution" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left">
+    <section
+      id="ob-solution"
+      className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left"
+    >
       <div className="space-y-12">
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-mono uppercase text-[#39D353] font-bold tracking-wider">The OpenBridge Fix</span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">How OpenBridge helps</h2>
+          <span className="text-xs font-mono uppercase text-[#39D353] font-bold tracking-wider">
+            The OpenBridge Fix
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">
+            How OpenBridge helps
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {solutions.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.id} className="bg-[#161B22] border border-[#30363D] p-5.5 rounded-lg space-y-3.5 hover:border-[#8B949E]/50 transition-colors">
-                <div className={`p-2 rounded mr-auto w-max mx-auto sm:mx-0 ${s.iconBg}`} aria-hidden="true">
+              <div
+                key={s.id}
+                className="bg-[#161B22] border border-[#30363D] p-5.5 rounded-lg space-y-3.5 hover:border-[#8B949E]/50 transition-colors"
+              >
+                <div
+                  className={`p-2 rounded mr-auto w-max mx-auto sm:mx-0 ${s.iconBg}`}
+                  aria-hidden="true"
+                >
                   <Icon className="w-4 h-4" />
                 </div>
                 <h3 className="text-sm font-bold text-[#F0F6FC]">{s.title}</h3>

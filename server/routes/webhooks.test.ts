@@ -10,7 +10,7 @@ describe("POST /api/webhooks/github", () => {
 
   beforeAll(async () => {
     process.env.NODE_ENV = "test";
-    
+
     // Seed a test user for database lookups during webhook tests
     const user = await prisma.user.upsert({
       where: { githubId: "test-webhook-id" },
@@ -20,8 +20,8 @@ describe("POST /api/webhooks/github", () => {
         githubLogin: testLogin,
         email: "webhook-test@example.com",
         avatarUrl: "https://example.com/avatar.png",
-        accessToken: "test-token"
-      }
+        accessToken: "test-token",
+      },
     });
     testUserId = user.id;
   });
@@ -29,10 +29,10 @@ describe("POST /api/webhooks/github", () => {
   afterAll(async () => {
     // Clean up test data
     await prisma.pullRequest.deleteMany({
-      where: { userId: testUserId }
+      where: { userId: testUserId },
     });
     await prisma.user.delete({
-      where: { id: testUserId }
+      where: { id: testUserId },
     });
   });
 
@@ -51,11 +51,11 @@ describe("POST /api/webhooks/github", () => {
         state: "open",
         merged: false,
         html_url: "https://github.com/Poojan2107/OpenBridge/pull/101",
-        user: { login: testLogin }
+        user: { login: testLogin },
       },
       repository: {
-        full_name: "Poojan2107/OpenBridge"
-      }
+        full_name: "Poojan2107/OpenBridge",
+      },
     };
 
     const payloadStr = JSON.stringify(payload);
@@ -73,7 +73,7 @@ describe("POST /api/webhooks/github", () => {
 
     // Verify it exists in Prisma
     const dbPr = await prisma.pullRequest.findFirst({
-      where: { userId: testUserId, prNumber: 101 }
+      where: { userId: testUserId, prNumber: 101 },
     });
     expect(dbPr).not.toBeNull();
     expect(dbPr?.status).toBe("PENDING");
@@ -88,8 +88,8 @@ describe("POST /api/webhooks/github", () => {
         repoFullName: "Poojan2107/OpenBridge",
         title: "feat: align grid styles",
         url: "https://github.com/Poojan2107/OpenBridge/pull/102",
-        status: "PENDING"
-      }
+        status: "PENDING",
+      },
     });
 
     const payload = {
@@ -100,11 +100,11 @@ describe("POST /api/webhooks/github", () => {
         state: "closed",
         merged: true,
         html_url: "https://github.com/Poojan2107/OpenBridge/pull/102",
-        user: { login: testLogin }
+        user: { login: testLogin },
       },
       repository: {
-        full_name: "Poojan2107/OpenBridge"
-      }
+        full_name: "Poojan2107/OpenBridge",
+      },
     };
 
     const res = await request(app)
@@ -116,7 +116,7 @@ describe("POST /api/webhooks/github", () => {
     expect(res.body.pullRequest).toHaveProperty("status", "MERGED");
 
     const dbPr = await prisma.pullRequest.findFirst({
-      where: { userId: testUserId, prNumber: 102 }
+      where: { userId: testUserId, prNumber: 102 },
     });
     expect(dbPr?.status).toBe("MERGED");
   });
@@ -168,11 +168,11 @@ describe("POST /api/webhooks/github", () => {
         state: "open",
         merged: false,
         html_url: "https://github.com/Poojan2107/OpenBridge/pull/103",
-        user: { login: testLogin }
+        user: { login: testLogin },
       },
       repository: {
-        full_name: "Poojan2107/OpenBridge"
-      }
+        full_name: "Poojan2107/OpenBridge",
+      },
     };
     const payloadStr = JSON.stringify(payload);
     const signature = signPayload(payloadStr, "supersecretkey");

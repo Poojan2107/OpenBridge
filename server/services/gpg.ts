@@ -128,7 +128,7 @@ export function parseGpgPublicKey(armoredKey: string): GpgKeyMetadata {
         foundPublicKey = true;
         const timeSec = packetBody.readUInt32BE(1);
         createdAt = new Date(timeSec * 1000);
-        
+
         const algId = packetBody[5];
         if (algId === 1 || algId === 2 || algId === 3) {
           algorithm = "RSA";
@@ -180,6 +180,6 @@ export function parseGpgPublicKey(armoredKey: string): GpgKeyMetadata {
     keyId,
     algorithm,
     keyLength,
-    createdAt
+    createdAt,
   };
 }

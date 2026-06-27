@@ -27,15 +27,13 @@ describe("POST /api/gpg/verify", () => {
       "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       "",
       base64Key,
-      "-----END PGP PUBLIC KEY BLOCK-----"
+      "-----END PGP PUBLIC KEY BLOCK-----",
     ].join("\n");
   };
 
   it("should verify a valid PGP public key block and return metadata", async () => {
     const key = getValidArmoredKey();
-    const res = await request(app)
-      .post("/api/gpg/verify")
-      .send({ publicKeyBlock: key });
+    const res = await request(app).post("/api/gpg/verify").send({ publicKeyBlock: key });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("success", true);
@@ -55,9 +53,7 @@ describe("POST /api/gpg/verify", () => {
   });
 
   it("should fail validation for empty payload", async () => {
-    const res = await request(app)
-      .post("/api/gpg/verify")
-      .send({ publicKeyBlock: "" });
+    const res = await request(app).post("/api/gpg/verify").send({ publicKeyBlock: "" });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
@@ -71,7 +67,7 @@ describe("POST /api/pr/register", () => {
 
   beforeAll(async () => {
     process.env.NODE_ENV = "test";
-    
+
     // Seed user
     const user = await prisma.user.upsert({
       where: { githubId: "test-pr-register-id" },
@@ -81,8 +77,8 @@ describe("POST /api/pr/register", () => {
         githubLogin: testLogin,
         email: "pr-register-test@example.com",
         avatarUrl: "https://example.com/avatar.png",
-        accessToken: "test-token"
-      }
+        accessToken: "test-token",
+      },
     });
     testUserId = user.id;
   });
@@ -90,21 +86,19 @@ describe("POST /api/pr/register", () => {
   afterAll(async () => {
     // Clean up
     await prisma.pullRequest.deleteMany({
-      where: { userId: testUserId }
+      where: { userId: testUserId },
     });
     await prisma.user.delete({
-      where: { id: testUserId }
+      where: { id: testUserId },
     });
   });
 
   it("should successfully register a valid pull request URL", async () => {
-    const res = await request(app)
-      .post("/api/pr/register")
-      .send({
-        githubLogin: testLogin,
-        prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
-        title: "feat: add registration tests"
-      });
+    const res = await request(app).post("/api/pr/register").send({
+      githubLogin: testLogin,
+      prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
+      title: "feat: add registration tests",
+    });
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty("success", true);
@@ -114,26 +108,22 @@ describe("POST /api/pr/register", () => {
   });
 
   it("should fail validation for invalid PR URL format", async () => {
-    const res = await request(app)
-      .post("/api/pr/register")
-      .send({
-        githubLogin: testLogin,
-        prUrl: "invalid-url",
-        title: "test"
-      });
+    const res = await request(app).post("/api/pr/register").send({
+      githubLogin: testLogin,
+      prUrl: "invalid-url",
+      title: "test",
+    });
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("error");
   });
 
   it("should return 404 if user is not found", async () => {
-    const res = await request(app)
-      .post("/api/pr/register")
-      .send({
-        githubLogin: "nonexistent-user-12345",
-        prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
-        title: "test"
-      });
+    const res = await request(app).post("/api/pr/register").send({
+      githubLogin: "nonexistent-user-12345",
+      prUrl: "https://github.com/Poojan2107/OpenBridge/pull/202",
+      title: "test",
+    });
 
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty("error", "User not found.");

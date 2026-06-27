@@ -12,7 +12,7 @@ interface State {
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
-    error: null
+    error: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -33,7 +33,8 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <h1 className="text-xl font-bold mb-2 text-zinc-100">Something went wrong</h1>
             <p className="text-zinc-400 text-xs mb-6 leading-relaxed">
-              An unexpected error occurred in the application view rendering. You can try restarting the session.
+              An unexpected error occurred in the application view rendering. You can try restarting
+              the session.
             </p>
             <div className="bg-black/30 border border-[#30363d] rounded-lg p-4 mb-6 text-left max-h-40 overflow-y-auto">
               <p className="font-mono text-[11px] text-red-400 break-words whitespace-pre-wrap">

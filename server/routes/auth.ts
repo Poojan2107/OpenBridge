@@ -8,7 +8,7 @@ const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "";
 function parseCookies(cookieHeader: string | undefined): { [key: string]: string } {
   const list: { [key: string]: string } = {};
   if (!cookieHeader) return list;
-  cookieHeader.split(";").forEach(cookie => {
+  cookieHeader.split(";").forEach((cookie) => {
     const parts = cookie.split("=");
     const name = parts.shift()?.trim() || "";
     const value = decodeURIComponent(parts.join("="));
@@ -40,8 +40,8 @@ router.get("/api/pr/status", async (req, res) => {
     const response = await fetch(apiUrl, {
       headers: {
         "User-Agent": "openbridge-mentor-app",
-        "Accept": "application/vnd.github.v3+json"
-      }
+        Accept: "application/vnd.github.v3+json",
+      },
     });
 
     if (!response.ok) {
@@ -72,7 +72,7 @@ router.get("/api/pr/status", async (req, res) => {
       created_at: data.created_at || null,
       additions: data.additions || 0,
       deletions: data.deletions || 0,
-      changed_files: data.changed_files || 0
+      changed_files: data.changed_files || 0,
     });
   } catch (err) {
     console.error("GET /api/pr/status error:", err);
@@ -89,7 +89,8 @@ router.get("/api/auth/url", (req, res) => {
     : `${protocol}://${host}/auth/callback`;
 
   // Generate secure random state token
-  const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  const state =
+    Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   res.setHeader("Set-Cookie", `ob_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax`);
 
   if (!GITHUB_CLIENT_ID) {
@@ -134,7 +135,7 @@ router.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
       public_repos: 42,
       followers: 128,
       token: "simulated_token_xyz",
-      simulated: true
+      simulated: true,
     };
   } else {
     try {
@@ -149,14 +150,14 @@ router.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          Accept: "application/json",
         },
         body: JSON.stringify({
           client_id: GITHUB_CLIENT_ID,
           client_secret: GITHUB_CLIENT_SECRET,
           code,
-          redirect_uri: redirectUri
-        })
+          redirect_uri: redirectUri,
+        }),
       });
 
       const tokenJson: any = await tokenResponse.json();
@@ -170,9 +171,9 @@ router.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
       // Extract details about the authorized GitHub user
       const userResponse = await fetch("https://api.github.com/user", {
         headers: {
-          "Authorization": `Bearer ${accessToken}`,
-          "User-Agent": "openbridge-mentor-app"
-        }
+          Authorization: `Bearer ${accessToken}`,
+          "User-Agent": "openbridge-mentor-app",
+        },
       });
 
       const userJson: any = await userResponse.json();
@@ -186,7 +187,7 @@ router.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
         public_repos: userJson.public_repos,
         followers: userJson.followers,
         token: accessToken,
-        simulated: false
+        simulated: false,
       };
     } catch (err: any) {
       console.error("Failed to authenticate with real GitHub API: ", err.message);
@@ -260,7 +261,7 @@ router.get(["/auth/callback", "/auth/callback/"], async (req, res) => {
 // A route to render simulated authorization UI in an elegant popup
 router.get("/auth/simulated-authorize", (req, res) => {
   const { redirect_uri, state } = req.query;
-  const decodedRedirectUri = decodeURIComponent(redirect_uri as string || "/auth/callback");
+  const decodedRedirectUri = decodeURIComponent((redirect_uri as string) || "/auth/callback");
   const stateVal = (state as string) || "";
 
   res.send(`

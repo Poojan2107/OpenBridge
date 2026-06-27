@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.db
+*.db-journal
+coverage/
+public/sw.js

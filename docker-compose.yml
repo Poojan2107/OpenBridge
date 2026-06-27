@@ -1,0 +1,15 @@
+services:
+  openbridge:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:./prod.db
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    volumes:
+      - openbridge_data:/app/prisma
+    restart: unless-stopped
+
+volumes:
+  openbridge_data:
