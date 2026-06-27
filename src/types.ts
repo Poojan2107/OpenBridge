@@ -47,3 +47,14 @@ export interface OpenSourceProgram {
   url: string;
   iconName: string;
 }
+
+export type TabType =
+  | "dashboard"
+  | "challenge"
+  | "preflight"
+  | "translator"
+  | "programs"
+  | "codereview"
+  | "interview"
+  | "leaderboard"
+  | "analytics";
