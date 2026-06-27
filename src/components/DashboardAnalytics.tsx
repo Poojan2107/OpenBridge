@@ -47,13 +47,19 @@ function computeStreak(log: Record<string, number>): number {
 }
 
 // Build last-N-days activity series
-function buildActivitySeries(log: Record<string, number>, days: number): { label: string; value: number }[] {
+function buildActivitySeries(
+  log: Record<string, number>,
+  days: number,
+): { label: string; value: number }[] {
   const out: { label: string; value: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = toDateKey(d);
-    out.push({ label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), value: log[key] ?? 0 });
+    out.push({
+      label: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      value: log[key] ?? 0,
+    });
   }
   return out;
 }
@@ -77,11 +83,17 @@ function StatCard({
   sparkColor?: string;
 }) {
   return (
-    <div className={`rounded-xl border bg-[#161b22] p-4 space-y-3 hover:border-zinc-600 transition-colors ${color}`}>
+    <div
+      className={`rounded-xl border bg-[#161b22] p-4 space-y-3 hover:border-zinc-600 transition-colors ${color}`}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1 min-w-0">
-          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</span>
-          <span className="block text-2xl font-black text-white font-mono leading-none">{value}</span>
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+            {label}
+          </span>
+          <span className="block text-2xl font-black text-white font-mono leading-none">
+            {value}
+          </span>
           {sub && <span className="block text-[11px] text-zinc-500 font-mono">{sub}</span>}
         </div>
         <div className="shrink-0 p-2 rounded-lg bg-[#0d1117] border border-[#30363d]">{icon}</div>
@@ -126,13 +138,15 @@ export default function DashboardAnalytics({
   }, [activityRefreshKey]);
 
   // ── Derived metrics ────────────────────────────────────────────────────────
-  const xp = calculateXP(completedTasks, pullRequests.filter(p => p.status === "MERGED").length);
+  const xp = calculateXP(completedTasks, pullRequests.filter((p) => p.status === "MERGED").length);
   const levelInfo = getLevelInfo(xp);
   const streak = useMemo(() => computeStreak(activityLog), [activityLog]);
 
-  const mergedPRs = pullRequests.filter(p => p.status === "MERGED").length;
-  const openPRs = pullRequests.filter(p => p.status === "PENDING" || p.status === "VERIFYING").length;
-  const closedPRs = pullRequests.filter(p => p.status === "FAILED").length;
+  const mergedPRs = pullRequests.filter((p) => p.status === "MERGED").length;
+  const openPRs = pullRequests.filter(
+    (p) => p.status === "PENDING" || p.status === "VERIFYING",
+  ).length;
+  const closedPRs = pullRequests.filter((p) => p.status === "FAILED").length;
 
   const roadmapCompletionPct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
@@ -142,13 +156,17 @@ export default function DashboardAnalytics({
     return (["week1", "week2", "week3", "week4"] as const).map((wk, i) => {
       const tasks = roadmap[wk] ?? [];
       const done = tasks.filter((_, ti) => checkedRoadmapTasks[`${wk}-${ti}`]).length;
-      return { label: `W${i + 1}`, value: done, color: done === tasks.length && tasks.length > 0 ? "#10b981" : "#3b82f6" };
+      return {
+        label: `W${i + 1}`,
+        value: done,
+        color: done === tasks.length && tasks.length > 0 ? "#10b981" : "#3b82f6",
+      };
     });
   }, [roadmap, checkedRoadmapTasks]);
 
   // Activity series — last 14 days
   const activitySeries = useMemo(() => buildActivitySeries(activityLog, 14), [activityLog]);
-  const activityValues = activitySeries.map(d => d.value);
+  const activityValues = activitySeries.map((d) => d.value);
   const totalActivities = activityValues.reduce((a, b) => a + b, 0);
 
   // PR status donut
@@ -156,7 +174,7 @@ export default function DashboardAnalytics({
     { value: mergedPRs, color: "#10b981", label: "Merged" },
     { value: openPRs, color: "#3b82f6", label: "Open" },
     { value: closedPRs, color: "#f85149", label: "Closed" },
-  ].filter(s => s.value > 0);
+  ].filter((s) => s.value > 0);
 
   // Roadmap donut
   const roadmapDonutSegments = [
@@ -166,11 +184,19 @@ export default function DashboardAnalytics({
 
   // XP level ladder
   const xpDonutSegments = [
-    { value: xp, color: levelInfo.gradientFrom.replace("from-", "").includes("zinc") ? "#52525b" :
-      levelInfo.gradientFrom.includes("blue") ? "#3b82f6" :
-      levelInfo.gradientFrom.includes("orange") ? "#f97316" :
-      levelInfo.gradientFrom.includes("violet") ? "#8b5cf6" : "#eab308",
-      label: "Earned" },
+    {
+      value: xp,
+      color: levelInfo.gradientFrom.replace("from-", "").includes("zinc")
+        ? "#52525b"
+        : levelInfo.gradientFrom.includes("blue")
+          ? "#3b82f6"
+          : levelInfo.gradientFrom.includes("orange")
+            ? "#f97316"
+            : levelInfo.gradientFrom.includes("violet")
+              ? "#8b5cf6"
+              : "#eab308",
+      label: "Earned",
+    },
     { value: Math.max(100 - xp, 0), color: "#1f2937", label: "Remaining" },
   ];
 
@@ -178,7 +204,7 @@ export default function DashboardAnalytics({
   const skillBars = profile.skills.slice(0, 6).map((s, i) => ({
     label: s,
     value: Math.max(20, 100 - i * 15),
-    color: ["#3b82f6","#10b981","#8b5cf6","#f59e0b","#f97316","#06b6d4"][i % 6],
+    color: ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#f97316", "#06b6d4"][i % 6],
   }));
 
   return (
@@ -192,13 +218,17 @@ export default function DashboardAnalytics({
             <BarChart2 className="w-5 h-5 text-blue-400" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-zinc-100 tracking-tight">Analytics Dashboard</h2>
+            <h2 className="text-base font-bold text-zinc-100 tracking-tight">
+              Analytics Dashboard
+            </h2>
             <p className="text-[11px] text-zinc-500 font-mono">
               {githubUser ? `@${githubUser.login}` : "guest-committer"} · all-time progress
             </p>
           </div>
         </div>
-        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-mono font-bold ${levelInfo.bgColor} ${levelInfo.borderColor} ${levelInfo.textColor}`}>
+        <div
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-mono font-bold ${levelInfo.bgColor} ${levelInfo.borderColor} ${levelInfo.textColor}`}
+        >
           <span>{levelInfo.emoji}</span>
           <span>{levelInfo.name}</span>
           <span className="text-zinc-600">·</span>
@@ -223,7 +253,7 @@ export default function DashboardAnalytics({
           value={`${completedTasks}/${totalTasks}`}
           sub={`${roadmapCompletionPct}% complete`}
           color="border-[#30363d]"
-          sparkData={weekBreakdown.map(w => w.value)}
+          sparkData={weekBreakdown.map((w) => w.value)}
           sparkColor="#10b981"
         />
         <StatCard
@@ -246,25 +276,21 @@ export default function DashboardAnalytics({
 
       {/* ── Charts Row 1: Activity + Donuts ───────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
         {/* Activity column chart */}
         <div className="lg:col-span-2 bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">Activity</span>
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Activity
+              </span>
               <h3 className="text-sm font-bold text-zinc-200">Last 14 Days</h3>
             </div>
             <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
               <TrendingUp className="w-3.5 h-3.5 text-blue-400" />
-              {activityValues.filter(v => v > 0).length} active days
+              {activityValues.filter((v) => v > 0).length} active days
             </div>
           </div>
-          <ColumnChart
-            data={activitySeries}
-            height={100}
-            color="#3b82f6"
-            labelEvery={2}
-          />
+          <ColumnChart data={activitySeries} height={100} color="#3b82f6" labelEvery={2} />
           <div className="flex items-center gap-1 text-[10px] font-mono text-zinc-600 border-t border-[#21262d] pt-3">
             <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
             Each bar = task completions on that day
@@ -273,7 +299,9 @@ export default function DashboardAnalytics({
 
         {/* Three donuts */}
         <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-4">
-          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">Breakdown</span>
+          <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+            Breakdown
+          </span>
 
           {/* Roadmap donut */}
           <div className="flex items-center gap-4">
@@ -286,7 +314,9 @@ export default function DashboardAnalytics({
             />
             <div>
               <p className="text-xs font-bold text-zinc-300">Roadmap</p>
-              <p className="text-[10px] font-mono text-zinc-500 mt-0.5">{completedTasks} of {totalTasks} tasks</p>
+              <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
+                {completedTasks} of {totalTasks} tasks
+              </p>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 <span className="text-[9px] font-mono text-zinc-600">Complete</span>
@@ -309,9 +339,13 @@ export default function DashboardAnalytics({
             />
             <div>
               <p className="text-xs font-bold text-zinc-300">XP Progress</p>
-              <p className={`text-[10px] font-mono mt-0.5 ${levelInfo.textColor}`}>{levelInfo.name} {levelInfo.emoji}</p>
+              <p className={`text-[10px] font-mono mt-0.5 ${levelInfo.textColor}`}>
+                {levelInfo.name} {levelInfo.emoji}
+              </p>
               {levelInfo.nextLevel && (
-                <p className="text-[9px] font-mono text-zinc-600 mt-0.5">{levelInfo.xpToNext} XP to {levelInfo.nextLevel.name}</p>
+                <p className="text-[9px] font-mono text-zinc-600 mt-0.5">
+                  {levelInfo.xpToNext} XP to {levelInfo.nextLevel.name}
+                </p>
               )}
             </div>
           </div>
@@ -321,7 +355,11 @@ export default function DashboardAnalytics({
           {/* PR donut */}
           <div className="flex items-center gap-4">
             <DonutChart
-              segments={prDonutSegments.length > 0 ? prDonutSegments : [{ value: 1, color: "#1f2937", label: "None" }]}
+              segments={
+                prDonutSegments.length > 0
+                  ? prDonutSegments
+                  : [{ value: 1, color: "#1f2937", label: "None" }]
+              }
               size={72}
               thickness={10}
               centerLabel={`${pullRequests.length}`}
@@ -347,13 +385,14 @@ export default function DashboardAnalytics({
 
       {/* ── Charts Row 2: Week breakdown + Skills + Level ──────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
         {/* Week-by-week */}
         <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Target className="w-4 h-4 text-zinc-400" />
             <div>
-              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">Roadmap</span>
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Roadmap
+              </span>
               <h3 className="text-sm font-bold text-zinc-200">Week-by-Week</h3>
             </div>
           </div>
@@ -367,14 +406,19 @@ export default function DashboardAnalytics({
                 return (
                   <div key={wk} className="space-y-1">
                     <div className="flex items-center justify-between text-[11px] font-mono">
-                      <span className={`flex items-center gap-1.5 ${isComplete ? "text-emerald-400" : "text-zinc-400"}`}>
-                        {isComplete
-                          ? <CheckCircle2 className="w-3 h-3" />
-                          : <Clock className="w-3 h-3 text-zinc-600" />
-                        }
+                      <span
+                        className={`flex items-center gap-1.5 ${isComplete ? "text-emerald-400" : "text-zinc-400"}`}
+                      >
+                        {isComplete ? (
+                          <CheckCircle2 className="w-3 h-3" />
+                        ) : (
+                          <Clock className="w-3 h-3 text-zinc-600" />
+                        )}
                         Week {i + 1}
                       </span>
-                      <span className={`font-bold ${isComplete ? "text-emerald-400" : "text-zinc-300"}`}>
+                      <span
+                        className={`font-bold ${isComplete ? "text-emerald-400" : "text-zinc-300"}`}
+                      >
                         {done}/{tasks.length}
                       </span>
                     </div>
@@ -398,7 +442,9 @@ export default function DashboardAnalytics({
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 text-zinc-400" />
             <div>
-              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">Stack</span>
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Stack
+              </span>
               <h3 className="text-sm font-bold text-zinc-200">Your Skills</h3>
             </div>
           </div>
@@ -415,7 +461,9 @@ export default function DashboardAnalytics({
           <div className="flex items-center gap-2">
             <Award className="w-4 h-4 text-zinc-400" />
             <div>
-              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">Progression</span>
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+                Progression
+              </span>
               <h3 className="text-sm font-bold text-zinc-200">Level Ladder</h3>
             </div>
           </div>
@@ -427,10 +475,16 @@ export default function DashboardAnalytics({
               return (
                 <div key={level.name} className="space-y-1">
                   <div className="flex items-center justify-between text-[10px] font-mono">
-                    <span className={`flex items-center gap-1.5 ${isCurrent ? level.textColor : isUnlocked ? "text-zinc-400" : "text-zinc-700"}`}>
+                    <span
+                      className={`flex items-center gap-1.5 ${isCurrent ? level.textColor : isUnlocked ? "text-zinc-400" : "text-zinc-700"}`}
+                    >
                       <span>{level.emoji}</span>
                       <span className={isCurrent ? "font-bold" : ""}>{level.name}</span>
-                      {isCurrent && <span className="text-[8px] px-1 py-0.5 rounded bg-white/10 border border-white/10">CURRENT</span>}
+                      {isCurrent && (
+                        <span className="text-[8px] px-1 py-0.5 rounded bg-white/10 border border-white/10">
+                          CURRENT
+                        </span>
+                      )}
                     </span>
                     <span className={isUnlocked ? "text-zinc-400" : "text-zinc-700"}>
                       {level.minXp} XP
@@ -442,10 +496,15 @@ export default function DashboardAnalytics({
                       style={{
                         width: `${levelPct}%`,
                         background: isUnlocked
-                          ? level.gradientFrom.includes("zinc") ? "#52525b"
-                          : level.gradientFrom.includes("blue") ? "#3b82f6"
-                          : level.gradientFrom.includes("orange") ? "#f97316"
-                          : level.gradientFrom.includes("violet") ? "#8b5cf6" : "#eab308"
+                          ? level.gradientFrom.includes("zinc")
+                            ? "#52525b"
+                            : level.gradientFrom.includes("blue")
+                              ? "#3b82f6"
+                              : level.gradientFrom.includes("orange")
+                                ? "#f97316"
+                                : level.gradientFrom.includes("violet")
+                                  ? "#8b5cf6"
+                                  : "#eab308"
                           : "#1f2937",
                       }}
                     />
@@ -461,7 +520,9 @@ export default function DashboardAnalytics({
       <div className="bg-[#161b22] border border-[#30363d] rounded-xl p-5">
         <div className="flex items-center gap-2 mb-4">
           <GitPullRequest className="w-4 h-4 text-zinc-400" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">XP Sources</span>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+            XP Sources
+          </span>
           <h3 className="text-sm font-bold text-zinc-200 ml-1">Breakdown</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -487,14 +548,22 @@ export default function DashboardAnalytics({
               formula: `${xp} / 100 max XP`,
               earned: xp,
               max: 100,
-              color: levelInfo.gradientFrom.includes("zinc") ? "#52525b"
-                : levelInfo.gradientFrom.includes("blue") ? "#3b82f6"
-                : levelInfo.gradientFrom.includes("orange") ? "#f97316"
-                : levelInfo.gradientFrom.includes("violet") ? "#8b5cf6" : "#eab308",
+              color: levelInfo.gradientFrom.includes("zinc")
+                ? "#52525b"
+                : levelInfo.gradientFrom.includes("blue")
+                  ? "#3b82f6"
+                  : levelInfo.gradientFrom.includes("orange")
+                    ? "#f97316"
+                    : levelInfo.gradientFrom.includes("violet")
+                      ? "#8b5cf6"
+                      : "#eab308",
               icon: <Zap className="w-4 h-4 text-amber-400" />,
             },
           ].map((item) => (
-            <div key={item.label} className="bg-[#0d1117] border border-[#21262d] rounded-lg p-4 space-y-3">
+            <div
+              key={item.label}
+              className="bg-[#0d1117] border border-[#21262d] rounded-lg p-4 space-y-3"
+            >
               <div className="flex items-center gap-2">
                 {item.icon}
                 <span className="text-xs font-bold text-zinc-300">{item.label}</span>

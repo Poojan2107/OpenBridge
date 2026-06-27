@@ -1,7 +1,8 @@
 export interface UserProfile {
   skills: string[];
   level: "Beginner" | "Intermediate" | "Advanced";
-  interest: "Frontend" | "Backend" | "Fullstack" | "AI / Machine Learning" | "DevOps / Infrastructure";
+  interest:
+    "Frontend" | "Backend" | "Fullstack" | "AI / Machine Learning" | "DevOps / Infrastructure";
 }
 
 export interface GitHubUser {

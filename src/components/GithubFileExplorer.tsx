@@ -1,22 +1,22 @@
 // GithubFileExplorer component replicates the GitHub file structure and content viewer.
 import React, { useState } from "react";
-import { 
-  Folder, 
-  File, 
-  GitBranch, 
-  ChevronRight, 
-  ArrowLeft, 
-  Eye, 
-  Copy, 
-  Check, 
-  Info, 
+import {
+  Folder,
+  File,
+  GitBranch,
+  ChevronRight,
+  ArrowLeft,
+  Eye,
+  Copy,
+  Check,
+  Info,
   Calendar,
   Lock,
   GitPullRequest,
   CheckCircle,
   Users,
   Code2,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 
 interface GithubFile {
@@ -41,14 +41,14 @@ const SIMULATED_FILES: GithubFile[] = [
     type: "directory",
     commitMessage: "feat: add secure credential mapper client and AI translator",
     author: "guest-committer",
-    time: "3 hours ago"
+    time: "3 hours ago",
   },
   {
     name: "src/components",
     type: "directory",
     commitMessage: "refactor: optimize dashboard UI alignment to replicate git metrics",
     author: "guest-committer",
-    time: "3 hours ago"
+    time: "3 hours ago",
   },
   {
     name: "package.json",
@@ -72,7 +72,7 @@ const SIMULATED_FILES: GithubFile[] = [
     "react": "^19.0.1",
     "lucide-react": "^0.546.0"
   }
-}`
+}`,
   },
   {
     name: "tsconfig.json",
@@ -96,7 +96,7 @@ const SIMULATED_FILES: GithubFile[] = [
     "noEmit": true,
     "jsx": "react-jsx"
   }
-}`
+}`,
   },
   {
     name: "LICENSE",
@@ -124,7 +124,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.`
+SOFTWARE.`,
   },
   {
     name: "verify-pr.yml",
@@ -151,8 +151,8 @@ jobs:
             echo "Error: Missing DCO 'Signed-off-by' line inside commits. Follow contributing guidelines."
             exit 1
           }
-          echo "Success! Commit header contains validated signature."`
-  }
+          echo "Success! Commit header contains validated signature."`,
+  },
 ];
 
 export default function GithubFileExplorer() {
@@ -167,7 +167,6 @@ export default function GithubFileExplorer() {
 
   return (
     <div className="border border-[#30363d] bg-[#0d1117] rounded-xl overflow-hidden font-sans">
-      
       {/* File Explorer Header with branch selector and meta counts */}
       <div className="p-4 bg-[#161b22] border-b border-[#30363d] flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 font-mono text-xs">
         <div className="flex items-center gap-2">
@@ -202,21 +201,21 @@ export default function GithubFileExplorer() {
           <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-orange-500 to-rose-500 flex items-center justify-center font-mono text-[9px] text-white font-bold">
             GC
           </div>
-          <span className="font-semibold text-zinc-350 hover:underline cursor-pointer">guest-committer</span>
+          <span className="font-semibold text-zinc-350 hover:underline cursor-pointer">
+            guest-committer
+          </span>
           <span className="text-zinc-500 hover:underline cursor-pointer font-mono truncate max-w-[200px] md:max-w-md">
             feat: adjust local environment pre-flight validator checklist
           </span>
         </div>
-        <span className="text-zinc-500 font-mono text-[11px] shrink-0">
-          3 hours ago
-        </span>
+        <span className="text-zinc-500 font-mono text-[11px] shrink-0">3 hours ago</span>
       </div>
 
       {/* Interactive Render Frame (File List vs File Contents) */}
       {!selectedFile ? (
         <div className="divide-y divide-[#30363d] font-mono text-[12px]">
           {SIMULATED_FILES.map((file) => (
-            <div 
+            <div
               key={file.name}
               onClick={() => {
                 if (file.type === "file") {
@@ -224,8 +223,8 @@ export default function GithubFileExplorer() {
                 }
               }}
               className={`flex items-center justify-between p-3 transition-colors ${
-                file.type === "file" 
-                  ? "hover:bg-[#161b22]/50 cursor-pointer text-zinc-300" 
+                file.type === "file"
+                  ? "hover:bg-[#161b22]/50 cursor-pointer text-zinc-300"
                   : "text-zinc-400 cursor-help"
               }`}
             >
@@ -235,20 +234,20 @@ export default function GithubFileExplorer() {
                 ) : (
                   <File className="w-4 h-4 text-zinc-400 shrink-0" />
                 )}
-                <span className={`truncate ${file.type === "file" ? "hover:underline text-zinc-250 font-semibold" : ""}`}>
+                <span
+                  className={`truncate ${file.type === "file" ? "hover:underline text-zinc-250 font-semibold" : ""}`}
+                >
                   {file.name}
                 </span>
               </div>
-              
+
               <div className="hidden md:flex items-center justify-between gap-6 flex-grow min-w-0 pr-4 text-zinc-500">
                 <span className="truncate max-w-sm font-sans block text-left">
                   {file.commitMessage}
                 </span>
               </div>
 
-              <div className="shrink-0 text-right text-zinc-500 text-[11px]">
-                {file.time}
-              </div>
+              <div className="shrink-0 text-right text-zinc-500 text-[11px]">{file.time}</div>
             </div>
           ))}
         </div>
@@ -263,7 +262,7 @@ export default function GithubFileExplorer() {
               <ArrowLeft className="w-3.5 h-3.5" /> Back
             </button>
             <span className="font-semibold text-zinc-200">{selectedFile.name}</span>
-            
+
             <button
               onClick={() => handleCopyCode(selectedFile.content || "")}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#21262d] border border-[#30363d] text-zinc-300 hover:bg-[#30363d] cursor-pointer"
@@ -289,9 +288,7 @@ export default function GithubFileExplorer() {
                     <td className="w-10 text-right text-zinc-600 select-none pr-4 text-[10.5px]">
                       {idx + 1}
                     </td>
-                    <td className="whitespace-pre text-left">
-                      {line || " "}
-                    </td>
+                    <td className="whitespace-pre text-left">{line || " "}</td>
                   </tr>
                 ))}
               </tbody>
@@ -310,7 +307,6 @@ export default function GithubFileExplorer() {
 
         {/* Readme body with strict Markdown replication styling */}
         <div className="p-6 md:p-8 space-y-6 text-zinc-300 leading-relaxed font-sans text-[13px]">
-          
           <div className="border-b border-[#30363d] pb-4">
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans flex items-center gap-2">
               🚀 openbridge-onboarding-hub
@@ -321,14 +317,24 @@ export default function GithubFileExplorer() {
           </div>
 
           <p>
-            Welcome to the <strong>OpenBridge Developers Onboarding Hub</strong>! This repository serves as the official structured preflight sandbox and code translator checklist. It is designed to bridge the structural gap for new developers looking to participate in large enterprise open-source software (OSS) repositories safely and securely.
+            Welcome to the <strong>OpenBridge Developers Onboarding Hub</strong>! This repository
+            serves as the official structured preflight sandbox and code translator checklist. It is
+            designed to bridge the structural gap for new developers looking to participate in large
+            enterprise open-source software (OSS) repositories safely and securely.
           </p>
 
           <div className="p-4 bg-[#161b22]/60 rounded-lg border border-[#30363d] flex items-start gap-3">
             <Lock className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div className="space-y-1 text-xs text-zinc-300">
-              <strong className="block text-amber-400">Developer Certificate of Origin (DCO) Signoffs Enforced</strong>
-              <span>To preserve structural integrity under OSI (Open Source Initiative) regulation benchmarks, all commits to this fork must specify the <code>Signed-off-by: Your Name &lt;email&gt;</code> footer signature. Our CI runner automatically rejects invalid commit chains.</span>
+              <strong className="block text-amber-400">
+                Developer Certificate of Origin (DCO) Signoffs Enforced
+              </strong>
+              <span>
+                To preserve structural integrity under OSI (Open Source Initiative) regulation
+                benchmarks, all commits to this fork must specify the{" "}
+                <code>Signed-off-by: Your Name &lt;email&gt;</code> footer signature. Our CI runner
+                automatically rejects invalid commit chains.
+              </span>
             </div>
           </div>
 
@@ -336,13 +342,15 @@ export default function GithubFileExplorer() {
             <h3 className="text-sm font-semibold text-zinc-100 uppercase tracking-wider font-mono">
               📋 Core Onboarding Workflows Included:
             </h3>
-            
+
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-0 list-none">
               <li className="p-3 bg-zinc-950 rounded-lg border border-[#30363d]/60 flex items-start gap-2">
                 <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 <div className="text-xs">
                   <strong className="block text-zinc-200">Recommended Match Indices</strong>
-                  <span className="text-zinc-450 text-[11px]">Personalized repository match indexing powered by semantic skills profiles.</span>
+                  <span className="text-zinc-450 text-[11px]">
+                    Personalized repository match indexing powered by semantic skills profiles.
+                  </span>
                 </div>
               </li>
 
@@ -350,7 +358,9 @@ export default function GithubFileExplorer() {
                 <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 <div className="text-xs">
                   <strong className="block text-zinc-200">4-Week Structured Roadmap</strong>
-                  <span className="text-zinc-450 text-[11px]">Iterative sandbox milestone targets ensuring stable codebase familiarity.</span>
+                  <span className="text-zinc-450 text-[11px]">
+                    Iterative sandbox milestone targets ensuring stable codebase familiarity.
+                  </span>
                 </div>
               </li>
 
@@ -358,7 +368,9 @@ export default function GithubFileExplorer() {
                 <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                 <div className="text-xs">
                   <strong className="block text-zinc-200">AI Issue Translator & Mapping</strong>
-                  <span className="text-zinc-450 text-[11px]">Exploit state of the art Gemini intelligence to deconstruct complex raw issues.</span>
+                  <span className="text-zinc-450 text-[11px]">
+                    Exploit state of the art Gemini intelligence to deconstruct complex raw issues.
+                  </span>
                 </div>
               </li>
 
@@ -366,7 +378,9 @@ export default function GithubFileExplorer() {
                 <CheckCircle className="w-4 h-4 text-[#ff7900] shrink-0 mt-0.5" />
                 <div className="text-xs">
                   <strong className="block text-[#ff7900]">Hacktoberfest Milestone Badge</strong>
-                  <span className="text-zinc-450 text-[11px]">Generate embeddable badges for your real GitHub portfolio README profiles.</span>
+                  <span className="text-zinc-450 text-[11px]">
+                    Generate embeddable badges for your real GitHub portfolio README profiles.
+                  </span>
                 </div>
               </li>
             </ul>
@@ -374,13 +388,12 @@ export default function GithubFileExplorer() {
 
           <div className="pt-2 border-t border-[#30363d] text-center">
             <p className="text-[11px] text-zinc-500 font-mono">
-              Maintained under <strong>OpenBridge Dev Guidelines</strong>. Feel free to clone or submit patches!
+              Maintained under <strong>OpenBridge Dev Guidelines</strong>. Feel free to clone or
+              submit patches!
             </p>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }

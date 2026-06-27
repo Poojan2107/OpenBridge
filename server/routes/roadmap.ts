@@ -24,7 +24,9 @@ router.post("/api/roadmap", async (req, res) => {
   try {
     const parseResult = RoadmapSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid request payload format.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid request payload format.", details: parseResult.error.format() });
     }
 
     const { skills, level, githubUser } = parseResult.data;
@@ -62,10 +64,10 @@ Always output response strictly in the following JSON format structure:
               week1: { type: Type.ARRAY, items: { type: Type.STRING } },
               week2: { type: Type.ARRAY, items: { type: Type.STRING } },
               week3: { type: Type.ARRAY, items: { type: Type.STRING } },
-              week4: { type: Type.ARRAY, items: { type: Type.STRING } }
-            }
-          }
-        }
+              week4: { type: Type.ARRAY, items: { type: Type.STRING } },
+            },
+          },
+        },
       });
 
       const text = response.text;
@@ -109,14 +111,18 @@ router.post("/api/roadmap/task/toggle", async (req, res) => {
   try {
     const parseResult = ToggleSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid request payload format.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid request payload format.", details: parseResult.error.format() });
     }
 
     const { login, taskText, isCompleted } = parseResult.data;
 
     const user = await prisma.user.findFirst({
       where: { githubLogin: login },
-      include: { profile: { include: { roadmap: { include: { weeks: { include: { tasks: true } } } } } } }
+      include: {
+        profile: { include: { roadmap: { include: { weeks: { include: { tasks: true } } } } } },
+      },
     });
 
     if (!user || !user.profile || !user.profile.roadmap) {
@@ -140,8 +146,8 @@ router.post("/api/roadmap/task/toggle", async (req, res) => {
       where: { id: matchedTask.id },
       data: {
         isCompleted,
-        completedAt: isCompleted ? new Date() : null
-      }
+        completedAt: isCompleted ? new Date() : null,
+      },
     });
 
     return res.json({ success: true });
@@ -165,14 +171,14 @@ router.get("/api/roadmap/export/:login", async (req, res) => {
               include: {
                 weeks: {
                   include: {
-                    tasks: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    tasks: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user || !user.profile) {
@@ -194,8 +200,10 @@ router.get("/api/roadmap/export/:login", async (req, res) => {
     let markdown = `# OpenBridge Contribution Roadmap\n\n## Profile Summary\n- **GitHub Username:** @${user.githubLogin}\n- **Developer Name:** ${name}\n- **Area of Interest:** ${domain}\n- **Experience Level:** ${level}\n- **Primary Skills:** ${skillsList}\n\n---\n\n## 4-Week Action Plan\n`;
 
     if (user.profile.roadmap && user.profile.roadmap.weeks.length > 0) {
-      const sortedWeeks = [...user.profile.roadmap.weeks].sort((a, b) => a.weekNumber - b.weekNumber);
-      
+      const sortedWeeks = [...user.profile.roadmap.weeks].sort(
+        (a, b) => a.weekNumber - b.weekNumber,
+      );
+
       sortedWeeks.forEach((week) => {
         markdown += `\n### Week ${week.weekNumber}\n`;
         const sortedTasks = [...week.tasks];

@@ -11,7 +11,7 @@ describe("parseGpgPublicKey", () => {
     tag6Body.writeUInt32BE(1600000000, 1); // Created at timestamp
     tag6Body[5] = 1; // Algorithm: RSA
     tag6Body.writeUInt16BE(2048, 6); // RSA bit length (2048)
-    
+
     // Tag 6 Header (old format, lenType = 0)
     // headerByte = 0x80 | (6 << 2) | 0 = 0x98
     const tag6Header = Buffer.from([0x98, tag6Body.length]);
@@ -20,7 +20,7 @@ describe("parseGpgPublicKey", () => {
     // 2. Construct Tag 13 Packet (User ID)
     const userIdString = "Alice Developer <alice@example.com>";
     const tag13Body = Buffer.from(userIdString, "utf8");
-    
+
     // Tag 13 Header (old format, lenType = 0)
     // headerByte = 0x80 | (13 << 2) | 0 = 0xb4
     const tag13Header = Buffer.from([0xb4, tag13Body.length]);
@@ -36,7 +36,7 @@ describe("parseGpgPublicKey", () => {
       "Version: OpenBridge Test Generator",
       "",
       base64Key,
-      "-----END PGP PUBLIC KEY BLOCK-----"
+      "-----END PGP PUBLIC KEY BLOCK-----",
     ].join("\n");
 
     // Compute expected GPG Key ID (low-order 8 bytes of SHA-1 fingerprint)
@@ -78,7 +78,7 @@ describe("parseGpgPublicKey", () => {
       "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       "",
       base64Key,
-      "-----END PGP PUBLIC KEY BLOCK-----"
+      "-----END PGP PUBLIC KEY BLOCK-----",
     ].join("\n");
 
     expect(() => {

@@ -35,17 +35,34 @@ const programs = [
 
 export function ProgramsSection() {
   return (
-    <section id="ob-compliance" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left">
+    <section
+      id="ob-compliance"
+      className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left"
+    >
       <div className="space-y-12">
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-mono uppercase text-[#D29922] font-bold tracking-wider">Pathways Alignment</span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">Supported Open Source Programs</h2>
-          <p className="text-[#8B949E] text-sm leading-relaxed max-w-xl">Become preparation-ready for major institutional initiatives and open developer internships. We align milestones perfectly to program timelines.</p>
+          <span className="text-xs font-mono uppercase text-[#D29922] font-bold tracking-wider">
+            Pathways Alignment
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">
+            Supported Open Source Programs
+          </h2>
+          <p className="text-[#8B949E] text-sm leading-relaxed max-w-xl">
+            Become preparation-ready for major institutional initiatives and open developer
+            internships. We align milestones perfectly to program timelines.
+          </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {programs.map((p) => (
-            <div key={p.id} className={`bg-[#161B22] border-l-[3px] ${p.border} border border-[#30363D] rounded p-5 space-y-2 hover:bg-[#161B22]/80 transition-colors`}>
-              <span className={`text-[11px] font-mono ${p.label} uppercase font-bold tracking-wider`}>{p.labelText}</span>
+            <div
+              key={p.id}
+              className={`bg-[#161B22] border-l-[3px] ${p.border} border border-[#30363D] rounded p-5 space-y-2 hover:bg-[#161B22]/80 transition-colors`}
+            >
+              <span
+                className={`text-[11px] font-mono ${p.label} uppercase font-bold tracking-wider`}
+              >
+                {p.labelText}
+              </span>
               <h4 className="text-base font-bold text-[#F0F6FC]">{p.title}</h4>
               <p className="text-[#8B949E] text-xs leading-relaxed">{p.desc}</p>
             </div>

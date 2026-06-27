@@ -10,13 +10,34 @@ interface ContributionRoadmapProps {
 }
 
 const WEEK_LABELS = {
-  week1: { title: "Week 01", subtitle: "Git & Local Setup", desc: "Cloning packages, testing, environments & baseline scripts verification." },
-  week2: { title: "Week 02", subtitle: "Documentation & Rules", desc: "Finding documentation discrepancies, onboarding briefs or writing missing tests." },
-  week3: { title: "Week 03", subtitle: "Targeted Bug Fixing", desc: "Tracing error flows, modifying file states, solving low-complexity helper issues." },
-  week4: { title: "Week 04", subtitle: "Feature & Engagement", desc: "Crafting structured Pull Requests, documenting impact & interacting with maintainers." }
+  week1: {
+    title: "Week 01",
+    subtitle: "Git & Local Setup",
+    desc: "Cloning packages, testing, environments & baseline scripts verification.",
+  },
+  week2: {
+    title: "Week 02",
+    subtitle: "Documentation & Rules",
+    desc: "Finding documentation discrepancies, onboarding briefs or writing missing tests.",
+  },
+  week3: {
+    title: "Week 03",
+    subtitle: "Targeted Bug Fixing",
+    desc: "Tracing error flows, modifying file states, solving low-complexity helper issues.",
+  },
+  week4: {
+    title: "Week 04",
+    subtitle: "Feature & Engagement",
+    desc: "Crafting structured Pull Requests, documenting impact & interacting with maintainers.",
+  },
 } as const;
 
-export default function ContributionRoadmap({ roadmap, checkedTasks: propsCheckedTasks, onToggleTask, login }: ContributionRoadmapProps) {
+export default function ContributionRoadmap({
+  roadmap,
+  checkedTasks: propsCheckedTasks,
+  onToggleTask,
+  login,
+}: ContributionRoadmapProps) {
   const [activeWeek, setActiveWeek] = useState<keyof PersonalizedRoadmap>("week1");
   const [localCheckedTasks, setLocalCheckedTasks] = useState<{ [key: string]: boolean }>({});
 
@@ -73,10 +94,12 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
 
           {/* Global Progress indicator */}
           <div className="bg-[#090a0f] px-3.5 py-2 border border-zinc-900 rounded select-none">
-            <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold tracking-wider">Phase progress</span>
+            <span className="block text-[8px] font-mono uppercase text-zinc-500 font-bold tracking-wider">
+              Phase progress
+            </span>
             <div className="flex items-center gap-3 mt-1.5">
               <div className="w-24 h-1 bg-zinc-900 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-zinc-400 transition-all duration-300"
                   style={{ width: `${progressPercent}%` }}
                 ></div>
@@ -106,18 +129,22 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
                     : "bg-transparent border-zinc-950 hover:border-zinc-900 hover:bg-[#090a0f]/40"
                 }`}
               >
-                <div className={`p-1 w-6 h-6 flex items-center justify-center rounded text-[10px] shrink-0 font-mono font-bold transition-colors border ${
-                  isActive
-                    ? "bg-zinc-800 border-zinc-700 text-white"
-                    : isCompleted
-                      ? "bg-emerald-950/25 border-emerald-900/60 text-emerald-400"
-                      : "bg-zinc-950 border-zinc-900 text-zinc-500"
-                }`}>
+                <div
+                  className={`p-1 w-6 h-6 flex items-center justify-center rounded text-[10px] shrink-0 font-mono font-bold transition-colors border ${
+                    isActive
+                      ? "bg-zinc-800 border-zinc-700 text-white"
+                      : isCompleted
+                        ? "bg-emerald-950/25 border-emerald-900/60 text-emerald-400"
+                        : "bg-zinc-950 border-zinc-900 text-zinc-500"
+                  }`}
+                >
                   {isCompleted ? "✓" : label.title.slice(-2)}
                 </div>
 
                 <div className="min-w-0 flex-grow">
-                  <span className={`block text-xs font-semibold ${isActive ? "text-zinc-150" : "text-zinc-350"}`}>
+                  <span
+                    className={`block text-xs font-semibold ${isActive ? "text-zinc-150" : "text-zinc-350"}`}
+                  >
                     {label.subtitle}
                   </span>
                   <span className="block text-[11px] text-zinc-550 truncate mt-0.5 leading-none">
@@ -126,14 +153,16 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
 
                   {/* Tiny progress dot indicator */}
                   <div className="w-full bg-zinc-950 h-[1.5px] rounded-full mt-2.5 overflow-hidden">
-                    <div 
-                      className={`h-full transition-all duration-300 ${isCompleted ? 'bg-emerald-500' : 'bg-zinc-600'}`}
+                    <div
+                      className={`h-full transition-all duration-300 ${isCompleted ? "bg-emerald-500" : "bg-zinc-600"}`}
                       style={{ width: `${weekProgress}%` }}
                     ></div>
                   </div>
                 </div>
 
-                <ChevronRight className={`w-3.5 h-3.5 text-zinc-650 transition-transform duration-150 self-center ${isActive ? "translate-x-0.5 text-zinc-300" : ""}`} />
+                <ChevronRight
+                  className={`w-3.5 h-3.5 text-zinc-650 transition-transform duration-150 self-center ${isActive ? "translate-x-0.5 text-zinc-300" : ""}`}
+                />
               </button>
             );
           })}
@@ -158,10 +187,12 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
               <span className="block text-[9px] uppercase font-bold tracking-wider text-zinc-500 mb-2">
                 Phase Targets
               </span>
-              
+
               {activeTasks.length === 0 ? (
                 <div className="text-center py-6">
-                  <span className="text-xs text-zinc-600 italic">No targets defined for this phase yet.</span>
+                  <span className="text-xs text-zinc-600 italic">
+                    No targets defined for this phase yet.
+                  </span>
                 </div>
               ) : (
                 activeTasks.map((task, idx) => {
@@ -176,17 +207,21 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
                           : "bg-zinc-950/30 border-zinc-905 hover:border-zinc-855 text-zinc-300"
                       }`}
                     >
-                      <div className={`p-0.5 rounded border mt-0.5 transition-colors ${
-                        isChecked
-                          ? "border-zinc-500 bg-zinc-650 text-zinc-100"
-                          : "border-zinc-805 text-transparent bg-transparent"
-                      }`}>
+                      <div
+                        className={`p-0.5 rounded border mt-0.5 transition-colors ${
+                          isChecked
+                            ? "border-zinc-500 bg-zinc-650 text-zinc-100"
+                            : "border-zinc-805 text-transparent bg-transparent"
+                        }`}
+                      >
                         <svg className="w-2.5 h-2.5 fill-current" viewBox="0 0 20 20">
                           <path d="M0 11l2-2 5 5L18 3l2 2L7 18z" />
                         </svg>
                       </div>
                       <div className="text-xs leading-relaxed">
-                        <span className={`block font-mono text-[9px] uppercase tracking-wider font-bold mb-0.5 text-zinc-500`}>
+                        <span
+                          className={`block font-mono text-[9px] uppercase tracking-wider font-bold mb-0.5 text-zinc-500`}
+                        >
                           Target 0{idx + 1}
                         </span>
                         <span className={`${isChecked ? "line-through text-zinc-500" : ""}`}>
@@ -204,10 +239,14 @@ export default function ContributionRoadmap({ roadmap, checkedTasks: propsChecke
             <BookOpen className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
             <div className="text-[10.5px] leading-relaxed text-zinc-400">
               <span className="font-bold text-zinc-300">Target Guideline: </span>
-              {activeWeek === "week1" && "Take your time with local setups. Over 40% of first-time open source contributions fail due to mismatched environment configurations."}
-              {activeWeek === "week2" && "Typo corrections or documentation patches are valid starting tasks. They provide context on codebase design and test runs."}
-              {activeWeek === "week3" && "Draft comprehensive checklists in your issue threads to trace your planned changes before writing lines of code."}
-              {activeWeek === "week4" && "Ensure pull requests are concise and accompanied by tests and visual diffs. This will help maintainers approve and merge cleanly."}
+              {activeWeek === "week1" &&
+                "Take your time with local setups. Over 40% of first-time open source contributions fail due to mismatched environment configurations."}
+              {activeWeek === "week2" &&
+                "Typo corrections or documentation patches are valid starting tasks. They provide context on codebase design and test runs."}
+              {activeWeek === "week3" &&
+                "Draft comprehensive checklists in your issue threads to trace your planned changes before writing lines of code."}
+              {activeWeek === "week4" &&
+                "Ensure pull requests are concise and accompanied by tests and visual diffs. This will help maintainers approve and merge cleanly."}
             </div>
           </div>
         </div>

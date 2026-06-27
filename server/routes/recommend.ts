@@ -3,7 +3,11 @@ import { z } from "zod";
 import { Type } from "@google/genai";
 import { getGeminiClient, getLiveGitHubRecommendations } from "../services/gemini";
 import { saveUserProfile } from "../services/db";
-import { generateCacheKey, getCachedRecommendations, setCachedRecommendations } from "../services/cache";
+import {
+  generateCacheKey,
+  getCachedRecommendations,
+  setCachedRecommendations,
+} from "../services/cache";
 
 const router = Router();
 
@@ -18,11 +22,13 @@ router.post("/api/recommend", async (req, res) => {
   try {
     const parseResult = RecommendSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid request payload format.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid request payload format.", details: parseResult.error.format() });
     }
 
     const { skills, level, interest, githubUser } = parseResult.data;
-    
+
     // Check recommendation cache
     const cacheKey = generateCacheKey(skills, level, interest);
     const cachedData = await getCachedRecommendations(cacheKey);
@@ -37,7 +43,9 @@ router.post("/api/recommend", async (req, res) => {
     let recommendations: any = null;
 
     if (!ai) {
-      console.log("No valid GEMINI_API_KEY environment variable found. Falling back to structured local simulation.");
+      console.log(
+        "No valid GEMINI_API_KEY environment variable found. Falling back to structured local simulation.",
+      );
       recommendations = await getLiveGitHubRecommendations(skills, level, interest);
     } else {
       const promptMessage = `Act as an experienced open-source engineering coordinator and mentor. Recommend exactly 3 active, beginner-friendly open-source GitHub repositories based on the contributor's target profile:
@@ -81,13 +89,13 @@ Always output response strictly in the following JSON format structure:
                     match: { type: Type.STRING },
                     difficulty: { type: Type.STRING },
                     reason: { type: Type.STRING },
-                    issues: { type: Type.ARRAY, items: { type: Type.STRING } }
-                  }
-                }
-              }
-            }
-          }
-        }
+                    issues: { type: Type.ARRAY, items: { type: Type.STRING } },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       const text = response.text;

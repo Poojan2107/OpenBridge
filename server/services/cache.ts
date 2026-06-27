@@ -6,7 +6,7 @@ import { getRedisClient } from "./redis";
  * Normalizes input fields and generates a unique SHA-256 cache key.
  */
 export function generateCacheKey(skills: string[], level: string, interest: string): string {
-  const sortedSkills = [...skills].map(s => s.toLowerCase().trim()).sort();
+  const sortedSkills = [...skills].map((s) => s.toLowerCase().trim()).sort();
   const rawKey = `${sortedSkills.join(",")}:${level.toLowerCase().trim()}:${interest.toLowerCase().trim()}`;
   return crypto.createHash("sha256").update(rawKey).digest("hex");
 }
@@ -33,18 +33,18 @@ export async function getCachedRecommendations(key: string): Promise<any | null>
   // Database fallback
   try {
     const record = await prisma.recommendationCache.findUnique({
-      where: { key }
+      where: { key },
     });
     if (record) {
       console.log(`Database Cache HIT for key: ${key}`);
-      
+
       // If Redis is online but was missed, backfill it
       if (redis) {
         try {
           await redis.setex(redisKey, 86400, record.response);
         } catch {}
       }
-      
+
       return JSON.parse(record.response);
     }
     console.log(`Cache MISS for key: ${key}`);
@@ -76,12 +76,12 @@ export async function setCachedRecommendations(key: string, response: any): Prom
     await prisma.recommendationCache.upsert({
       where: { key },
       update: {
-        response: responseStr
+        response: responseStr,
       },
       create: {
         key,
-        response: responseStr
-      }
+        response: responseStr,
+      },
     });
     console.log(`Database Cache WRITE successful for key: ${key}`);
   } catch (err) {

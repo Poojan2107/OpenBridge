@@ -115,7 +115,6 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
       <div className="fixed bottom-0 right-1/4 w-[400px] h-[300px] bg-blue-600/4 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 relative z-10">
-
         {/* Header */}
         <div className="flex items-start justify-between mb-8 gap-4">
           <div>
@@ -180,9 +179,7 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
         {!loading && !error && entries.length === 0 && (
           <div className="text-center py-20 space-y-4">
             <Trophy className="w-12 h-12 text-zinc-700 mx-auto" />
-            <p className="text-zinc-500 font-mono text-sm">
-              No contributors on the board yet.
-            </p>
+            <p className="text-zinc-500 font-mono text-sm">No contributors on the board yet.</p>
             <p className="text-zinc-600 text-xs">
               Complete roadmap tasks and merge PRs to appear here!
             </p>
@@ -205,11 +202,12 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
                   key={entry.login}
                   className={`
                     relative rounded-xl border p-4 transition-all duration-200
-                    ${isCurrentUser
-                      ? "border-blue-700/60 bg-blue-950/15 ring-1 ring-blue-700/30"
-                      : rank <= 3
-                      ? "border-[#30363d] bg-gradient-to-r from-[#161b22] to-[#161b22] hover:border-zinc-600"
-                      : "border-[#30363d] bg-[#161b22] hover:border-zinc-700"
+                    ${
+                      isCurrentUser
+                        ? "border-blue-700/60 bg-blue-950/15 ring-1 ring-blue-700/30"
+                        : rank <= 3
+                          ? "border-[#30363d] bg-gradient-to-r from-[#161b22] to-[#161b22] hover:border-zinc-600"
+                          : "border-[#30363d] bg-[#161b22] hover:border-zinc-700"
                     }
                   `}
                 >
@@ -232,13 +230,14 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
                           rank === 1
                             ? "border-amber-600"
                             : rank === 2
-                            ? "border-zinc-500"
-                            : rank === 3
-                            ? "border-orange-600"
-                            : "border-[#30363d]"
+                              ? "border-zinc-500"
+                              : rank === 3
+                                ? "border-orange-600"
+                                : "border-[#30363d]"
                         }`}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = `https://avatars.dicebear.com/api/identicon/${entry.login}.svg`;
+                          (e.target as HTMLImageElement).src =
+                            `https://avatars.dicebear.com/api/identicon/${entry.login}.svg`;
                         }}
                       />
                     </div>
@@ -300,9 +299,7 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
                           {entry.mergedPRs}
                         </span>
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-600">
-                        {taskPct}% roadmap
-                      </div>
+                      <div className="text-[10px] font-mono text-zinc-600">{taskPct}% roadmap</div>
                     </div>
                   </div>
                 </div>
@@ -314,7 +311,8 @@ export default function Leaderboard({ currentLogin }: LeaderboardProps) {
         {/* Footer note */}
         {!loading && entries.length > 0 && (
           <p className="text-center text-[11px] font-mono text-zinc-700 mt-8">
-            Showing top {entries.length} contributors · Updates every time a PR is merged or a task is completed
+            Showing top {entries.length} contributors · Updates every time a PR is merged or a task
+            is completed
           </p>
         )}
       </div>

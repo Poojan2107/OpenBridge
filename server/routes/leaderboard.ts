@@ -40,11 +40,9 @@ router.get("/api/leaderboard", async (_req, res) => {
           ? u.profile.roadmap.weeks.reduce((acc, w) => acc + w.tasks.length, 0)
           : 0;
 
-        const mergedPRs = u.pullRequests.filter(
-          (pr) => pr.status === "MERGED"
-        ).length;
+        const mergedPRs = u.pullRequests.filter((pr) => pr.status === "MERGED").length;
         const pendingPRs = u.pullRequests.filter(
-          (pr) => pr.status === "PENDING" || pr.status === "VERIFYING"
+          (pr) => pr.status === "PENDING" || pr.status === "VERIFYING",
         ).length;
 
         // XP formula: 50 per task + 200 per merged PR + 30 per pending PR
@@ -106,7 +104,7 @@ router.get("/api/github/skills/:login", async (req, res) => {
     // Fetch user repos
     const reposRes = await fetch(
       `https://api.github.com/users/${login}/repos?per_page=50&sort=updated&type=owner`,
-      { headers }
+      { headers },
     );
 
     if (!reposRes.ok) {

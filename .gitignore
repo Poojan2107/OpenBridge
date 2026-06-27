@@ -12,3 +12,9 @@ coverage/
 # CI logs
 ci_logs.zip
 ci_logs/
+
+ci_log.txt
+
+# Agent metadata
+.kilo/
+

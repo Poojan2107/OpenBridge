@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { UserProfile, GitHubUser } from "../types";
-import { Terminal, Code, Server, BrainCircuit, Cpu, ArrowRight, Sparkles, Plus, X, Loader2, Github } from "lucide-react";
+import {
+  Terminal,
+  Code,
+  Server,
+  BrainCircuit,
+  Cpu,
+  ArrowRight,
+  Sparkles,
+  Plus,
+  X,
+  Loader2,
+  Github,
+} from "lucide-react";
 
 interface ProfilingFormProps {
   onSubmit: (profile: UserProfile) => void;
@@ -9,21 +21,62 @@ interface ProfilingFormProps {
 }
 
 const PRESET_SKILLS = [
-  "React", "TypeScript", "JavaScript", "Node.js", "Python", 
-  "HTML/CSS", "Tailwind CSS", "Docker", "Git/GitHub", 
-  "Go", "Rust", "C++", "Java", "PostgreSQL", "MongoDB"
+  "React",
+  "TypeScript",
+  "JavaScript",
+  "Node.js",
+  "Python",
+  "HTML/CSS",
+  "Tailwind CSS",
+  "Docker",
+  "Git/GitHub",
+  "Go",
+  "Rust",
+  "C++",
+  "Java",
+  "PostgreSQL",
+  "MongoDB",
 ];
 
 const INTERESTS = [
-  { id: "Frontend", label: "Frontend Development", icon: Code, desc: "User interfaces, responsive design, animations & state flow." },
-  { id: "Backend", label: "Backend Systems", icon: Server, desc: "Databases, APIs, caching, server logic & background microservices." },
-  { id: "Fullstack", label: "Fullstack Engineering", icon: Cpu, desc: "End-to-end applications bridging interactive design and fast API services." },
-  { id: "AI / Machine Learning", label: "AI & Machine Learning", icon: BrainCircuit, desc: "Neural networks, data pipelines, model integration & LLMs context." },
-  { id: "DevOps / Infrastructure", label: "DevOps & Infrastructure", icon: Terminal, desc: "Virtualization, CI/CD orchestration scripts, systems health & security." }
+  {
+    id: "Frontend",
+    label: "Frontend Development",
+    icon: Code,
+    desc: "User interfaces, responsive design, animations & state flow.",
+  },
+  {
+    id: "Backend",
+    label: "Backend Systems",
+    icon: Server,
+    desc: "Databases, APIs, caching, server logic & background microservices.",
+  },
+  {
+    id: "Fullstack",
+    label: "Fullstack Engineering",
+    icon: Cpu,
+    desc: "End-to-end applications bridging interactive design and fast API services.",
+  },
+  {
+    id: "AI / Machine Learning",
+    label: "AI & Machine Learning",
+    icon: BrainCircuit,
+    desc: "Neural networks, data pipelines, model integration & LLMs context.",
+  },
+  {
+    id: "DevOps / Infrastructure",
+    label: "DevOps & Infrastructure",
+    icon: Terminal,
+    desc: "Virtualization, CI/CD orchestration scripts, systems health & security.",
+  },
 ] as const;
 
 export default function ProfilingForm({ onSubmit, isLoading, githubUser }: ProfilingFormProps) {
-  const [selectedSkills, setSelectedSkills] = useState<string[]>(["React", "TypeScript", "Git/GitHub"]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([
+    "React",
+    "TypeScript",
+    "Git/GitHub",
+  ]);
   const [customSkillInput, setCustomSkillInput] = useState("");
   const [experienceLevel, setExperienceLevel] = useState<UserProfile["level"]>("Beginner");
   const [interestArea, setInterestArea] = useState<UserProfile["interest"]>("Frontend");
@@ -45,7 +98,9 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
             });
           }
         })
-        .catch(() => {/* fallback to bio parsing */})
+        .catch(() => {
+          /* fallback to bio parsing */
+        })
         .finally(() => setDetectingSkills(false));
     }
   }, [githubUser?.login]);
@@ -57,11 +112,14 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
 
       // Smart parse user bio to map relevant languages or frameworks
       if (bioText.includes("react")) skillsToSelect.add("React");
-      if (bioText.includes("typescript") || bioText.includes("ts")) skillsToSelect.add("TypeScript");
-      if (bioText.includes("javascript") || bioText.includes("js")) skillsToSelect.add("JavaScript");
+      if (bioText.includes("typescript") || bioText.includes("ts"))
+        skillsToSelect.add("TypeScript");
+      if (bioText.includes("javascript") || bioText.includes("js"))
+        skillsToSelect.add("JavaScript");
       if (bioText.includes("node")) skillsToSelect.add("Node.js");
       if (bioText.includes("python")) skillsToSelect.add("Python");
-      if (bioText.includes("css") || bioText.includes("tailwind")) skillsToSelect.add("Tailwind CSS");
+      if (bioText.includes("css") || bioText.includes("tailwind"))
+        skillsToSelect.add("Tailwind CSS");
       if (bioText.includes("docker")) skillsToSelect.add("Docker");
       if (bioText.includes("go")) skillsToSelect.add("Go");
       if (bioText.includes("rust")) skillsToSelect.add("Rust");
@@ -78,13 +136,32 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
       setSelectedSkills(Array.from(skillsToSelect));
 
       // Auto-detect focus interest domain
-      if (bioText.includes("backend") || bioText.includes("api") || bioText.includes("database") || bioText.includes("server")) {
+      if (
+        bioText.includes("backend") ||
+        bioText.includes("api") ||
+        bioText.includes("database") ||
+        bioText.includes("server")
+      ) {
         setInterestArea("Backend");
-      } else if (bioText.includes("ml") || bioText.includes("ai") || bioText.includes("data") || bioText.includes("learning")) {
+      } else if (
+        bioText.includes("ml") ||
+        bioText.includes("ai") ||
+        bioText.includes("data") ||
+        bioText.includes("learning")
+      ) {
         setInterestArea("AI / Machine Learning");
-      } else if (bioText.includes("devops") || bioText.includes("infrastructure") || bioText.includes("kubernetes") || bioText.includes("ci/cd")) {
+      } else if (
+        bioText.includes("devops") ||
+        bioText.includes("infrastructure") ||
+        bioText.includes("kubernetes") ||
+        bioText.includes("ci/cd")
+      ) {
         setInterestArea("DevOps / Infrastructure");
-      } else if (bioText.includes("fullstack") || bioText.includes("full-stack") || bioText.includes("end-to-end")) {
+      } else if (
+        bioText.includes("fullstack") ||
+        bioText.includes("full-stack") ||
+        bioText.includes("end-to-end")
+      ) {
         setInterestArea("Fullstack");
       } else {
         setInterestArea("Frontend");
@@ -105,7 +182,7 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
 
   const togglePresetSkill = (skill: string) => {
     if (selectedSkills.includes(skill)) {
-      setSelectedSkills(selectedSkills.filter(s => s !== skill));
+      setSelectedSkills(selectedSkills.filter((s) => s !== skill));
     } else {
       setSelectedSkills([...selectedSkills, skill]);
     }
@@ -114,14 +191,14 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
   const handleAddCustomSkill = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanInput = customSkillInput.trim();
-    if (cleanInput && !selectedSkills.some(s => s.toLowerCase() === cleanInput.toLowerCase())) {
+    if (cleanInput && !selectedSkills.some((s) => s.toLowerCase() === cleanInput.toLowerCase())) {
       setSelectedSkills([...selectedSkills, cleanInput]);
       setCustomSkillInput("");
     }
   };
 
   const handleRemoveSkill = (skill: string) => {
-    setSelectedSkills(selectedSkills.filter(s => s !== skill));
+    setSelectedSkills(selectedSkills.filter((s) => s !== skill));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -129,7 +206,7 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
     onSubmit({
       skills: selectedSkills,
       level: experienceLevel,
-      interest: interestArea
+      interest: interestArea,
     });
   };
 
@@ -142,9 +219,13 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
             <Code className="w-5 h-5 text-zinc-300" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-zinc-150 tracking-tight">Configure Your Developer Profile</h3>
+            <h3 className="text-sm font-bold text-zinc-150 tracking-tight">
+              Configure Your Developer Profile
+            </h3>
             <p className="text-zinc-400 text-xs mt-1 leading-relaxed">
-              OpenBridge aligns recommended components to your expertise. Select your comfortable difficulty threshold, preferred workspace tools, and focus domains to generate optimized project onboarding pathways.
+              OpenBridge aligns recommended components to your expertise. Select your comfortable
+              difficulty threshold, preferred workspace tools, and focus domains to generate
+              optimized project onboarding pathways.
             </p>
           </div>
         </div>
@@ -175,9 +256,12 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
               ))}
             </div>
             <div className="mt-2.5 text-[10px] text-zinc-500 font-mono">
-              {experienceLevel === "Beginner" && "Requires: entry-level documentation, installation guidelines, or basic tests."}
-              {experienceLevel === "Intermediate" && "Requires: logical modules, testing suites, or intermediate features."}
-              {experienceLevel === "Advanced" && "Requires: performance tuning, security refactors, or logical engines."}
+              {experienceLevel === "Beginner" &&
+                "Requires: entry-level documentation, installation guidelines, or basic tests."}
+              {experienceLevel === "Intermediate" &&
+                "Requires: logical modules, testing suites, or intermediate features."}
+              {experienceLevel === "Advanced" &&
+                "Requires: performance tuning, security refactors, or logical engines."}
             </div>
           </div>
 
@@ -188,29 +272,40 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
                 Workspace Toolset
               </label>
               <p className="text-zinc-500 text-[11px] mt-1 leading-relaxed">
-                Register the languages, frameworks, or developer utilities you feel comfortable navigating.
+                Register the languages, frameworks, or developer utilities you feel comfortable
+                navigating.
               </p>
             </div>
 
             {/* Auto-detection status banner */}
             {githubUser && !githubUser.simulated && (
-              <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[11px] font-mono transition-all ${
-                detectingSkills
-                  ? "border-blue-900/40 bg-blue-950/20 text-blue-400"
-                  : detectedSkills.length > 0
-                  ? "border-emerald-900/40 bg-emerald-950/15 text-emerald-400"
-                  : "border-zinc-900 bg-zinc-950/40 text-zinc-500"
-              }`}>
+              <div
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-[11px] font-mono transition-all ${
+                  detectingSkills
+                    ? "border-blue-900/40 bg-blue-950/20 text-blue-400"
+                    : detectedSkills.length > 0
+                      ? "border-emerald-900/40 bg-emerald-950/15 text-emerald-400"
+                      : "border-zinc-900 bg-zinc-950/40 text-zinc-500"
+                }`}
+              >
                 {detectingSkills ? (
-                  <><Loader2 className="w-3 h-3 animate-spin shrink-0" /> Scanning your GitHub repos for languages…</>
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin shrink-0" /> Scanning your GitHub repos
+                    for languages…
+                  </>
                 ) : detectedSkills.length > 0 ? (
-                  <><Github className="w-3 h-3 shrink-0" /> Auto-detected {detectedSkills.length} skills from your {githubUser.public_repos} repos</>
+                  <>
+                    <Github className="w-3 h-3 shrink-0" /> Auto-detected {detectedSkills.length}{" "}
+                    skills from your {githubUser.public_repos} repos
+                  </>
                 ) : (
-                  <><Github className="w-3 h-3 shrink-0" /> Connect GitHub to auto-detect skills from your repos</>
+                  <>
+                    <Github className="w-3 h-3 shrink-0" /> Connect GitHub to auto-detect skills
+                    from your repos
+                  </>
                 )}
               </div>
             )}
-
 
             {/* Current Selection tags */}
             <div className="flex flex-wrap gap-1 bg-[#090a0f] p-2 rounded border border-zinc-900 min-h-[44px]">
@@ -237,7 +332,9 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
 
             {/* Presets Grid */}
             <div className="space-y-1.5">
-              <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-600">Quick Configs</span>
+              <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-600">
+                Quick Configs
+              </span>
               <div className="flex flex-wrap gap-1 max-h-[140px] overflow-y-auto pr-1">
                 {PRESET_SKILLS.map((sk) => {
                   const active = selectedSkills.includes(sk);
@@ -269,7 +366,7 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
                 placeholder="Register alternative (e.g. SQLite, Rust)"
                 className="flex-grow bg-[#090a0f] border border-zinc-900 rounded px-2.5 py-1 text-xs text-zinc-100 placeholder-zinc-700 focus:outline-none focus:border-zinc-700 font-mono"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     handleAddCustomSkill(e);
                   }
                 }}
@@ -309,15 +406,19 @@ export default function ProfilingForm({ onSubmit, isLoading, githubUser }: Profi
                       : "bg-[#090a0f] border-zinc-90 w-full hover:border-zinc-800"
                   }`}
                 >
-                  <div className={`p-2 rounded border shrink-0 ${
-                    active 
-                      ? "bg-zinc-800 border-zinc-700 text-white" 
-                      : "bg-zinc-950 border-zinc-900 text-zinc-500"
-                  }`}>
+                  <div
+                    className={`p-2 rounded border shrink-0 ${
+                      active
+                        ? "bg-zinc-800 border-zinc-700 text-white"
+                        : "bg-zinc-950 border-zinc-900 text-zinc-500"
+                    }`}
+                  >
                     <IconComp className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className={`block text-xs font-bold leading-none ${active ? "text-zinc-150" : "text-zinc-300"}`}>
+                    <span
+                      className={`block text-xs font-bold leading-none ${active ? "text-zinc-150" : "text-zinc-300"}`}
+                    >
                       {area.label}
                     </span>
                     <span className="block text-[11px] text-zinc-500 mt-1 leading-normal">

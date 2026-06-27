@@ -17,7 +17,7 @@ export async function rateLimiter(req: Request, res: Response, next: NextFunctio
     try {
       const key = `rate:${ip}`;
       const clearBefore = now - LIMIT_WINDOW_MS;
-      
+
       const multi = redis.multi();
       // Add member to sorted set (timestamp + random string to avoid duplicate members)
       multi.zadd(key, now, `${now}:${Math.random()}`);
@@ -29,7 +29,7 @@ export async function rateLimiter(req: Request, res: Response, next: NextFunctio
       multi.pexpire(key, LIMIT_WINDOW_MS);
 
       const results = await multi.exec();
-      
+
       if (results) {
         // results is an array of [error, result]
         const zcardError = results[2][0];
@@ -41,7 +41,7 @@ export async function rateLimiter(req: Request, res: Response, next: NextFunctio
 
         if (count > MAX_REQUESTS) {
           return res.status(429).json({
-            error: "Too many requests. Please wait a moment before trying again."
+            error: "Too many requests. Please wait a moment before trying again.",
           });
         }
         return next();
@@ -56,11 +56,11 @@ export async function rateLimiter(req: Request, res: Response, next: NextFunctio
     rateLimits[ip] = [];
   }
 
-  rateLimits[ip] = rateLimits[ip].filter(timestamp => now - timestamp < LIMIT_WINDOW_MS);
+  rateLimits[ip] = rateLimits[ip].filter((timestamp) => now - timestamp < LIMIT_WINDOW_MS);
 
   if (rateLimits[ip].length >= MAX_REQUESTS) {
     return res.status(429).json({
-      error: "Too many requests. Please wait a moment before trying again."
+      error: "Too many requests. Please wait a moment before trying again.",
     });
   }
 

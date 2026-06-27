@@ -20,14 +20,14 @@ router.get("/api/user/:login", async (req, res) => {
               include: {
                 weeks: {
                   include: {
-                    tasks: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    tasks: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user || !user.profile) {
@@ -60,12 +60,12 @@ router.get("/api/user/:login", async (req, res) => {
       profile: {
         skills: parsedSkills,
         level: user.profile.level,
-        interest: user.profile.interest
+        interest: user.profile.interest,
       },
       repos: user.profile.repos || [],
       roadmap: user.profile.roadmap ? roadmapData : null,
       checkedRoadmapTasks: checkedTasks,
-      pullRequests: user.pullRequests || []
+      pullRequests: user.pullRequests || [],
     });
   } catch (err) {
     console.error("Failed to fetch user data:", err);
@@ -80,12 +80,12 @@ router.post("/api/user/:login/reset", async (req, res) => {
 
     const user = await prisma.user.findFirst({
       where: { githubLogin: login },
-      include: { profile: true }
+      include: { profile: true },
     });
 
     if (user && user.profile) {
       await prisma.profile.delete({
-        where: { id: user.profile.id }
+        where: { id: user.profile.id },
       });
     }
 
@@ -111,21 +111,22 @@ router.get("/api/badge/:login.svg", async (req, res) => {
               include: {
                 weeks: {
                   include: {
-                    tasks: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    tasks: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
-    let passholderName = (queryName as string) || (user?.name) || user?.githubLogin || "Guest Committer";
+    let passholderName =
+      (queryName as string) || user?.name || user?.githubLogin || "Guest Committer";
     let domain = user?.profile?.interest || "Frontend Base";
     let level = user?.profile?.level || "Beginner";
     let completedCount = 0;
-    
+
     if (user?.profile?.roadmap?.weeks) {
       user.profile.roadmap.weeks.forEach((w) => {
         w.tasks.forEach((t) => {
@@ -248,7 +249,9 @@ router.post("/api/gpg/verify", (req, res) => {
   try {
     const parseResult = GpgVerifySchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid payload.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid payload.", details: parseResult.error.format() });
     }
 
     const { publicKeyBlock } = parseResult.data;
@@ -269,7 +272,9 @@ router.post("/api/pr/register", async (req, res) => {
   try {
     const parseResult = PrRegisterSchema.safeParse(req.body);
     if (!parseResult.success) {
-      return res.status(400).json({ error: "Invalid payload.", details: parseResult.error.format() });
+      return res
+        .status(400)
+        .json({ error: "Invalid payload.", details: parseResult.error.format() });
     }
 
     const { githubLogin, prUrl, title } = parseResult.data;
@@ -277,7 +282,9 @@ router.post("/api/pr/register", async (req, res) => {
     // Parse repository name and PR number from URL
     const match = prUrl.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/i);
     if (!match) {
-      return res.status(400).json({ error: "Invalid GitHub PR URL format. Must be like https://github.com/owner/repo/pull/123" });
+      return res.status(400).json({
+        error: "Invalid GitHub PR URL format. Must be like https://github.com/owner/repo/pull/123",
+      });
     }
 
     const [, owner, repo, prNumStr] = match;
@@ -286,7 +293,7 @@ router.post("/api/pr/register", async (req, res) => {
 
     // Find user
     const user = await prisma.user.findFirst({
-      where: { githubLogin }
+      where: { githubLogin },
     });
 
     if (!user) {
@@ -298,15 +305,15 @@ router.post("/api/pr/register", async (req, res) => {
       where: {
         userId: user.id,
         prNumber,
-        repoFullName
-      }
+        repoFullName,
+      },
     });
 
     let pr;
     if (existingPr) {
       pr = await prisma.pullRequest.update({
         where: { id: existingPr.id },
-        data: { title, url: prUrl }
+        data: { title, url: prUrl },
       });
     } else {
       pr = await prisma.pullRequest.create({
@@ -316,8 +323,8 @@ router.post("/api/pr/register", async (req, res) => {
           repoFullName,
           title,
           url: prUrl,
-          status: "PENDING"
-        }
+          status: "PENDING",
+        },
       });
     }
 

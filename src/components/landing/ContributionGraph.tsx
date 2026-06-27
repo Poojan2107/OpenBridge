@@ -7,26 +7,210 @@ function getSimulatedContributionData(): number[][] {
   }
   const letterPatterns: Record<string, [number, number][]> = {
     O: [
-      [0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4],
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 4],
+      [3, 0],
+      [3, 4],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
     ],
     P: [
-      [0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 1], [3, 2], [3, 3], [4, 0], [5, 0], [6, 0],
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 4],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [4, 0],
+      [5, 0],
+      [6, 0],
     ],
-    E: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 0], [2, 0], [2, 1], [2, 2], [3, 0], [4, 0], [4, 1], [4, 2], [4, 3], [4, 4], [5, 0], [6, 0]],
-    N: [[0, 0], [0, 4], [1, 0], [1, 1], [1, 4], [2, 0], [2, 2], [2, 4], [3, 0], [3, 3], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 4]],
-    B: [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 4], [2, 0], [2, 3], [3, 0], [3, 1], [3, 2], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3]],
-    R: [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 1], [3, 2], [3, 3], [4, 0], [4, 2], [5, 0], [5, 3], [6, 0], [6, 4]],
-    I: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4]],
-    D: [[0, 0], [0, 1], [0, 2], [0, 3], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3]],
-    G: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [1, 0], [2, 0], [3, 0], [3, 2], [3, 3], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4]],
-    H: [[0, 0], [0, 4], [1, 0], [1, 4], [2, 0], [2, 4], [3, 0], [3, 1], [3, 2], [3, 3], [3, 4], [4, 0], [4, 4], [5, 0], [5, 4], [6, 0], [6, 4]],
+    E: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [1, 0],
+      [2, 0],
+      [2, 1],
+      [2, 2],
+      [3, 0],
+      [4, 0],
+      [4, 1],
+      [4, 2],
+      [4, 3],
+      [4, 4],
+      [5, 0],
+      [6, 0],
+    ],
+    N: [
+      [0, 0],
+      [0, 4],
+      [1, 0],
+      [1, 1],
+      [1, 4],
+      [2, 0],
+      [2, 2],
+      [2, 4],
+      [3, 0],
+      [3, 3],
+      [3, 4],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 4],
+    ],
+    B: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 3],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+    ],
+    R: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 4],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [4, 0],
+      [4, 2],
+      [5, 0],
+      [5, 3],
+      [6, 0],
+      [6, 4],
+    ],
+    I: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [1, 2],
+      [2, 2],
+      [3, 2],
+      [4, 2],
+      [5, 2],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+    ],
+    D: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 4],
+      [3, 0],
+      [3, 4],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+    ],
+    G: [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [0, 3],
+      [0, 4],
+      [1, 0],
+      [2, 0],
+      [3, 0],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+    ],
+    H: [
+      [0, 0],
+      [0, 4],
+      [1, 0],
+      [1, 4],
+      [2, 0],
+      [2, 4],
+      [3, 0],
+      [3, 1],
+      [3, 2],
+      [3, 3],
+      [3, 4],
+      [4, 0],
+      [4, 4],
+      [5, 0],
+      [5, 4],
+      [6, 0],
+      [6, 4],
+    ],
   };
   const word = "OPENBRIDGE";
   const letterSpacing = 5;
   const startCol = 1;
   word.split("").forEach((ch, idx) => {
     const pattern = letterPatterns[ch];
-    if (!pattern) { return; }
+    if (!pattern) {
+      return;
+    }
     const offset = startCol + idx * letterSpacing;
     pattern.forEach(([r, c]) => {
       const col = offset + c;
@@ -50,25 +234,47 @@ export function ContributionGraph() {
   const contribGrid = useRef(getSimulatedContributionData());
 
   return (
-    <section id="ob-tutorial" className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left">
+    <section
+      id="ob-tutorial"
+      className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-b border-[#30363D] select-none text-center sm:text-left"
+    >
       <div className="space-y-12">
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-mono uppercase text-[#39D353] font-bold tracking-wider">Telemetry Statistics</span>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">Interactive Contribution Wave</h2>
-          <p className="text-[#8B949E] text-sm leading-relaxed max-w-xl">Your real-time developer pulse. Every checkmark ticked on a roadmap translates to active, visible progress on your telemetry dashboard.</p>
+          <span className="text-xs font-mono uppercase text-[#39D353] font-bold tracking-wider">
+            Telemetry Statistics
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-[#F0F6FC]">
+            Interactive Contribution Wave
+          </h2>
+          <p className="text-[#8B949E] text-sm leading-relaxed max-w-xl">
+            Your real-time developer pulse. Every checkmark ticked on a roadmap translates to
+            active, visible progress on your telemetry dashboard.
+          </p>
         </div>
         <div className="bg-[#161B22] border border-[#30363D] p-6 rounded-lg space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-0.5">
-              <span className="block text-xs font-mono text-[#8B949E] uppercase font-bold">Workspace commit metrics</span>
-              <span className="block text-lg font-bold text-[#F0F6FC]">412 contributions in the last year</span>
+              <span className="block text-xs font-mono text-[#8B949E] uppercase font-bold">
+                Workspace commit metrics
+              </span>
+              <span className="block text-lg font-bold text-[#F0F6FC]">
+                412 contributions in the last year
+              </span>
             </div>
             <div className="text-xs font-mono text-[#8B949E] space-y-1 sm:text-right">
-              <span className="block">Active velocity: <strong className="text-[#39D353]">+14 commits this week</strong></span>
-              <span className="block">GPG Keys Registered: <strong className="text-[#39D353]">✓ Active</strong></span>
+              <span className="block">
+                Active velocity: <strong className="text-[#39D353]">+14 commits this week</strong>
+              </span>
+              <span className="block">
+                GPG Keys Registered: <strong className="text-[#39D353]">✓ Active</strong>
+              </span>
             </div>
           </div>
-          <div className="overflow-x-auto scrollbar-none py-2 bg-[#0D1117] border border-[#30363D] rounded-lg p-5" role="img" aria-label="Contribution heatmap showing 412 contributions over the past year">
+          <div
+            className="overflow-x-auto scrollbar-none py-2 bg-[#0D1117] border border-[#30363D] rounded-lg p-5"
+            role="img"
+            aria-label="Contribution heatmap showing 412 contributions over the past year"
+          >
             <div className="min-w-[650px] space-y-1.5 cursor-crosshair">
               {contribGrid.current.map((cols, rowIndex) => (
                 <div key={rowIndex} className="flex gap-1">

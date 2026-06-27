@@ -25,10 +25,7 @@ export function removeSSEClient(id: string): void {
 /**
  * Broadcast an event to all connected SSE clients
  */
-export function broadcastSSEEvent(event: {
-  type: string;
-  payload: Record<string, unknown>;
-}): void {
+export function broadcastSSEEvent(event: { type: string; payload: Record<string, unknown> }): void {
   const data = JSON.stringify(event);
   clients.forEach((client) => {
     try {
@@ -46,7 +43,7 @@ export function broadcastSSEEvent(event: {
  */
 export function sendSSEEventToClient(
   clientId: string,
-  event: { type: string; payload: Record<string, unknown> }
+  event: { type: string; payload: Record<string, unknown> },
 ): void {
   const client = clients.get(clientId);
   if (!client) return;

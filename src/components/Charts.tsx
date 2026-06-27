@@ -7,8 +7,16 @@ interface DataPoint {
 }
 
 // ── Thin wrapper for SVG animations ──────────────────────────────────────────
-function AnimatedPath({ d, stroke, strokeWidth = 2, fill = "none" }: {
-  d: string; stroke: string; strokeWidth?: number; fill?: string;
+function AnimatedPath({
+  d,
+  stroke,
+  strokeWidth = 2,
+  fill = "none",
+}: {
+  d: string;
+  stroke: string;
+  strokeWidth?: number;
+  fill?: string;
 }) {
   return (
     <path
@@ -53,14 +61,19 @@ export function DonutChart({
   });
 
   return (
-    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+    <div
+      className="relative inline-flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
         {/* Track */}
         <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1f2937" strokeWidth={thickness} />
         {arcs.map((arc, i) => (
           <circle
             key={i}
-            cx={cx} cy={cy} r={r}
+            cx={cx}
+            cy={cy}
+            r={r}
             fill="none"
             stroke={arc.color}
             strokeWidth={thickness}
@@ -73,8 +86,14 @@ export function DonutChart({
       </svg>
       {(centerLabel || centerSub) && (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-          {centerLabel && <span className="text-lg font-black text-white font-mono leading-none">{centerLabel}</span>}
-          {centerSub && <span className="text-[10px] text-zinc-500 font-mono mt-0.5">{centerSub}</span>}
+          {centerLabel && (
+            <span className="text-lg font-black text-white font-mono leading-none">
+              {centerLabel}
+            </span>
+          )}
+          {centerSub && (
+            <span className="text-[10px] text-zinc-500 font-mono mt-0.5">{centerSub}</span>
+          )}
         </div>
       )}
     </div>
@@ -122,16 +141,21 @@ export function Sparkline({
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {filled && (
         <defs>
-          <linearGradient id={`grad-${color.replace("#","")}`} x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id={`grad-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.3" />
             <stop offset="100%" stopColor={color} stopOpacity="0.01" />
           </linearGradient>
         </defs>
       )}
-      {filled && (
-        <path d={areaPath} fill={`url(#grad-${color.replace("#","")})`} />
-      )}
-      <path d={linePath} stroke={color} strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      {filled && <path d={areaPath} fill={`url(#grad-${color.replace("#", "")})`} />}
+      <path
+        d={linePath}
+        stroke={color}
+        strokeWidth={2}
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       {/* Last dot */}
       <circle
         cx={points[points.length - 1].x}
@@ -146,13 +170,7 @@ export function Sparkline({
 }
 
 // ── Horizontal Bar Chart ──────────────────────────────────────────────────────
-export function HorizontalBarChart({
-  data,
-  maxValue,
-}: {
-  data: DataPoint[];
-  maxValue?: number;
-}) {
+export function HorizontalBarChart({ data, maxValue }: { data: DataPoint[]; maxValue?: number }) {
   const max = maxValue ?? Math.max(...data.map((d) => d.value), 1);
 
   return (
@@ -197,7 +215,11 @@ export function ColumnChart({
       {data.map((d, i) => {
         const barH = Math.max((d.value / max) * (height - 20), d.value > 0 ? 4 : 0);
         return (
-          <div key={i} className="flex flex-col items-center justify-end flex-1 gap-0.5 group" style={{ height }}>
+          <div
+            key={i}
+            className="flex flex-col items-center justify-end flex-1 gap-0.5 group"
+            style={{ height }}
+          >
             <span className="text-[8px] font-mono text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity">
               {d.value}
             </span>

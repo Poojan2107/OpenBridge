@@ -10,7 +10,7 @@ export function getRedisClient(): Redis | null {
   if (!redisInitialized) {
     redisInitialized = true;
     const redisUrl = process.env.REDIS_URL;
-    
+
     if (redisUrl && redisUrl.trim() !== "") {
       try {
         console.log(`Initializing Redis client with URL: ${redisUrl}`);
@@ -21,11 +21,13 @@ export function getRedisClient(): Redis | null {
           retryStrategy(times) {
             // Keep retrying but print warnings, max retry delay 5s
             if (times > 10) {
-              console.warn("Redis reconnection attempts exceeded threshold. Suspending Redis operations.");
+              console.warn(
+                "Redis reconnection attempts exceeded threshold. Suspending Redis operations.",
+              );
               return null; // Stop retrying
             }
             return Math.min(times * 100, 2000);
-          }
+          },
         });
 
         redisClient.on("error", (err) => {
@@ -37,12 +39,19 @@ export function getRedisClient(): Redis | null {
         redisClient = null;
       }
     } else {
-      console.warn("No REDIS_URL environment variable found. Redis caching and rate limiting disabled.");
+      console.warn(
+        "No REDIS_URL environment variable found. Redis caching and rate limiting disabled.",
+      );
     }
   }
 
   // Only return the client if it's in a valid state
-  if (redisClient && (redisClient.status === "ready" || redisClient.status === "connecting" || redisClient.status === "wait")) {
+  if (
+    redisClient &&
+    (redisClient.status === "ready" ||
+      redisClient.status === "connecting" ||
+      redisClient.status === "wait")
+  ) {
     return redisClient;
   }
   return null;

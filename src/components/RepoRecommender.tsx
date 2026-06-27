@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { RepositorySuggestion } from "../types";
-import { 
-  FolderGit2, 
-  AlertCircle, 
-  Sparkles, 
-  Star, 
-  ChevronDown, 
-  ChevronUp, 
-  Copy, 
-  Check, 
-  GitPullRequest, 
-  ExternalLink, 
+import {
+  FolderGit2,
+  AlertCircle,
+  Sparkles,
+  Star,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check,
+  GitPullRequest,
+  ExternalLink,
   RefreshCw,
   Terminal,
   Code,
   ChevronLeft,
   ChevronRight,
-  Search
+  Search,
 } from "lucide-react";
 
 interface RepoRecommenderProps {
@@ -28,9 +28,11 @@ interface RepoRecommenderProps {
 export default function RepoRecommender({ repos, userProfile, onReset }: RepoRecommenderProps) {
   const [copiedIndex, setCopiedIndex] = useState<{ [key: string]: boolean }>({});
   const [expandedRepo, setExpandedRepo] = useState<string | null>(repos[0]?.name || null);
-  const [activeIssueTerminal, setActiveIssueTerminal] = useState<{ [repoName: string]: { text: string; idx: number } | null }>({});
+  const [activeIssueTerminal, setActiveIssueTerminal] = useState<{
+    [repoName: string]: { text: string; idx: number } | null;
+  }>({});
   const [searchQuery, setSearchQuery] = useState("");
-  
+
   // Real dynamic list pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 2;
@@ -41,12 +43,12 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
   }, [searchQuery]);
 
   // Filter repositories dynamically based on search terms
-  const filteredRepos = repos.filter(repo => {
+  const filteredRepos = repos.filter((repo) => {
     const query = searchQuery.toLowerCase();
     return (
       repo.name.toLowerCase().includes(query) ||
       repo.description.toLowerCase().includes(query) ||
-      repo.issues.some(issue => issue.toLowerCase().includes(query))
+      repo.issues.some((issue) => issue.toLowerCase().includes(query))
     );
   });
 
@@ -69,7 +71,7 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
       .replace(/[^a-z0-9]+/g, "-")
       .slice(0, 18)}`;
     const repoShortName = repoName.split("/")[1] || "project";
-    
+
     return [
       `# 1. Fork repository on GitHub, then clone your local copy`,
       `git clone https://github.com/your-username/${repoShortName}.git`,
@@ -88,7 +90,7 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
       `# 5. Perfect! Perform your code changes, commit, & file descriptive PR`,
       `git add .`,
       `git commit -m "onboard: 0${idx + 1} - ${issueText.slice(0, 36)}..."`,
-      `git push origin ${safeBranch}`
+      `git push origin ${safeBranch}`,
     ].join("\n");
   };
 
@@ -114,7 +116,9 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
             Recommended Repositories
           </h2>
           <p className="text-zinc-400 text-xs mt-0.5">
-            Matching repositories indexed for interests: <span className="text-zinc-300 font-semibold">{userProfile?.interest}</span> ({userProfile?.level})
+            Matching repositories indexed for interests:{" "}
+            <span className="text-zinc-300 font-semibold">{userProfile?.interest}</span> (
+            {userProfile?.level})
           </p>
         </div>
 
@@ -189,16 +193,16 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
 
                 {/* Highly structured match score */}
                 <div className="text-right shrink-0">
-                  <div className="text-xs font-mono font-bold text-zinc-300">
-                    {repo.match}
-                  </div>
+                  <div className="text-xs font-mono font-bold text-zinc-300">{repo.match}</div>
                   <div className="text-[9px] text-zinc-500 uppercase font-mono">match</div>
                 </div>
               </div>
 
               {/* Badges row */}
               <div className="flex flex-wrap gap-1.5 mb-4">
-                <span className={`px-2 py-0.5 text-[10px] font-mono border rounded ${getDifficultyColor(repo.difficulty)}`}>
+                <span
+                  className={`px-2 py-0.5 text-[10px] font-mono border rounded ${getDifficultyColor(repo.difficulty)}`}
+                >
                   {repo.difficulty}
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-mono border border-zinc-900 bg-zinc-950 text-zinc-505 rounded">
@@ -232,7 +236,11 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
                   <span className="inline-flex items-center gap-1.5">
                     Suggested Issues ({repo.issues.length})
                   </span>
-                  {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
                 </button>
 
                 {isExpanded && (
@@ -244,12 +252,14 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
                         <div
                           key={idx}
                           className={`flex flex-col gap-2 p-2.5 bg-[#090a0f] border rounded text-[11px] transition-all leading-relaxed ${
-                            isTerminalActive ? 'border-orange-500/40 bg-orange-950/5' : 'border-zinc-900'
+                            isTerminalActive
+                              ? "border-orange-500/40 bg-orange-950/5"
+                              : "border-zinc-900"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3 w-full">
                             <div className="text-zinc-405 font-mono flex gap-1.5 min-w-0">
-                              <span className="text-zinc-500 font-bold shrink-0">0{idx+1}</span>
+                              <span className="text-zinc-500 font-bold shrink-0">0{idx + 1}</span>
                               <span className="truncate">{issueStr}</span>
                             </div>
 
@@ -259,9 +269,15 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
                                 onClick={() => {
                                   const activeVal = activeIssueTerminal[repo.name];
                                   if (activeVal && activeVal.idx === idx) {
-                                    setActiveIssueTerminal(prev => ({ ...prev, [repo.name]: null }));
+                                    setActiveIssueTerminal((prev) => ({
+                                      ...prev,
+                                      [repo.name]: null,
+                                    }));
                                   } else {
-                                    setActiveIssueTerminal(prev => ({ ...prev, [repo.name]: { text: issueStr, idx } }));
+                                    setActiveIssueTerminal((prev) => ({
+                                      ...prev,
+                                      [repo.name]: { text: issueStr, idx },
+                                    }));
                                   }
                                 }}
                                 className={`p-1 rounded transition-colors ${
@@ -344,18 +360,21 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
 
       {/* GitHub styled Pagination Container */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-1.5 pt-6 select-none font-mono text-xs" id="repos-pagination-block">
+        <div
+          className="flex items-center justify-center gap-1.5 pt-6 select-none font-mono text-xs"
+          id="repos-pagination-block"
+        >
           <button
             type="button"
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-zinc-850 bg-zinc-950 text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:hover:text-zinc-400 disabled:cursor-not-allowed transition-colors cursor-pointer"
             id="repos-prev-btn"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Previous</span>
           </button>
-          
+
           {Array.from({ length: totalPages }).map((_, pIdx) => {
             const pageNum = pIdx + 1;
             const isSelected = currentPage === pageNum;
@@ -379,7 +398,7 @@ export default function RepoRecommender({ repos, userProfile, onReset }: RepoRec
           <button
             type="button"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-zinc-850 bg-zinc-950 text-zinc-400 hover:text-zinc-200 disabled:opacity-40 disabled:hover:text-zinc-400 disabled:cursor-not-allowed transition-colors cursor-pointer"
             id="repos-next-btn"
           >

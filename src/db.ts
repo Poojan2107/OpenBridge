@@ -26,7 +26,7 @@ if (globalForPrisma.prisma) {
       connectionString,
       max: 10, // Max clients in the pool
       idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-      connectionTimeoutMillis: 2000 // Raise error if client connection takes > 2 seconds
+      connectionTimeoutMillis: 2000, // Raise error if client connection takes > 2 seconds
     });
     adapter = new PrismaPg(pool);
   }

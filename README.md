@@ -16,7 +16,7 @@
 
 <br />
 
-*"I want to contribute to open source but I don't know where to start."* — **Every developer, ever.**
+_"I want to contribute to open source but I don't know where to start."_ — **Every developer, ever.**
 
 OpenBridge solves this. It profiles your skills, matches you to real GitHub repos, generates a personalized 4-week roadmap, simulates pull request workflows, reviews your code with AI, and tracks your progression from **Lurker** to **OSS Legend**.
 
@@ -28,41 +28,41 @@ OpenBridge solves this. It profiles your skills, matches you to real GitHub repo
 
 ### 🎯 Core Platform
 
-| Feature | Description |
-|---|---|
+| Feature                   | Description                                                                                     |
+| ------------------------- | ----------------------------------------------------------------------------------------------- |
 | **Smart Skill Profiling** | Multi-step onboarding wizard that captures your tech stack, experience level, and interest area |
-| **AI Repo Matching** | Gemini-powered recommendations of real GitHub repos with personalized match reasons |
-| **4-Week Roadmap** | AI-generated step-by-step contribution plan with interactive task tracking |
-| **GitHub OAuth** | Real GitHub login with encrypted token storage (AES-256-CBC) |
-| **Live GitHub Search** | Fallback repo discovery via GitHub Search API when Gemini is unavailable |
+| **AI Repo Matching**      | Gemini-powered recommendations of real GitHub repos with personalized match reasons             |
+| **4-Week Roadmap**        | AI-generated step-by-step contribution plan with interactive task tracking                      |
+| **GitHub OAuth**          | Real GitHub login with encrypted token storage (AES-256-CBC)                                    |
+| **Live GitHub Search**    | Fallback repo discovery via GitHub Search API when Gemini is unavailable                        |
 
 ### 🤖 AI-Powered Tools (3 Gemini Integrations)
 
-| Tool | What It Does |
-|---|---|
-| **🔍 AI Code Review** | Paste code → get structured feedback (score, praise, issues, suggestions) like a senior maintainer |
-| **🎓 Mock Interview Generator** | 5 tailored technical questions based on your stack, with hints & interviewer evaluation criteria |
-| **🗺️ AI Issue Mapper** | Paste a GitHub issue URL → get a plain-English explanation, affected files, and step-by-step fix guide |
+| Tool                            | What It Does                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **🔍 AI Code Review**           | Paste code → get structured feedback (score, praise, issues, suggestions) like a senior maintainer     |
+| **🎓 Mock Interview Generator** | 5 tailored technical questions based on your stack, with hints & interviewer evaluation criteria       |
+| **🗺️ AI Issue Mapper**          | Paste a GitHub issue URL → get a plain-English explanation, affected files, and step-by-step fix guide |
 
 ### 🏆 Gamification & Progression
 
-| Feature | Description |
-|---|---|
-| **XP & Level System** | Earn XP from roadmap tasks (+5) and PRs (+10). Rank up: Lurker → Rookie → Contributor → Core Member → OSS Legend |
-| **Animated Level-Up Toast** | Particle-burst notification when you cross a rank threshold |
-| **SVG Contributor Passport** | Live-updating badge you can embed in your GitHub README |
-| **Public Profile Page** | Shareable `/p/:username` page showcasing your journey, repos, roadmap progress, and rank |
-| **Contribution Streak Heatmap** | GitHub-style activity calendar tracking daily engagement |
+| Feature                         | Description                                                                                                      |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **XP & Level System**           | Earn XP from roadmap tasks (+5) and PRs (+10). Rank up: Lurker → Rookie → Contributor → Core Member → OSS Legend |
+| **Animated Level-Up Toast**     | Particle-burst notification when you cross a rank threshold                                                      |
+| **SVG Contributor Passport**    | Live-updating badge you can embed in your GitHub README                                                          |
+| **Public Profile Page**         | Shareable `/p/:username` page showcasing your journey, repos, roadmap progress, and rank                         |
+| **Contribution Streak Heatmap** | GitHub-style activity calendar tracking daily engagement                                                         |
 
 ### 🛡️ Security & Infrastructure
 
-| Feature | Description |
-|---|---|
-| **AES-256-CBC Encryption** | OAuth tokens encrypted at rest with SHA-256 derived keys |
-| **Rate Limiting** | 15 req/min per IP on all AI endpoints to prevent abuse |
-| **Prisma ORM** | SQLite (dev) / PostgreSQL (prod) with full schema for users, profiles, roadmaps |
-| **SPA Routing** | Client-side routing with Express fallback for `/p/:login` public profiles |
-| **PWA Support** | Installable on desktop/mobile, offline-capable with service worker caching |
+| Feature                    | Description                                                                     |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| **AES-256-CBC Encryption** | OAuth tokens encrypted at rest with SHA-256 derived keys                        |
+| **Rate Limiting**          | 15 req/min per IP on all AI endpoints to prevent abuse                          |
+| **Prisma ORM**             | SQLite (dev) / PostgreSQL (prod) with full schema for users, profiles, roadmaps |
+| **SPA Routing**            | Client-side routing with Express fallback for `/p/:login` public profiles       |
+| **PWA Support**            | Installable on desktop/mobile, offline-capable with service worker caching      |
 
 ---
 
@@ -134,13 +134,13 @@ npm start       # Serves from dist/server.cjs
 
 ## 🔧 Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
-| `GEMINI_API_KEY` | Yes | Your Gemini API key for AI features |
-| `GITHUB_CLIENT_ID` | Optional | GitHub OAuth app client ID |
-| `GITHUB_CLIENT_SECRET` | Optional | GitHub OAuth app client secret |
-| `ENCRYPTION_KEY` | Optional | Custom AES-256 encryption passphrase (auto-generated if missing) |
-| `APP_URL` | Optional | Public URL for OAuth redirects (defaults to localhost) |
+| Variable               | Required | Description                                                      |
+| ---------------------- | -------- | ---------------------------------------------------------------- |
+| `GEMINI_API_KEY`       | Yes      | Your Gemini API key for AI features                              |
+| `GITHUB_CLIENT_ID`     | Optional | GitHub OAuth app client ID                                       |
+| `GITHUB_CLIENT_SECRET` | Optional | GitHub OAuth app client secret                                   |
+| `ENCRYPTION_KEY`       | Optional | Custom AES-256 encryption passphrase (auto-generated if missing) |
+| `APP_URL`              | Optional | Public URL for OAuth redirects (defaults to localhost)           |
 
 > **Note:** The app works without GitHub OAuth — it falls back to a demo mode with simulated GitHub interactions.
 
@@ -187,32 +187,32 @@ openbridge/
 
 ## 🎨 Tech Stack
 
-| Layer | Technology |
-|---|---|
+| Layer        | Technology                                         |
+| ------------ | -------------------------------------------------- |
 | **Frontend** | React 19, TypeScript, Tailwind CSS 4, Lucide Icons |
-| **Backend** | Express.js, Node.js |
-| **AI** | Google Gemini 2.5 Flash (structured JSON output) |
-| **Database** | Prisma ORM → SQLite (dev) / PostgreSQL (prod) |
-| **Auth** | GitHub OAuth 2.0 with AES-256-CBC token encryption |
-| **Build** | Vite (frontend), esbuild (server), tsx (dev) |
-| **PWA** | Service Worker, Web App Manifest, offline caching |
+| **Backend**  | Express.js, Node.js                                |
+| **AI**       | Google Gemini 2.5 Flash (structured JSON output)   |
+| **Database** | Prisma ORM → SQLite (dev) / PostgreSQL (prod)      |
+| **Auth**     | GitHub OAuth 2.0 with AES-256-CBC token encryption |
+| **Build**    | Vite (frontend), esbuild (server), tsx (dev)       |
+| **PWA**      | Service Worker, Web App Manifest, offline caching  |
 
 ---
 
 ## 🧩 API Endpoints
 
-| Method | Route | Description |
-|---|---|---|
-| `POST` | `/api/recommend` | AI repo recommendations based on profile |
-| `POST` | `/api/roadmap` | Generate personalized 4-week roadmap |
-| `POST` | `/api/explain` | Translate GitHub issues to plain English |
-| `POST` | `/api/codereview` | AI-powered code review with scoring |
-| `POST` | `/api/interview` | Generate 5 mock interview questions |
-| `GET` | `/api/user/:login` | Fetch public user profile data |
-| `GET` | `/api/badge/:login.svg` | Dynamic SVG contributor badge |
-| `POST` | `/api/roadmap/task/toggle` | Toggle roadmap task completion |
-| `GET` | `/api/auth/url` | Get GitHub OAuth redirect URL |
-| `GET` | `/auth/callback` | Handle OAuth callback |
+| Method | Route                      | Description                              |
+| ------ | -------------------------- | ---------------------------------------- |
+| `POST` | `/api/recommend`           | AI repo recommendations based on profile |
+| `POST` | `/api/roadmap`             | Generate personalized 4-week roadmap     |
+| `POST` | `/api/explain`             | Translate GitHub issues to plain English |
+| `POST` | `/api/codereview`          | AI-powered code review with scoring      |
+| `POST` | `/api/interview`           | Generate 5 mock interview questions      |
+| `GET`  | `/api/user/:login`         | Fetch public user profile data           |
+| `GET`  | `/api/badge/:login.svg`    | Dynamic SVG contributor badge            |
+| `POST` | `/api/roadmap/task/toggle` | Toggle roadmap task completion           |
+| `GET`  | `/api/auth/url`            | Get GitHub OAuth redirect URL            |
+| `GET`  | `/auth/callback`           | Handle OAuth callback                    |
 
 ---
 
@@ -247,6 +247,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 **Built with ❤️ by [Poojan](https://github.com/Poojan2107)**
 
-*OpenBridge — because everyone deserves a bridge into open source.*
+_OpenBridge — because everyone deserves a bridge into open source._
 
 </div>

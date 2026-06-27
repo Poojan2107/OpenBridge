@@ -70,9 +70,7 @@ function Toast({
     setTimeout(onDismiss, 350);
   };
 
-  const cfg =
-    STATUS_CONFIG[notification.status || notification.type] ||
-    STATUS_CONFIG["PENDING"];
+  const cfg = STATUS_CONFIG[notification.status || notification.type] || STATUS_CONFIG["PENDING"];
 
   return (
     <div
@@ -80,11 +78,12 @@ function Toast({
         relative max-w-sm w-full rounded-xl border backdrop-blur-sm shadow-2xl shadow-black/50
         transition-all duration-350 ease-out font-sans
         ${cfg.color}
-        ${visible && !exiting
-          ? "opacity-100 translate-x-0"
-          : exiting
-          ? "opacity-0 translate-x-8"
-          : "opacity-0 translate-x-8"
+        ${
+          visible && !exiting
+            ? "opacity-100 translate-x-0"
+            : exiting
+              ? "opacity-0 translate-x-8"
+              : "opacity-0 translate-x-8"
         }
       `}
     >
@@ -121,10 +120,7 @@ function Toast({
   );
 }
 
-export default function NotificationToast({
-  notifications,
-  onDismiss,
-}: NotificationToastProps) {
+export default function NotificationToast({ notifications, onDismiss }: NotificationToastProps) {
   if (notifications.length === 0) return null;
 
   return (

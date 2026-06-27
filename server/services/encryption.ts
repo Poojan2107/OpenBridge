@@ -3,12 +3,14 @@ import crypto from "crypto";
 const isProduction = process.env.NODE_ENV === "production";
 
 if (isProduction && !process.env.ENCRYPTION_KEY) {
-  throw new Error("CRITICAL ERROR: ENCRYPTION_KEY environment variable is required in production mode to prevent session data decryption failures!");
+  throw new Error(
+    "CRITICAL ERROR: ENCRYPTION_KEY environment variable is required in production mode to prevent session data decryption failures!",
+  );
 }
 
-const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY 
-  ? crypto.createHash("sha256").update(process.env.ENCRYPTION_KEY).digest() 
-  : crypto.randomBytes(32); 
+const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY
+  ? crypto.createHash("sha256").update(process.env.ENCRYPTION_KEY).digest()
+  : crypto.randomBytes(32);
 
 const IV_LENGTH = 16;
 

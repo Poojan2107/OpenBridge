@@ -16,20 +16,26 @@ import { rateLimiter } from "./middleware/rateLimiter";
 
 const app = express();
 
-app.use(express.json({
-  verify: (req: any, _res, buf) => {
-    req.rawBody = buf;
-  }
-}));
+app.use(
+  express.json({
+    verify: (req: any, _res, buf) => {
+      req.rawBody = buf;
+    },
+  }),
+);
 
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false,
-}));
-app.use(cors({
-  origin: process.env.APP_URL || "http://localhost:3000",
-  credentials: true,
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+  }),
+);
+app.use(
+  cors({
+    origin: process.env.APP_URL || "http://localhost:3000",
+    credentials: true,
+  }),
+);
 
 app.use("/api/recommend", rateLimiter);
 app.use("/api/explain", rateLimiter);

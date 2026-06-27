@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Terminal, Lightbulb, CheckSquare, Sparkles, BookOpen, FileCode2, Copy, Check, ArrowRight, HelpCircle } from "lucide-react";
+import {
+  Terminal,
+  Lightbulb,
+  CheckSquare,
+  Sparkles,
+  BookOpen,
+  FileCode2,
+  Copy,
+  Check,
+  ArrowRight,
+  HelpCircle,
+} from "lucide-react";
 import { IssueTranslation } from "../types";
 
 interface IssueTranslatorProps {
@@ -9,16 +20,16 @@ interface IssueTranslatorProps {
 const PRESETS = [
   {
     title: "Live GitHub Issue (facebook/react)",
-    text: "https://github.com/facebook/react/issues/28000"
+    text: "https://github.com/facebook/react/issues/28000",
   },
   {
     title: "Vite local server port conflict",
-    text: "Error: listen EADDRINUSE: address already in use :::3000 at Server.setupListenHandle [as _listen2] (node:net:1812:14) at listenInCluster (node:net:1860:12) at Server.listen (node:net:1948:7) - The development server crashed because port 3000 is occupied. Introduce a warning or search for the next available port dynamically."
+    text: "Error: listen EADDRINUSE: address already in use :::3000 at Server.setupListenHandle [as _listen2] (node:net:1812:14) at listenInCluster (node:net:1860:12) at Server.listen (node:net:1948:7) - The development server crashed because port 3000 is occupied. Introduce a warning or search for the next available port dynamically.",
   },
   {
     title: "React stale closure in search input hook",
-    text: "Warning: React hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array. When typing inside the search input rapidly, the old fetched requests resolve after the newer ones, leading to outdated query lists rendering on-screen."
-  }
+    text: "Warning: React hook useEffect has a missing dependency: 'fetchResults'. Either include it or remove the dependency array. When typing inside the search input rapidly, the old fetched requests resolve after the newer ones, leading to outdated query lists rendering on-screen.",
+  },
 ];
 
 export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
@@ -36,9 +47,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
       "Contacting GitHub repositories API...",
       "Deconstructing code semantic contexts...",
       "Mapping issue dependencies to files...",
-      "Generating action guidelines with Gemini..."
+      "Generating action guidelines with Gemini...",
     ];
-    
+
     let current = 0;
     const interval = setInterval(() => {
       current++;
@@ -58,7 +69,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
     setError(null);
     setExplanation(null);
     setCompletedSteps({});
-    
+
     const stopInterval = startLoaderAnimation();
 
     try {
@@ -66,7 +77,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
       if (res) {
         setExplanation(res);
       } else {
-        setError("Gemini was unable to decipher this text. Please refine the description or use one of our preset templates.");
+        setError(
+          "Gemini was unable to decipher this text. Please refine the description or use one of our preset templates.",
+        );
       }
     } catch (err) {
       setError("Failed to establish server contact. Falling back to local diagnostic metrics.");
@@ -77,7 +90,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
   };
 
   const toggleStep = (idx: number) => {
-    setCompletedSteps(prev => ({ ...prev, [idx]: !prev[idx] }));
+    setCompletedSteps((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   const copyFile = (filePath: string) => {
@@ -90,7 +103,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
     "Contacting GitHub repositories API...",
     "Deconstructing code semantic contexts...",
     "Mapping issue dependencies to files...",
-    "Generating action guidelines with Gemini..."
+    "Generating action guidelines with Gemini...",
   ];
 
   return (
@@ -103,7 +116,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
           Issue Translator & Target Mapper
         </h2>
         <p className="text-zinc-400 text-xs mt-1 max-w-2xl leading-relaxed">
-          Paste any raw GitHub issue description, bug trace log, or a **live GitHub issue URL**. Gemini will fetch the content, isolate the cause, identify affected target files, and generate a step-by-step checklist.
+          Paste any raw GitHub issue description, bug trace log, or a **live GitHub issue URL**.
+          Gemini will fetch the content, isolate the cause, identify affected target files, and
+          generate a step-by-step checklist.
         </p>
       </div>
 
@@ -111,7 +126,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
         {/* Left Column: Input Panel */}
         <div className="lg:col-span-5 space-y-4">
           <div className="space-y-1.5">
-            <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 font-mono">Quick-test cases</span>
+            <span className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 font-mono">
+              Quick-test cases
+            </span>
             <div className="flex flex-col gap-1.5">
               {PRESETS.map((p, idx) => (
                 <button
@@ -135,7 +152,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
           </div>
 
           <div className="pt-1">
-            <label className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 mb-1.5 font-mono">Custom Input (Text or Issue URL)</label>
+            <label className="block text-[10px] uppercase font-bold tracking-wider text-zinc-650 mb-1.5 font-mono">
+              Custom Input (Text or Issue URL)
+            </label>
             <div className="relative">
               <textarea
                 value={issueText}
@@ -172,7 +191,6 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
 
         {/* Right Column: Dynamic Output */}
         <div className="lg:col-span-7 bg-[#090a0f]/40 border border-zinc-900 rounded-lg p-5 min-h-[300px] flex flex-col justify-between relative">
-          
           {/* Default Empty State */}
           {!loading && !explanation && !error && (
             <div className="m-auto text-center max-w-sm space-y-4 py-8 select-none">
@@ -180,9 +198,12 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
                 <HelpCircle className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-zinc-300 font-mono uppercase tracking-wider">Awaiting Issue Inputs</h4>
+                <h4 className="text-xs font-bold text-zinc-300 font-mono uppercase tracking-wider">
+                  Awaiting Issue Inputs
+                </h4>
                 <p className="text-xs text-zinc-500 mt-1 pb-4 leading-relaxed">
-                  Select a test case on the left, or input your custom traceback block to see affected files & resolution instructions index.
+                  Select a test case on the left, or input your custom traceback block to see
+                  affected files & resolution instructions index.
                 </p>
               </div>
             </div>
@@ -217,7 +238,9 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
           {/* Custom Error State */}
           {error && !loading && (
             <div className="m-auto text-center max-w-sm space-y-2 py-6 select-none">
-              <span className="text-amber-500 text-xs font-bold font-mono uppercase tracking-wider">⚠️ Translation Warning</span>
+              <span className="text-amber-500 text-xs font-bold font-mono uppercase tracking-wider">
+                ⚠️ Translation Warning
+              </span>
               <p className="text-xs text-zinc-500 leading-relaxed">{error}</p>
             </div>
           )}
@@ -230,9 +253,7 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-zinc-400 bg-zinc-900 px-2 py-0.5 border border-zinc-800 rounded">
                   Plain Description Synthesis
                 </span>
-                <p className="text-zinc-300 leading-relaxed font-sans">
-                  {explanation.meaning}
-                </p>
+                <p className="text-zinc-300 leading-relaxed font-sans">{explanation.meaning}</p>
               </div>
 
               {/* High Probability Files */}
@@ -283,15 +304,19 @@ export default function IssueTranslator({ onTranslate }: IssueTranslatorProps) {
                             : "bg-zinc-950/30 border-zinc-905 hover:border-zinc-855 text-zinc-300"
                         }`}
                       >
-                        <div className={`p-0.5 rounded border mt-0.5 ${
-                          active
-                            ? "border-zinc-500 bg-zinc-650 text-zinc-100"
-                            : "border-zinc-805 text-transparent bg-transparent"
-                        }`}>
+                        <div
+                          className={`p-0.5 rounded border mt-0.5 ${
+                            active
+                              ? "border-zinc-500 bg-zinc-650 text-zinc-100"
+                              : "border-zinc-805 text-transparent bg-transparent"
+                          }`}
+                        >
                           <Check className="w-3 h-3" />
                         </div>
                         <div className="text-[11px] leading-relaxed">
-                          <span className={`block font-bold mb-0.5 text-[9px] uppercase tracking-wider text-zinc-500`}>
+                          <span
+                            className={`block font-bold mb-0.5 text-[9px] uppercase tracking-wider text-zinc-500`}
+                          >
                             Target 0{idx + 1}
                           </span>
                           <span className={`${active ? "line-through text-zinc-550" : ""}`}>
