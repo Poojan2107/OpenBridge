@@ -4,21 +4,15 @@ import {
   GitPullRequest,
   Terminal,
   Award,
-  Zap,
   Check,
-  Plus,
   X,
   Send,
   RefreshCw,
   AlertCircle,
-  GitBranch,
-  Calendar,
   ExternalLink,
   Copy,
   Sparkles,
-  ShieldAlert,
   ArrowLeft,
-  CheckCircle,
 } from "lucide-react";
 import { PersonalizedRoadmap, UserProfile, GitHubUser } from "../types";
 import LevelBadge from "./LevelBadge";
@@ -88,7 +82,9 @@ export default function ChallengeHub({
             },
           ]);
         }
-      } catch {}
+      } catch (e) {
+        console.warn("Failed to load PRs from localStorage:", e);
+      }
     }
   }, [initialPullRequests]);
 
@@ -145,7 +141,9 @@ export default function ChallengeHub({
     try {
       const saved = localStorage.getItem("ob_pr_comments");
       if (saved) return JSON.parse(saved);
-    } catch {}
+    } catch (e) {
+      console.warn("Failed to load PR comments from localStorage:", e);
+    }
     return {
       "pr-1": [
         "This typo fix is correct. Thanks for contributing!",
@@ -182,6 +180,8 @@ export default function ChallengeHub({
 
   // Badge customizer states
   const [badgeTheme, setBadgeTheme] = useState<"classic" | "cyberpunk" | "emerald">("classic");
+  const [badgeCacheBuster] = useState(() => Date.now());
+  const [randomId] = useState(() => Math.floor(100000 + Math.random() * 900000));
   const [tempPassName, setTempPassName] = useState(() => {
     return githubUser ? githubUser.name || githubUser.login : "Guest Committer";
   });
@@ -1032,7 +1032,7 @@ export default function ChallengeHub({
                   </div>
 
                   <span className="text-[10px] font-mono text-zinc-550 mt-2 hover:underline cursor-help">
-                    ID: OB-{Math.floor(100000 + Math.random() * 900000)}
+                    ID: OB-{randomId}
                   </span>
                 </div>
 
@@ -1147,7 +1147,7 @@ export default function ChallengeHub({
                   </span>
                   <div className="flex items-center justify-center p-2.5 bg-[#0c0d12]/60 border border-zinc-900 rounded-lg">
                     <img
-                      src={`/api/badge/${githubUser?.login || "guest-committer"}.svg?name=${encodeURIComponent(tempPassName)}&theme=${badgeTheme}&t=${Date.now()}`}
+                      src={`/api/badge/${githubUser?.login || "guest-committer"}.svg?name=${encodeURIComponent(tempPassName)}&theme=${badgeTheme}&t=${badgeCacheBuster}`}
                       alt="OpenBridge Verified Passport"
                       className="max-w-full h-auto"
                       style={{ maxHeight: "80px" }}

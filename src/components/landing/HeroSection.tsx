@@ -10,8 +10,6 @@ import {
   Star,
   Check,
   CheckCircle,
-  Code,
-  ExternalLink,
 } from "lucide-react";
 
 interface HeroSectionProps {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { GitPullRequest, GitMerge, X, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { GitMerge, X, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 export interface ToastNotification {
   id: string;

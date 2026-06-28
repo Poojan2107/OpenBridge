@@ -139,7 +139,9 @@ export default function PreflightConsole() {
         }
         return parsed;
       }
-    } catch {}
+    } catch (e) {
+      console.error("Failed to parse localStorage checks:", e);
+    }
     return [
       {
         name: "Global Git Config Signature",
