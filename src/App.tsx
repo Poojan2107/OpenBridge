@@ -371,7 +371,6 @@ export default function App() {
         onConnectGithub={handleConnectGithub}
         onConnectGuest={handleConnectGuest}
         onDisconnectGithub={handleDisconnectGithub}
-        onOnboardPreset={handleOnboardPreset}
         onSubmitProfile={handleSubmitProfile}
         isLoading={loading}
       />

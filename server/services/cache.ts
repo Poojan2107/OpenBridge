@@ -42,7 +42,9 @@ export async function getCachedRecommendations(key: string): Promise<any | null>
       if (redis) {
         try {
           await redis.setex(redisKey, 86400, record.response);
-        } catch {}
+        } catch (e) {
+          console.warn("Redis backfill failed:", e);
+        }
       }
 
       return JSON.parse(record.response);

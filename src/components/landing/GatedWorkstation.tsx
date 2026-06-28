@@ -1,4 +1,4 @@
-import { Shield, Zap, Github, CheckCircle, Award, Code, Terminal, Info } from "lucide-react";
+import { Shield, Zap, Github, Award, Code, Terminal, Info } from "lucide-react";
 import { GitHubUser, UserProfile } from "../../types";
 import ProfilingForm from "../ProfilingForm";
 

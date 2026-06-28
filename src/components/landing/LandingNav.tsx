@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Github, Layers, ChevronDown, Menu, X, Search } from "lucide-react";
+import { Layers, ChevronDown, Menu, X, Search } from "lucide-react";
 import { GitHubUser } from "../../types";
 
 interface LandingNavProps {

@@ -15,7 +15,6 @@ interface GithubLandingPageProps {
   onConnectGithub: () => void;
   onConnectGuest?: () => void;
   onDisconnectGithub: () => void;
-  onOnboardPreset: () => void;
   onSubmitProfile: (profile: UserProfile) => void;
   isLoading: boolean;
 }
@@ -25,7 +24,6 @@ export default function GithubLandingPage({
   onConnectGithub,
   onConnectGuest: rawOnConnectGuest,
   onDisconnectGithub,
-  onOnboardPreset,
   onSubmitProfile,
   isLoading,
 }: GithubLandingPageProps) {

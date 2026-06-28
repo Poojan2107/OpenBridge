@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   GitFork,
-  Star,
-  Award,
   CheckCircle2,
   Circle,
   ExternalLink,
@@ -10,10 +8,7 @@ import {
   Check,
   ArrowLeft,
   Sparkles,
-  Code,
-  Globe,
   Zap,
-  GitPullRequest,
   Calendar,
 } from "lucide-react";
 import LevelBadge from "./LevelBadge";
@@ -54,6 +49,7 @@ export default function PublicProfile({ login }: PublicProfileProps) {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [badgeTs] = useState(() => Date.now());
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -316,7 +312,7 @@ export default function PublicProfile({ login }: PublicProfileProps) {
             </div>
             <div className="flex justify-center p-4 bg-[#0d1117] rounded-xl border border-[#30363d]">
               <img
-                src={`/api/badge/${login}.svg?t=${Date.now()}`}
+                src={`/api/badge/${login}.svg?t=${badgeTs}`}
                 alt={`${login} OpenBridge Passport`}
                 className="max-w-full h-auto"
                 style={{ maxHeight: "120px" }}
